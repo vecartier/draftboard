@@ -54068,11 +54068,15 @@ function k4({ store: e, session: t, info: n, onClose: r, onRename: i }) {
 					setShapesOpen: f
 				})]
 			}),
+			/* @__PURE__ */ (0, $.jsx)("div", {
+				className: "top-center",
+				children: /* @__PURE__ */ (0, $.jsx)(l4, { store: e })
+			}),
 			/* @__PURE__ */ (0, $.jsxs)("div", {
 				className: "bottom-row",
 				children: [
 					/* @__PURE__ */ (0, $.jsx)(u4, { store: e }),
-					/* @__PURE__ */ (0, $.jsx)(l4, { store: e }),
+					/* @__PURE__ */ (0, $.jsx)("span", {}),
 					/* @__PURE__ */ (0, $.jsx)(f4, { store: e })
 				]
 			}),

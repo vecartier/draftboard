@@ -1113,4 +1113,5 @@ button:focus:not(:focus-visible) { outline: none; }
 .shape-cell svg { stroke-width: 1.75; }
 .bento .tools-card .tiles { grid-template-columns: repeat(5, minmax(0, 1fr)); }
 .bento .tools-card.four .tiles { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.bento .top-center { position: absolute; top: var(--top-inset); left: 50%; transform: translateX(-50%); z-index: 8; }
 /*$vite$:1*/
