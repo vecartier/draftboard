@@ -14,7 +14,7 @@ The request is `$ARGUMENTS`. If it's empty, make a blank board named "Untitled b
 
 Boards copy the Draftboard editor from the person's own private **engine artifact**. Its link and version are kept in `~/.claude/draftboard/engine.json` (`{"url": ..., "version": ...}`). The editor is in the `engine/` folder next to this file: `draftboard.js`, `draftboard.css`, `index.html` and `VERSION`.
 
-Before making a board, read both. If `engine.json` exists and its `version` equals `VERSION`, use its `url` as ENGINE and skip to "Make a board". Otherwise set the engine up:
+Before making a board, read both. If `engine.json` exists and its `version` is the same as `VERSION` or newer (compare them as version numbers), use its `url` as ENGINE and skip to "Make a board". Otherwise set the engine up:
 
 1. Tell the user in one line: "Setting up your private copy of the Draftboard editor. This happens once and takes a few minutes."
 2. Copy the four engine files into a new folder in your scratchpad (artifacts publish from there).
