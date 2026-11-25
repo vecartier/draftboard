@@ -1,6 +1,6 @@
 ---
-name: build-from-board
-description: Builds a Draftboard board into working code in the current project, screen by screen, matching its layout, copy and flows. Use when the user types /build-from-board, pastes a Draftboard board link and asks to build it, or asks to implement, build or code a Draftboard board or wireframe (by name or link).
+name: build
+description: Builds a Draftboard board into working code in the current project, screen by screen, matching its layout, copy and flows. Use when the user types /draftboard:build, pastes a Draftboard board link and asks to build it, or asks to implement, build or code a Draftboard board or wireframe (by name or link).
 argument-hint: "[board link or name]"
 ---
 
