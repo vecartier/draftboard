@@ -993,4 +993,124 @@ button:focus:not(:focus-visible) { outline: none; }
 .text-editor.flow-label::placeholder { color: var(--text-tertiary); }
 .text-editor.connector-label { background: #fbfaf7; border-radius: 6px; box-shadow: 0 0 0 1px var(--border-strong); }
 .tool-flow .canvas, .tool-connector .canvas { cursor: crosshair; }
+
+/* Bento layout: title and file actions on top, Layers on the left, Tools and Options cards on the right,
+   undo / mode / zoom along the bottom. Everything floats as cards on the paper. */
+.bento .side-stack {
+  position: absolute; right: var(--space-4); top: calc(var(--top-inset) + 60px); width: 236px; z-index: 6;
+  display: flex; flex-direction: column; gap: 10px; max-height: calc(100% - var(--top-inset) - 60px - 76px);
+  pointer-events: none;
+}
+.bento .side-stack > * { pointer-events: auto; }
+.card {
+  position: relative; border-radius: var(--radius-xl); background: var(--surface-menu); border: 1px solid var(--border);
+  backdrop-filter: var(--blur); -webkit-backdrop-filter: var(--blur); box-shadow: var(--shadow-lg);
+  padding: 10px; display: flex; flex-direction: column; gap: 8px; min-height: 0;
+  animation: pop-in var(--dur) var(--ease-out);
+}
+.card-head { font-size: 12px; font-weight: 600; color: var(--text-secondary); padding: 2px 4px 0; }
+.card-sub { font-size: 11px; font-weight: 600; color: var(--text-tertiary); padding: 8px 6px 4px; }
+.card-hint { font-size: 13px; line-height: 1.4; color: var(--text-secondary); margin: 0 4px 4px; }
+.tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
+.tile {
+  display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 9px 2px 7px; border: none; background: none;
+  border-radius: var(--radius-md); color: var(--text); font: inherit; cursor: pointer;
+  transition: background-color var(--dur-fast) var(--ease-out), transform var(--dur-fast) var(--ease-out);
+}
+.tile svg { width: 19px; height: 19px; stroke-width: 1.85; }
+.tile span { font-size: 11px; color: var(--text-secondary); }
+.tile:hover { background: var(--hover); }
+.tile:active { transform: scale(0.95); }
+.tile.on { background: var(--active-bg); }
+.tile.on span { color: var(--text); font-weight: 600; }
+.cells { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
+.cell {
+  display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 8px 2px 6px; border: none; border-radius: var(--radius-md);
+  background: var(--surface); box-shadow: inset 0 0 0 1px var(--border); color: var(--text); font: inherit; cursor: pointer;
+  transition: background-color var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out);
+}
+.cell svg { width: 22px; height: 22px; }
+.shape-cell svg { fill: none; stroke: currentColor; stroke-width: 1.75; stroke-linecap: round; }
+.cell small { font-size: 10.5px; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+.cell:hover { background: var(--surface-sunken); }
+.cell.on { box-shadow: inset 0 0 0 1.5px var(--selection); }
+.options-card { flex: 0 1 auto; }
+.options-card > .library-section, .options-card .search { margin-left: 4px; margin-right: 4px; }
+.options-card.picked-components, .options-card.picked-icons, .options-card.picked-devices { overflow-y: auto; scrollbar-width: none; }
+.options-card::-webkit-scrollbar { display: none; }
+.options-card .panel-hint { margin: 0 4px 4px; }
+.options-card .library-grid { padding: 0; grid-template-columns: repeat(2, 1fr); }
+.options-card .symbol-grid { padding: 0; grid-template-columns: repeat(5, 1fr); }
+.options-card .search { width: calc(100% - 8px); }
+/* The selection's style, one row of controls under another. */
+.options-card .style-bar {
+  position: static; transform: none; animation: none; box-shadow: none; border: none; background: none; padding: 0;
+  flex-wrap: wrap; white-space: normal; justify-content: flex-start; row-gap: 4px;
+}
+.options-card .style-group { flex-wrap: wrap; }
+.options-card .style-group > .separator:first-child { display: none; }
+/* Its menus open beside the card, to the left, so they never run off the window. */
+.options-card .menu-anchor { position: static; }
+.options-card .menu, .options-card .style-bar .menu {
+  top: 0; bottom: auto; left: auto; right: calc(100% + 10px); transform-origin: top right; animation-name: pop-in;
+}
+.device-list .row-button {
+  display: flex; justify-content: space-between; width: 100%; padding: 6px; border: none; background: none; border-radius: var(--radius-sm);
+  font: inherit; font-size: 13px; color: var(--text); cursor: pointer; text-align: left;
+}
+.device-list .row-button small { color: var(--text-tertiary); font-variant-numeric: tabular-nums; }
+.device-list .row-button:hover { background: var(--hover); }
+
+.bento .bottom-row {
+  position: absolute; left: var(--space-4); right: var(--space-4); bottom: max(16px, env(safe-area-inset-bottom));
+  display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; pointer-events: none; z-index: 6;
+}
+.bento .bottom-row > * { pointer-events: auto; }
+.bento .bottom-row .undo-controls { justify-self: start; padding: 2px 6px; }
+.bento .bottom-row .zoom-controls { justify-self: end; padding: 2px 6px; }
+.bento .bottom-row .icon-button { width: 32px; height: 32px; }
+.bento .bottom-row .icon-button[data-tip]:hover::after { top: auto; bottom: calc(100% + 8px); }
+.bento .bottom-row .menu { top: auto; bottom: calc(100% + var(--menu-gap)); animation-name: pop-in-up; }
+.mode-switch {
+  display: flex; gap: 2px; padding: 3px; border-radius: var(--radius-pill); background: var(--surface-glass);
+  backdrop-filter: var(--blur); -webkit-backdrop-filter: var(--blur); border: 1px solid var(--border); box-shadow: var(--shadow-md);
+}
+.mode-option {
+  border: none; background: none; font: inherit; font-size: 13px; font-weight: 500; color: var(--text-secondary);
+  padding: 7px 14px; border-radius: var(--radius-pill); cursor: pointer;
+  transition: background-color var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out);
+}
+.mode-option:hover { color: var(--text); }
+.mode-option.on { background: var(--active-bg); color: var(--text); font-weight: 600; }
+/* With the tools on the right, the old corner controls and selection dock are gone. */
+.bento .corner-controls, .bento .selection-dock { display: none; }
+.bento .panel.layers-panel { max-height: calc(100% - 72px - 76px); }
+@media (max-width: 760px) {
+  .bento .side-stack { width: 200px; }
+  .bento .panel.layers-panel { display: none; }
+}
+.cells, .tiles { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.options-card .style-bar-label { display: none; }
+.bento .tools-card { flex: none; }
+.bento .options-card.picked-components, .bento .options-card.picked-icons, .bento .options-card.picked-devices { flex: 0 1 auto; min-height: 0; }
+/* Tools card: four icons, no labels (the hover tip names them). */
+.bento .tools-card { padding: 6px; }
+.bento .tools-card .tiles { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 2px; }
+.bento .tools-card .tile { padding: 10px 0; position: relative; }
+.bento .tools-card .tile svg { width: 20px; height: 20px; }
+@media (hover: hover) { .tile[data-tip]:hover::after {
+  content: attr(data-tip); position: absolute; top: calc(100% + 8px); left: 50%; transform: translateX(-50%);
+  white-space: pre; padding: 5px 8px; border-radius: 7px; background: rgba(28, 28, 30, 0.92); color: #fff;
+  font-size: 12px; font-weight: 500; pointer-events: none; z-index: 30; animation: tip-in 0.12s ease 0.35s both;
+} }
+.options-card.scrolls { overflow-y: auto; scrollbar-width: none; }
+.back-link {
+  display: flex; align-items: center; gap: 4px; border: none; background: none; font: inherit; font-size: 13px; font-weight: 600;
+  color: var(--text); padding: 2px 4px; cursor: pointer; border-radius: var(--radius-sm); align-self: flex-start;
+}
+.back-link svg { width: 15px; height: 15px; color: var(--text-secondary); }
+.back-link:hover { background: var(--hover); }
+.shape-cell svg { stroke-width: 1.75; }
+.bento .tools-card .tiles { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+.bento .tools-card.four .tiles { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 /*$vite$:1*/
