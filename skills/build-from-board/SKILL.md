@@ -6,7 +6,7 @@ argument-hint: "[board link or name]"
 
 # Build from a Draftboard board
 
-The board is in `$ARGUMENTS`: a link, or a board's name ("build my Checkout board"). For a name, find it with the Artifact tool, `action: "list"`: boards have the description "A Draftboard wireframe board." and their name as the title; if several fit, ask which in one line. With nothing given, use the board made or opened most recently in this conversation, or ask which board in one short question.
+The board is in `$ARGUMENTS`: a link, or a board's name ("build my Checkout board"). For a name, find it with the Artifact tool, `action: "list"`: a board's title is its name, and its files (`scope: "files"`) include `draftboard.js`; if several fit, ask which in one line. With nothing given, use the board made or opened most recently in this conversation, or ask which board in one short question.
 
 ## 1. Read the board
 

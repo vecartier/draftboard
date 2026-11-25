@@ -67,7 +67,7 @@ People comment on a board with the artifact's own comments. Read them with the A
 
 ## Pick up an older board
 
-Find it with the Artifact tool: `action: "list"` (page through with `page_token` if needed). Boards have the description "A Draftboard wireframe board." and their name as the title. Match the user's words to a title; if several fit, list them in one line and ask which. Then open it beside the chat (`action: "open"`), read it (see build-from-board, step 1), and summarise in one line what's on it before you change anything. A board made with an older editor still works; update its editor (below) only if the user wants a newer feature.
+Find it with the Artifact tool: `action: "list"` (page through with `page_token` if needed). The listing shows titles; a board's title is its name. Match the user's words to a title, and check a likely match is a board by listing its files (`scope: "files"`: a board has `draftboard.js` and isn't named "Draftboard engine"). If several fit, list them in one line and ask which. Then open it beside the chat (`action: "open"`), read it (see build-from-board, step 1), and summarise in one line what's on it before you change anything. A board made with an older editor still works; update its editor (below) only if the user wants a newer feature.
 
 ## Update a board to the latest editor
 
