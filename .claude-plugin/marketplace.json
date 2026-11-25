@@ -1,0 +1,11 @@
+{
+  "name": "draftboard",
+  "owner": { "name": "vecartier" },
+  "plugins": [
+    {
+      "name": "draftboard",
+      "source": "./",
+      "description": "Wireframe in Draftboard inside Claude: each board is its own artifact beside the chat, drafted by you or Claude, shared from its Share menu, built into code with /build-from-board."
+    }
+  ]
+}
