@@ -25,7 +25,7 @@ Prefer the open [skills](https://github.com/vercel-labs/skills) installer? `npx 
 
 It needs Claude Code with Claude artifacts (a claude.ai account), and nothing else: no server, nothing running on your computer.
 
-**Your first board takes a few minutes.** Claude publishes the Draftboard editor (in `skills/board/engine/`) as a private artifact of your own, which your boards then copy on the server, so every board after that opens at once. When the plugin updates its editor, Claude refreshes that copy on your next `/draftboard`.
+**Your first board can take a few minutes.** Claude publishes the Draftboard editor (in `skills/board/engine/`) as a private artifact of your own, which your boards then copy on the server, so every board after that opens at once. When the plugin updates its editor, Claude refreshes that copy on your next `/draftboard`.
 
 ## How it works
 
