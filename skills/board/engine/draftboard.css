@@ -1153,4 +1153,9 @@ button:focus:not(:focus-visible) { outline: none; }
   top: auto; bottom: 0; left: calc(100% + 10px); right: auto; transform-origin: bottom left; animation-name: pop-in-up;
 }
 .bento .bottom-dock .cells { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.bento .bottom-dock .tools-card .tiles { align-items: center; }
+.bento .bottom-dock .tools-card .separator { height: 20px; margin: 0 4px; }
+/* The picked mode shows by its soft fill alone, no ring around it. */
+.bento .mode-option:focus, .bento .mode-option:focus-visible { outline: none; box-shadow: none; }
+.bento .tile:focus, .bento .tile:focus-visible { outline: none; }
 /*$vite$:1*/

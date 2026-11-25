@@ -49860,7 +49860,7 @@ var h1 = 10, g1 = 1.5, _1 = 8, v1 = 4, y1 = 450, b1 = 48, x1 = class {
 				d1(this.store, r.original, r.end, e);
 				return;
 			case "placing":
-				this.store.state.tool === "shape" && this.store.state.shapePreset === "line" ? this.store.set({ draftSnap: qH(this.store.snapPoint(r.start), this.store.snapPoint(n), !1) }) : this.store.set({ marquee: eB(r.start, n) });
+				this.store.set({ draftSnap: this.placingPreview(r.start, n) });
 				return;
 			case "panning":
 				this.store.set({ camera: tG(t, qz(e, r.last)) }), this.mode = {
@@ -49944,21 +49944,17 @@ var h1 = 10, g1 = 1.5, _1 = 8, v1 = 4, y1 = 450, b1 = 48, x1 = class {
 				this.store.set({ connectDraft: null }), this.store.endTransient();
 				break;
 			case "placing": {
-				let t = this.store.state.marquee ?? {
-					...e.start,
-					width: 0,
-					height: 0
-				};
+				let t = this.lastScreen ? eG(this.store.state.camera, this.lastScreen) : e.start, n = eB(e.start, t);
 				this.store.set({
 					marquee: null,
 					draftSnap: null
 				});
-				let n = t.width < 4 && t.height < 4 ? {
+				let r = n.width < 4 && n.height < 4 ? {
 					...e.start,
 					width: 0,
 					height: 0
-				} : t;
-				this.store.state.tool === "shape" ? CQ(this.store, e.start, this.lastScreen ? eG(this.store.state.camera, this.lastScreen) : e.start) : p1(this.store, n);
+				} : n;
+				this.store.state.tool === "shape" ? CQ(this.store, e.start, this.lastScreen ? eG(this.store.state.camera, this.lastScreen) : e.start) : p1(this.store, r);
 				break;
 			}
 			case "drawing": {
@@ -50156,6 +50152,22 @@ var h1 = 10, g1 = 1.5, _1 = 8, v1 = 4, y1 = 450, b1 = 48, x1 = class {
 			start: a,
 			originals: vQ(this.store, p).filter((e) => e === p || !QQ(e)),
 			duplicate: d
+		};
+	}
+	/** What a Shapes drag will make, drawn while dragging. */
+	placingPreview(e, t) {
+		let { tool: n, shapePreset: r, flowShape: i } = this.store.state, a = this.store.snapPoint(e), o = this.store.snapPoint(t);
+		if (Math.abs(o.x - a.x) < 4 && Math.abs(o.y - a.y) < 4) return null;
+		if (n === "shape" && r === "line") return qH(a, o, !1);
+		let s = {
+			x: Math.min(a.x, o.x),
+			y: Math.min(a.y, o.y),
+			width: Math.abs(o.x - a.x),
+			height: Math.abs(o.y - a.y)
+		};
+		return {
+			...n === "shape" ? this.store.styledFor("shape", GH(r, e)) : this.store.styledFor("flow", nU(i, e)),
+			frame: s
 		};
 	}
 	/** The Connector tool: from a side dot or a shape (attached), or from empty canvas (a loose end). */
@@ -53523,14 +53535,17 @@ function t4({ store: e, shapesOpen: t, setShapesOpen: n }) {
 		shortcut: "V",
 		on: a === "select",
 		onClick: o
-	}, "select"), h = c ? [
+	}, "select"), h = (e) => /* @__PURE__ */ (0, $.jsx)("div", { className: "separator" }, e), g = c ? [
 		m,
+		h("s1"),
 		l,
 		u,
+		h("s2"),
 		f,
 		p
 	] : [
 		m,
+		h("s1"),
 		/* @__PURE__ */ (0, $.jsx)(e4, {
 			icon: /* @__PURE__ */ (0, $.jsx)(sZ, {}),
 			label: "Devices",
@@ -53558,7 +53573,9 @@ function t4({ store: e, shapesOpen: t, setShapesOpen: n }) {
 				o(), i.current?.click();
 			}
 		}, "image"),
+		h("s2"),
 		u,
+		h("s3"),
 		f,
 		p,
 		/* @__PURE__ */ (0, $.jsx)(e4, {
@@ -53574,7 +53591,7 @@ function t4({ store: e, shapesOpen: t, setShapesOpen: n }) {
 		"aria-label": "Tools",
 		children: [/* @__PURE__ */ (0, $.jsx)("div", {
 			className: "tiles",
-			children: h
+			children: g
 		}), /* @__PURE__ */ (0, $.jsx)("input", {
 			ref: i,
 			type: "file",
@@ -54003,11 +54020,16 @@ function k4({ store: e, session: t, info: n, onClose: r, onRename: i }) {
 		a.current = e;
 	}, []), s = (0, d.useCallback)(() => a.current, []), [c, l] = (0, d.useState)(!1), [u, f] = (0, d.useState)(!1);
 	(0, d.useEffect)(() => {
-		let e = (e) => {
+		let t = (e) => {
 			e.key === "Escape" && f(!1);
+		}, n = (t) => {
+			let n = t.target;
+			n && !n.closest(".side-stack, .bottom-dock, .menu") && (f(!1), e.state.libraryTab !== null && e.set({ libraryTab: null }));
 		};
-		return window.addEventListener("keydown", e), () => window.removeEventListener("keydown", e);
-	}, []);
+		return window.addEventListener("keydown", t), window.addEventListener("pointerdown", n, !0), () => {
+			window.removeEventListener("keydown", t), window.removeEventListener("pointerdown", n, !0);
+		};
+	}, [e]);
 	let p = A1(e);
 	return O4(e, s), w4(e), (0, d.useEffect)(() => {
 		let t = (t) => {
