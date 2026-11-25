@@ -1,20 +1,26 @@
 # Draftboard for Claude
 
-Wireframe in Draftboard without leaving Claude. Every board is its own Claude artifact, like a Design: it opens beside the chat, you draw on it by hand or ask Claude for a first draft, you share it from its own Share menu, and Claude builds it into code later.
+Wireframe in Draftboard without leaving Claude. Every board is its own Claude artifact, like a Design: it opens beside the chat, you draw on it by hand or ask Claude for drafts, you share it from its own Share menu, and Claude builds it into code later.
 
-- **`/draftboard`** makes a blank board. **`/draftboard a checkout flow with cart and payment`** makes one with Claude's first draft on it. Ask for more ("add an error state to Payment") and Claude drafts into the open board; each draft is one ⌘Z.
-- **Sharing**: use the board's Share menu. People you share it with can view it; only you (and anyone you give edit access) change it.
-- **`/build-from-board <board link>`** reads the board (its screens, copy, flows, notes and comments) and builds it in the current project, in that project's own stack and components.
+- **`/draftboard`** opens a fresh blank board in a couple of seconds.
+- **`/draftboard a checkout flow with cart and payment`** makes a new board with Claude's first draft on it.
+- **Iterate** by asking in the chat ("make Pay sticky", "add an error state"), or leave comments on the board with the artifact's own comments and send them to Claude: Claude makes the change, replies on the thread and resolves it. Every Claude change is one ⌘Z.
+- **Come back later**: "open my Checkout board" finds the board by name, opens it beside the chat and picks up where you left off.
+- **Build it**: paste the board's link into Claude Code in your project ("build this"), or run `/build-from-board <link or name>`. Claude reads the screens, copy, flows, notes and comments, and builds them in your project's own stack and components.
+- **Sharing**: from the board's Share menu. People you share it with can view it; only you (and anyone you give edit access) change it.
 
 ## Install
 
-```bash
-npx skills add vecartier/draftboard -g -a claude-code
+Inside Claude Code:
+
+```
+/plugin marketplace add vecartier/draftboard
+/plugin install draftboard@draftboard
 ```
 
-That copies the two skills, `/draftboard` and `/build-from-board`, into `~/.claude/skills`, using the open [skills](https://github.com/vercel-labs/skills) installer. Start a new Claude Code session afterwards. To update later: `npx skills update`.
+Or from a terminal: `claude plugin marketplace add vecartier/draftboard && claude plugin install draftboard@draftboard`. Start a new session afterwards.
 
-**Faster: install it as a Claude Code plugin instead.** Inside Claude Code, run `/plugin marketplace add vecartier/draftboard`, then `/plugin install draftboard@draftboard`. The plugin adds a `/draftboard` command that makes and opens a board in a couple of seconds, without waiting on Claude (Claude still writes any draft you ask for). Use one route or the other, not both: with the skills already installed, remove them first with `npx skills remove -g draftboard build-from-board`.
+Prefer the open [skills](https://github.com/vercel-labs/skills) installer? `npx skills add vecartier/draftboard -g -a claude-code` installs the same two skills, without the plugin's quick `/draftboard` (a blank board then takes Claude a few more seconds). Use one route or the other, not both.
 
 It needs Claude Code with Claude artifacts (a claude.ai account), and nothing else: no server, nothing running on your computer.
 

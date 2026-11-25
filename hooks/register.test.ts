@@ -21,3 +21,11 @@ test('/draftboard publishes the board itself, with no model turn', async ($, on)
   expect((published[0] as { tool: string }).tool).toBe('Artifact')
   expect(prompts).toEqual([])
 })
+
+test('a request goes to the draftboard skill', async ($, on) => {
+  let skill = 0
+  on('command.run', () => { skill += 1; return { text: 'skill' } })
+  const ran = await $.command.run({ command: 'draftboard', args: 'add a settings screen to Checkout' } as Parameters<typeof $.command.run>[0])
+  expect(ran.text).toBe('skill')
+  expect(skill).toBe(1)
+})

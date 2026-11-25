@@ -1,12 +1,12 @@
 ---
 name: build-from-board
-description: Builds a Draftboard board into working code in the current project, screen by screen, matching its layout, copy and flows. Use when the user types /build-from-board, or asks to implement, build or code a Draftboard board, wireframe or board link.
-argument-hint: "[board link]"
+description: Builds a Draftboard board into working code in the current project, screen by screen, matching its layout, copy and flows. Use when the user types /build-from-board, pastes a Draftboard board link and asks to build it, or asks to implement, build or code a Draftboard board or wireframe (by name or link).
+argument-hint: "[board link or name]"
 ---
 
 # Build from a Draftboard board
 
-The board is the artifact link in `$ARGUMENTS`. With no link, use the board made or opened most recently in this conversation. If there is none, ask for the link in one short question and stop.
+The board is in `$ARGUMENTS`: a link, or a board's name ("build my Checkout board"). For a name, find it with the Artifact tool, `action: "list"`: boards have the description "A Draftboard wireframe board." and their name as the title; if several fit, ask which in one line. With nothing given, use the board made or opened most recently in this conversation, or ask which board in one short question.
 
 ## 1. Read the board
 
