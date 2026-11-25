@@ -29,3 +29,19 @@ test('a request goes to the board skill', async ($, on) => {
   expect(ran.text).toBe('skill')
   expect(skill).toBe(1)
 })
+
+test('/draftboard:flow publishes a blank flow chart', async ($, on) => {
+  const published: Record<string, unknown>[] = []
+  on('session.info', () => ({ value: { scratchpadDir: '/tmp/scratch', transcriptPath: '' } }))
+  on('process.run', () => {
+    return { value: { exitCode: 0, stdout: 'ready /tmp/scratch/draftboard-2/index.html https://claude.ai/artifact/ENGINE1\n', stderr: '', isStdoutTruncated: false, isStderrTruncated: false } }
+  })
+  on('tool.call', (_: unknown, e: Record<string, unknown>) => {
+    published.push(e)
+    return { result: {}, text: 'Published at https://claude.ai/artifact/FLOW1 (Version 1)' }
+  })
+  on('clock.after', () => ({ value: undefined }))
+  const ran = await $.command.run({ command: 'draftboard:flow', args: '' } as Parameters<typeof $.command.run>[0])
+  expect(ran.text).toBe('Untitled flow chart is open beside the chat: https://claude.ai/artifact/FLOW1')
+  expect(published[0]?.description).toBe('A Draftboard flow chart.')
+})

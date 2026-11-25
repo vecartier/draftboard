@@ -1,6 +1,6 @@
 ---
 name: board
-description: Draftboard wireframe boards, each its own Claude artifact beside the chat. Makes a board (blank, or with a first draft), iterates on a board when asked or from comments left on it, and reopens an older board by name to keep working. Use when the user types /draftboard or /draftboard:board, asks to wireframe, sketch or mock up screens or a flow, mentions a Draftboard board (by name or link), or asks to address comments on one. To build a board in code, use the build skill.
+description: Draftboard wireframe boards, each its own Claude artifact beside the chat. Makes a board (blank, or with a first draft), iterates on a board when asked or from comments left on it, and reopens an older board by name to keep working. Use when the user types /draftboard or /draftboard:board, asks to wireframe, sketch or mock up screens, mentions a Draftboard board (by name or link), or asks to address comments on one. For flow charts (process and decision diagrams), use the flow skill. To build a board in code, use the build skill.
 argument-hint: "[what to wireframe, or which board to change]"
 ---
 
@@ -12,6 +12,7 @@ The request is `$ARGUMENTS`. Decide what it asks for:
 
 - **Empty:** make a blank board named "Untitled board" (below).
 - **About a board that already exists** (it names one, links one, or says "my checkout board", "the board from last week", "add a screen to…"): find it (Pick up an older board), then iterate on it.
+- **A flow chart** (a process, decision or flowchart diagram rather than screens): use the flow skill instead.
 - **Anything else:** make a new board named after the request, then draft the request into it.
 
 ## Make a board (fast path: two tool calls)
@@ -45,6 +46,8 @@ Read `draft-reference.md` (next to this file) once per session before your first
 - `merge` redraws frames with the same name and adds the rest, `append` always adds, and `replace` clears the board first (only when the user asks for that).
 
 The open board applies the draft as one Undo step, then sets `status` on that inbox document. Check it with `action: "get"`: `"applied"` (with `frames`) means it's on the board, and `"error"` (with `message`) means fix the draft and send a new document. With no `status` yet, the board isn't open: open it (Artifact `action: "open"`), wait a moment and check again. The draft waits in the inbox until the board is opened.
+
+A board can also hold a flow chart next to its screens: add a `flowchart` to the draft (format in the flow skill's `flow-reference.md`).
 
 Write good drafts: real copy and labels, few colours, one idea per screen, and `flows` for navigation between screens. Inside a `row`, give each field or button a `width` (or `"fill"` on one of them) so the row fits the frame.
 

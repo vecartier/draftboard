@@ -8,6 +8,7 @@ on this artifact's URL, as the person:
   parts, json (start of the hand-off JSON, format draftboard.handoff/1; if parts > 1 append the "json" of docs
   "handoff.{{BOARD_ID}}~1" … "~<parts-1>" in order) and png {assetId} (see it with the Artifact tool: action "read", path = assetId).
 - Draft into it: action "set", collection "inbox", any new doc_id, data {"draft": <draft JSON>, "mode": "merge"|"append"|"replace"}.
+  A draft has "frames" (wireframe screens), "flowchart" (steps and connections, laid out automatically), or both.
   The open board applies it as one Undo step and sets "status" on that doc to "applied" (with "frames") or "error" (with "message").
 -->
 <meta charset="UTF-8" />
@@ -15,7 +16,7 @@ on this artifact's URL, as the person:
 <title>{{BOARD_NAME}}</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&display=swap" />
 <link rel="stylesheet" href="draftboard.css" />
-<script id="draftboard-board" type="application/json">{"id":"{{BOARD_ID}}","name":"{{BOARD_NAME_JSON}}"}</script>
+<script id="draftboard-board" type="application/json">{"id":"{{BOARD_ID}}","name":"{{BOARD_NAME_JSON}}","type":"{{BOARD_TYPE}}"}</script>
 </head>
 <body>
 <div id="root"></div>

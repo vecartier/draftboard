@@ -1,6 +1,7 @@
 # Draftboard draft format
 
-A draft is JSON: { "frames": [Frame], "flows"?: [{ "from": frameName, "to": frameName, "via"?: label }] }.
+A draft is JSON: { "frames": [Frame], "flows"?: [{ "from": frameName, "to": frameName, "via"?: label }], "flowchart"?: Flowchart }.
+"flowchart" adds flowchart steps and connections, laid out automatically (format in the flow skill's flow-reference.md).
 A flow is a real link, drawn as a connector that follows both screens: from the element on the "from" screen whose label or text is "via" (a button such as "Checkout"), or from the whole screen without "via". Never draw arrows or lines for navigation.
 
 Frame: { "name", "device"?: "iphone-17-pro" (default) | other device id | "custom" (then "width", "height"); a device frame takes a taller "height" for a long scrolling page,
