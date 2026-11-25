@@ -14,7 +14,7 @@ npx skills add vecartier/draftboard -g -a claude-code
 
 That copies the two skills, `/draftboard` and `/build-from-board`, into `~/.claude/skills`, using the open [skills](https://github.com/vercel-labs/skills) installer. Start a new Claude Code session afterwards. To update later: `npx skills update`.
 
-It also works as a Claude Code plugin: `/plugin marketplace add vecartier/draftboard`, then `/plugin install draftboard@draftboard`.
+**Faster: install it as a Claude Code plugin instead.** Inside Claude Code, run `/plugin marketplace add vecartier/draftboard`, then `/plugin install draftboard@draftboard`. The plugin adds a `/draftboard` command that makes and opens a board in a couple of seconds, without waiting on Claude (Claude still writes any draft you ask for). Use one route or the other, not both: with the skills already installed, remove them first with `npx skills remove -g draftboard build-from-board`.
 
 It needs Claude Code with Claude artifacts (a claude.ai account), and nothing else: no server, nothing running on your computer.
 
