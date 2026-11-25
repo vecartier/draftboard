@@ -3,7 +3,7 @@
 A draft is JSON: { "frames": [Frame], "flows"?: [{ "from": frameName, "to": frameName, "via"?: label }] }.
 A flow is a real link, drawn as a connector that follows both screens: from the element on the "from" screen whose label or text is "via" (a button such as "Checkout"), or from the whole screen without "via". Never draw arrows or lines for navigation.
 
-Frame: { "name", "device"?: "iphone-17-pro" (default) | other device id | "custom" (then "width", "height"),
+Frame: { "name", "device"?: "iphone-17-pro" (default) | other device id | "custom" (then "width", "height"); a device frame takes a taller "height" for a long scrolling page,
   "x"?, "y"? (canvas position; default: to the right of existing content), "padding"?: 20, "gap"?: 12, "children": [Node] }
 Children stack top to bottom from just under the system bar, inside the padding.
 
