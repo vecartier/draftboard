@@ -1159,4 +1159,7 @@ button:focus:not(:focus-visible) { outline: none; }
 .bento .mode-option:focus, .bento .mode-option:focus-visible { outline: none; box-shadow: none; }
 .bento .tile:focus, .bento .tile:focus-visible { outline: none; }
 .size-list { max-height: 280px; min-width: 120px; }
+/* In a card the style controls wrap onto as many rows as they need, never past its edge. */
+.bento .options-card .style-bar { display: flex; flex-wrap: wrap; width: 100%; }
+.bento .options-card .style-group { flex: 0 1 auto; flex-wrap: wrap; min-width: 0; max-width: 100%; }
 /*$vite$:1*/
