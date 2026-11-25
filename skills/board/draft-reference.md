@@ -1,6 +1,7 @@
 # Draftboard draft format
 
-A draft is JSON: { "frames": [Frame], "flows"?: [{ "from": frameName, "to": frameName }] }.
+A draft is JSON: { "frames": [Frame], "flows"?: [{ "from": frameName, "to": frameName, "via"?: label }] }.
+A flow is a real link, drawn as a connector that follows both screens: from the element on the "from" screen whose label or text is "via" (a button such as "Checkout"), or from the whole screen without "via". Never draw arrows or lines for navigation.
 
 Frame: { "name", "device"?: "iphone-17-pro" (default) | other device id | "custom" (then "width", "height"),
   "x"?, "y"? (canvas position; default: to the right of existing content), "padding"?: 20, "gap"?: 12, "children": [Node] }
@@ -20,7 +21,7 @@ Node (all coordinates relative to the frame; every node also takes the layout ke
 Layout keys: "width"?: number | "fill", "height"?, "align"?: "leading"|"center"|"trailing", "gapAfter"?,
   "bleed"?: true (ignore padding, full width), "pin"?: "top"|"bottom", "x"?/"y"? (absolute inside the frame; y skips the stack).
 
-Keep it a wireframe: real labels and copy, few colours, one idea per screen. Use flows for navigation between frames.
+Keep it a wireframe: real labels and copy, few colours, one idea per screen. Use flows for navigation between frames, with "via" naming the button or row that leads there.
 
 ## Catalog
 
