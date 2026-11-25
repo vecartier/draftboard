@@ -69,5 +69,6 @@ test('a missing engine is published by the command itself, with no model turn', 
   const ran = await $.command.run({ command: 'draftboard:flow', args: '' } as Parameters<typeof $.command.run>[0])
   expect(ran.text).toBe('Untitled flow chart is open beside the chat: https://claude.ai/artifact/FLOW2')
   expect(calls[0]?.title).toBe('Draftboard engine')
+  expect(calls[0]?.url).toBeUndefined()
   expect(prompts).toEqual([])
 })

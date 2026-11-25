@@ -30,17 +30,16 @@ async function setUpEngine($: Engine, scratchpadDir: string): Promise<string | n
   const copied = await $.process.run(['bash', `${$.plugin.root}/skills/board/engine-files.sh`, 'copy', scratchpadDir], { timeoutMs: 30_000 })
   const line = /^files (\S+) (\S+) (\S+)$/.exec(copied.stdout.trim().split('\n').pop() ?? '')
   if (!line) return `Copying the editor failed: ${copied.stdout.trim() || copied.stderr.trim()}`
-  const [, dir, version, current] = line
-  const existing = current && current !== '-' ? current : undefined
-  // Updating needs the artifact read in this session first; a gone or unreadable engine is replaced by a new one.
-  const readable = existing ? !('deny' in (await $.tool.call({ tool: 'Artifact', action: 'read', url: existing }) as object)) : false
+  const [, dir, version] = line
+  // Always a new engine artifact: replacing an existing one needs it read in this conversation first, which a
+  // command can't do, and a refused replace would leave the old editor in place.
   const published = await $.tool.call({
     tool: 'Artifact', action: 'publish', file_path: `${dir}/index.html`, title: 'Draftboard engine', icon: 'canvas',
     description: 'The Draftboard editor your boards copy. Keep it.',
     files: { 'draftboard.js': `${dir}/draftboard.js`, 'draftboard.css': `${dir}/draftboard.css` },
     capabilities: CAPABILITIES,
-    ...(existing && readable ? { url: existing } : {}),
   })
+  if ('deny' in (published as object)) return `Publishing the editor was refused: ${resultText(published).slice(0, 300)}`
   const url = ARTIFACT_URL.exec(resultText(published))?.[0]
   if (!url) return `Publishing the editor didn't work: ${resultText(published).slice(0, 300)}`
   await $.process.run(['bash', `${$.plugin.root}/skills/board/engine-files.sh`, 'record', url, version], { timeoutMs: 10_000 })
