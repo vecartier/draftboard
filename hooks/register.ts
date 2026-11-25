@@ -1,6 +1,6 @@
 import type { EngineInterface as Engine, Register } from 'claude-code'
 
-// /draftboard as a command: makes the board and opens it without a model turn. The board page comes from
+// /draftboard, fast: makes the board and opens it without a model turn. The board page comes from
 // skills/draftboard/new-board.sh and the editor is copied on the server from the person's engine, so this is one
 // script run and one publish. Anything that needs Claude (setting the engine up, drafting) goes to the
 // draftboard skill as a prompt once the command has finished.
@@ -26,16 +26,10 @@ function askClaude($: Engine, text: string): void {
 }
 
 export const register: Register = (on) => {
-  on('session.start', async ($, e, next) => {
-    await $.command.register({
-      name: 'draftboard',
-      description: 'New Draftboard board beside the chat, blank or with a first draft',
-      argumentHint: '[what to wireframe]',
-    })
-    return next(e)
-  })
-
-  on('command.run', { command: 'draftboard' }, async ($, e) => {
+  // `/draftboard` is the draftboard skill's own command; this answers it first, so the skill (and a model turn)
+  // only runs when the fast path can't.
+  on('command.run', async ($, e, next) => {
+    if (e.command !== 'draftboard' && e.command !== 'draftboard:draftboard') return next(e)
     const request = (e.args ?? '').trim()
     const viaSkill = (why: string) => {
       askClaude($, `Use the draftboard skill to make a new Draftboard board${request ? ` for: ${request}` : ''}. (${why})`)
@@ -70,5 +64,5 @@ export const register: Register = (on) => {
 
     if (request) askClaude($, `Draft into the Draftboard board ${url} (named "${name}", already open beside the chat) with the draftboard skill: ${request}`)
     return { text: `${name} is open beside the chat: ${url}`, isTextDisplayOnly: true }
-  })
+  }).catch(($, e, next) => (next.called ? { text: 'Making your board…' } : next(e)))
 }
