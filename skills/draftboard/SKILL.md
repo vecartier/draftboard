@@ -10,6 +10,18 @@ Each Draftboard board is its own artifact: the Draftboard editor plus one board.
 
 The request is `$ARGUMENTS`. If it's empty, make a blank board named "Untitled board".
 
+## Your engine (once per person, and after a plugin update)
+
+Boards copy the Draftboard editor from the person's own private **engine artifact**. Its link and version are kept in `~/.claude/draftboard/engine.json` (`{"url": ..., "version": ...}`). The plugin's editor is in `../../engine/` next to this file: `draftboard.js`, `draftboard.css`, `index.html` and `VERSION`.
+
+Before making a board, read both. If `engine.json` exists and its `version` equals `VERSION`, use its `url` as ENGINE and skip to "Make a board". Otherwise set the engine up:
+
+1. Tell the user in one line: "Setting up your private copy of the Draftboard editor. This happens once and takes a few minutes."
+2. Copy the four engine files into a new folder in your scratchpad (artifacts publish from there).
+3. Read `draftboard.js` and `draftboard.css` in full (the Artifact tool publishes only what you have read). They are the minified Draftboard editor from this plugin; read them in parts if needed.
+4. Publish with the Artifact tool: `file_path` the copied `index.html`, `files`: `{"draftboard.js": "<copied draftboard.js>", "draftboard.css": "<copied draftboard.css>"}`, `title`: "Draftboard engine", `icon`: "canvas", `description`: "The Draftboard editor your boards copy. Keep it.", the same `capabilities` as a board (below). With `url` the existing engine's URL when updating one (list its files first: `action: "list"`, `scope: "files"`), and no `url` the first time.
+5. Write `~/.claude/draftboard/engine.json` with the engine's URL and `VERSION`. It stays private to the user, and only their own boards copy from it.
+
 ## Make a board
 
 1. **Name it** in two to four words from the request ("Checkout", "Onboarding flow").
@@ -20,9 +32,9 @@ The request is `$ARGUMENTS`. If it's empty, make a blank board named "Untitled b
    Change nothing else in the file.
 3. **Publish it** with the Artifact tool, a new artifact (no `url`):
    - `file_path`: that `index.html`; `title`: the name; `icon`: `"canvas"`; `description`: "A Draftboard wireframe board."
-   - `files`: `{"draftboard.js": {"artifact": "ENGINE", "path": "draftboard.js"}, "draftboard.css": {"artifact": "ENGINE", "path": "draftboard.css"}}` where ENGINE is `https://claude.ai/artifact/3VLq2PiXPEMjBvpp2VPH2b`. The editor is copied on the server, so you never read or send it yourself.
+   - `files`: `{"draftboard.js": {"artifact": "ENGINE", "path": "draftboard.js"}, "draftboard.css": {"artifact": "ENGINE", "path": "draftboard.css"}}` where ENGINE is the person's engine URL. The editor is copied on the server, so boards need no reading or sending.
    - `capabilities`: `{"db": {"rules": [{"path": "board", "read": "view", "write": "admin"}, {"path": "inbox", "read": "admin", "write": "admin"}]}, "user": {}, "assets": {}, "downloads": true}`
-   If the copy from ENGINE is refused because the user can't open it, tell them in one line that the Draftboard engine isn't shared with them, and stop.
+   If the copy from ENGINE is refused (the engine was deleted), remove `engine.json`, set the engine up again, and retry.
 4. The new board opens beside the chat. With no request, say in one line that the blank board is open, and stop.
 
 ## Draft into a board
@@ -42,4 +54,4 @@ Reply in one or two lines: what you drew, the board's link, and that ⌘Z undoes
 
 ## Update a board to the latest editor
 
-A board keeps the editor it was made with. To give it the current one (when the user asks, or a fix they want is in a newer editor): list the board's files (Artifact `action: "list"`, `scope: "files"`, its `url`), then publish its `index.html` again to that `url` with the same `files` map as above. Read `index.html` first with `action: "read"` and `path: "index.html"`, and publish that, unchanged. Its board and drafts are kept.
+A board keeps the editor it was made with. To give it the current one (when the user asks, or a fix they want is in a newer editor), make sure the engine is current (above), then list the board's files (Artifact `action: "list"`, `scope: "files"`, its `url`), then publish its `index.html` again to that `url` with the same `files` map as above. Read `index.html` first with `action: "read"` and `path: "index.html"`, and publish that, unchanged. Its board and drafts are kept.

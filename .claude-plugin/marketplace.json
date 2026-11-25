@@ -1,6 +1,11 @@
 {
   "name": "draftboard",
-  "owner": { "name": "vecartier" },
+  "owner": {
+    "name": "vecartier"
+  },
+  "metadata": {
+    "description": "Draftboard: wireframe boards as Claude artifacts."
+  },
   "plugins": [
     {
       "name": "draftboard",

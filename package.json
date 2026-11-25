@@ -1,0 +1,22 @@
+{
+  "name": "draftboard",
+  "version": "0.4.0",
+  "description": "Install the Draftboard plugin for Claude Code: wireframe boards as artifacts beside the chat, drafted by you or Claude, built into code with /build-from-board.",
+  "type": "module",
+  "bin": {
+    "draftboard": "installer/install.js"
+  },
+  "files": [
+    "installer"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vecartier/draftboard.git"
+  },
+  "homepage": "https://github.com/vecartier/draftboard",
+  "license": "MIT",
+  "author": "vecartier",
+  "engines": {
+    "node": ">=18"
+  }
+}
