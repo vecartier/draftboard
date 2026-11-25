@@ -1,6 +1,6 @@
 {
   "name": "draftboard",
-  "version": "0.8.1",
+  "version": "0.8.2",
   "description": "Wireframe in Draftboard, inside Claude: each board is its own artifact that opens beside the chat. Draw by hand or have Claude draft first, share a board from its Share menu, and build it into code with /draftboard:build.",
   "author": {
     "name": "vecartier"

@@ -1114,4 +1114,23 @@ button:focus:not(:focus-visible) { outline: none; }
 .bento .tools-card .tiles { grid-template-columns: repeat(5, minmax(0, 1fr)); }
 .bento .tools-card.four .tiles { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 .bento .top-center { position: absolute; top: var(--top-inset); left: 50%; transform: translateX(-50%); z-index: 8; }
+
+/* One grid for the bento chrome: every pill is 44 px tall with fully round ends, every card has the same 18 px
+   corners, the top row shares one centre line, and Layers and the Tools card start at the same height. */
+.bento { --bar: 44px; --chrome-top: var(--top-inset); --cards-top: calc(var(--top-inset) + var(--bar) + 12px); }
+.bento .top-bar { top: var(--chrome-top); align-items: center; height: var(--bar); }
+.bento .doc-header { height: var(--bar); align-items: center; }
+.bento .doc-title { padding: 6px 8px 6px 17px; margin-left: 0; line-height: 1.2; }
+.bento .top-center { top: var(--chrome-top); height: var(--bar); display: flex; align-items: center; }
+.bento .toolbar, .bento .mode-switch { height: var(--bar); box-sizing: border-box; padding: 4px; border-radius: var(--radius-pill); }
+.bento .toolbar .icon-button, .bento .bottom-row .icon-button { width: 34px; height: 34px; }
+.bento .bottom-row .undo-controls, .bento .bottom-row .zoom-controls { padding: 4px; }
+.bento .zoom-button { height: 34px; }
+.bento .mode-option { height: 34px; padding: 0 16px; display: grid; place-items: center; }
+.bento .side-stack { top: var(--cards-top); }
+.bento .panel.layers-panel { top: var(--cards-top); border-radius: var(--radius-xl); }
+.bento .screen .panel.layers-panel.collapsed, .bento .panel.layers-panel.collapsed { border-radius: var(--radius-xl); }
+.bento .card { border-radius: var(--radius-xl); }
+.bento .cell, .bento .tile { border-radius: var(--radius-md); }
+.bento .doc-title { font-size: 18px; letter-spacing: -0.015em; height: var(--bar); display: flex; align-items: center; padding-top: 0; padding-bottom: 0; }
 /*$vite$:1*/
