@@ -1158,4 +1158,5 @@ button:focus:not(:focus-visible) { outline: none; }
 /* The picked mode shows by its soft fill alone, no ring around it. */
 .bento .mode-option:focus, .bento .mode-option:focus-visible { outline: none; box-shadow: none; }
 .bento .tile:focus, .bento .tile:focus-visible { outline: none; }
+.size-list { max-height: 280px; min-width: 120px; }
 /*$vite$:1*/

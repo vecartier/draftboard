@@ -9,7 +9,7 @@ Frame: { "name", "device"?: "iphone-17-pro" (default) | other device id | "custo
 Children stack top to bottom from just under the system bar, inside the padding.
 
 Node (all coordinates relative to the frame; every node also takes the layout keys below):
-- { "type": "text", "text", "style"?: "title"|"heading"|"body"|"caption", "size"?, "bold"?, "font"?: "system"|"rounded"|"serif"|"mono"|"handwritten", "color"?: "#rrggbb" }
+- { "type": "text", "text", "style"?: "display"|"title"|"heading"|"subheading"|"body"|"small"|"caption"|"footnote", "size"?, "bold"?, "font"?: "system"|"rounded"|"serif"|"mono"|"handwritten", "color"?: "#rrggbb" }
 - { "type": "component", "component": button|navigationBar|tabBar|listRow|toggle|textField|searchBar|segmentedControl|slider|card|imagePlaceholder,
     "label"? (segmentedControl: "A, B, C"), "fill"?, "color"? (foreground) }  navigationBar and tabBar span the full width; tabBar pins to the bottom.
 - { "type": "wireframe", "id" } a grey sketch block from the library (see the reference for ids, e.g. hero, listRow, card, form, emptyState)
