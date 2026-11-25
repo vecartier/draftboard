@@ -1,6 +1,6 @@
 # Flowchart draft format
 
-A flowchart draft is `{"flowchart": {...}}`. It can sit in the same draft as wireframe `frames` (see the board skill's draft-reference.md), but on a flow chart it is usually alone.
+A flowchart draft is `{"flowchart": {...}}`. It can sit alone, or in the same draft as wireframe `frames` (see draft-reference.md).
 
 ```json
 {

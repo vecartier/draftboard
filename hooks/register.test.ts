@@ -30,29 +30,13 @@ test('a request goes to the board skill', async ($, on) => {
   expect(skill).toBe(1)
 })
 
-test('/draftboard:flow publishes a blank flow chart', async ($, on) => {
-  const published: Record<string, unknown>[] = []
-  on('session.info', () => ({ value: { scratchpadDir: '/tmp/scratch', transcriptPath: '' } }))
-  on('process.run', () => {
-    return { value: { exitCode: 0, stdout: 'ready /tmp/scratch/draftboard-2/index.html https://claude.ai/artifact/ENGINE1\n', stderr: '', isStdoutTruncated: false, isStderrTruncated: false } }
-  })
-  on('tool.call', (_: unknown, e: Record<string, unknown>) => {
-    published.push(e)
-    return { result: {}, text: 'Published at https://claude.ai/artifact/FLOW1 (Version 1)' }
-  })
-  on('clock.after', () => ({ value: undefined }))
-  const ran = await $.command.run({ command: 'draftboard:flow', args: '' } as Parameters<typeof $.command.run>[0])
-  expect(ran.text).toBe('Untitled flow chart is open beside the chat: https://claude.ai/artifact/FLOW1')
-  expect(published[0]?.description).toBe('A Draftboard flow chart.')
-})
-
 test('a missing engine is published by the command itself, with no model turn', async ($, on) => {
   const calls: Record<string, unknown>[] = []
   const prompts: string[] = []
   let engineReady = false
   on('session.info', () => ({ value: { scratchpadDir: '/tmp/scratch', transcriptPath: '' } }))
-  on('process.run', (_: unknown, e: { argv: string[] } | string[]) => {
-    const argv = Array.isArray(e) ? e : e.argv
+  on('process.run', (_: unknown, e: { readonly argv: readonly string[] }) => {
+    const argv = e.argv
     const script = String(argv[1] ?? '')
     let stdout = ''
     if (script.endsWith('engine-files.sh') && argv[2] === 'copy') stdout = 'files /tmp/scratch/draftboard-engine-1 0.6.0 -\n'
@@ -66,8 +50,8 @@ test('a missing engine is published by the command itself, with no model turn', 
   })
   on('clock.after', () => ({ value: undefined }))
   on('prompt.submit', (_: unknown, e: { text: string }) => { prompts.push(e.text); return { text: e.text } })
-  const ran = await $.command.run({ command: 'draftboard:flow', args: '' } as Parameters<typeof $.command.run>[0])
-  expect(ran.text).toBe('Untitled flow chart is open beside the chat: https://claude.ai/artifact/FLOW2')
+  const ran = await $.command.run({ command: 'draftboard', args: '' } as Parameters<typeof $.command.run>[0])
+  expect(ran.text).toBe('Untitled board is open beside the chat: https://claude.ai/artifact/FLOW2')
   expect(calls[0]?.title).toBe('Draftboard engine')
   expect(calls[0]?.url).toBeUndefined()
   expect(prompts).toEqual([])

@@ -1,6 +1,6 @@
 import type { EngineInterface as Engine, Register } from 'claude-code'
 
-// /draftboard (or /draftboard:flow for a flow chart) with nothing after it, fast: makes a blank board and opens it without a model turn. The board page comes from
+// /draftboard with nothing after it, fast: makes a blank board and opens it without a model turn. The board page comes from
 // skills/board/new-board.sh and the editor is copied on the server from the person's engine, so this is one
 // script run and one publish. The first time (and after an editor update) it also publishes the person's private
 // engine itself, so that needs no model turn either. Anything that needs Claude (drafting, or a step here
@@ -42,7 +42,7 @@ async function setUpEngine($: Engine, scratchpadDir: string): Promise<string | n
   if ('deny' in (published as object)) return `Publishing the editor was refused: ${resultText(published).slice(0, 300)}`
   const url = ARTIFACT_URL.exec(resultText(published))?.[0]
   if (!url) return `Publishing the editor didn't work: ${resultText(published).slice(0, 300)}`
-  await $.process.run(['bash', `${$.plugin.root}/skills/board/engine-files.sh`, 'record', url, version], { timeoutMs: 10_000 })
+  await $.process.run(['bash', `${$.plugin.root}/skills/board/engine-files.sh`, 'record', url, version ?? '0'], { timeoutMs: 10_000 })
   return null
 }
 
@@ -50,22 +50,21 @@ export const register: Register = (on) => {
   // `/draftboard` is the board skill's own command; this answers it first, so the skill (and a model turn)
   // only runs when the fast path can't.
   on('command.run', async ($, e, next) => {
-    const flow = ['flow', 'draftboard:flow'].includes(e.command)
-    if (!flow && !['draftboard', 'board', 'draftboard:board'].includes(e.command)) return next(e)
+    if (!['draftboard', 'board', 'draftboard:board'].includes(e.command)) return next(e)
     const request = (e.args ?? '').trim()
     // Only a blank board is made here. A request may be about an existing board ("add a screen to Checkout"),
     // which takes Claude to tell apart, so the skill handles every request.
     if (request) return next(e)
     const viaSkill = (why: string) => {
-      askClaude($, flow ? `Use the flow skill to make a new blank Draftboard flow chart. (${why})` : `Use the board skill to make a new blank Draftboard board. (${why})`)
-      return { text: flow ? 'Making your flow chart…' : 'Making your board…', isTextDisplayOnly: true as const }
+      askClaude($, `Use the board skill to make a new blank Draftboard board. (${why})`)
+      return { text: 'Making your board…', isTextDisplayOnly: true as const }
     }
 
     const { scratchpadDir } = await $.session.info()
     if (!scratchpadDir) return viaSkill('This session has no scratchpad for the fast path.')
-    const name = flow ? 'Untitled flow chart' : 'Untitled board'
+    const name = 'Untitled board'
     const prepare = async () => {
-      const run = await $.process.run(['bash', `${$.plugin.root}/skills/board/new-board.sh`, scratchpadDir, name, flow ? 'flow' : 'wireframe'], { timeoutMs: 15_000 })
+      const run = await $.process.run(['bash', `${$.plugin.root}/skills/board/new-board.sh`, scratchpadDir, name], { timeoutMs: 15_000 })
       return { line: run.stdout.trim().split('\n').pop() ?? '', stderr: run.stderr.trim() }
     }
     let prepared = await prepare()
@@ -86,8 +85,8 @@ export const register: Register = (on) => {
       action: 'publish',
       file_path: page,
       title: name,
-      icon: flow ? 'flowchart' : 'canvas',
-      description: flow ? 'A Draftboard flow chart.' : 'A Draftboard wireframe board.',
+      icon: 'canvas',
+      description: 'A Draftboard board.',
       files: {
         'draftboard.js': { artifact: engine, path: 'draftboard.js' },
         'draftboard.css': { artifact: engine, path: 'draftboard.css' },

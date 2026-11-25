@@ -1,14 +1,12 @@
 #!/bin/bash
 # Prepares a new Draftboard board page in one step.
-# Usage: new-board.sh <folder to write into, e.g. your scratchpad> <board name> [wireframe|flow]
+# Usage: new-board.sh <folder to write into, e.g. your scratchpad> <board name>
 # Prints: "ready <index.html path> <engine url>" when the engine is set up and current,
 #         "engine-needed <reason>" when it must be set up first (see SKILL.md),
 #         or "error <reason>".
 set -u
 OUT="${1:-}"
 NAME="${2:-Untitled board}"
-TYPE="${3:-wireframe}"
-[ "$TYPE" = "flow" ] || TYPE="wireframe"
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 RECORD="$HOME/.claude/draftboard/engine.json"
 [ -n "$OUT" ] || { echo "error Give a folder to write into."; exit 1; }
@@ -28,7 +26,7 @@ mkdir -p "$DIR"
 # The name goes into HTML (escaped) and into a JSON string (escaped).
 HTML_NAME="$(printf '%s' "$NAME" | sed -e 's/&/\&amp;/g' -e 's/</\&lt;/g' -e 's/>/\&gt;/g')"
 JSON_NAME="$(printf '%s' "$NAME" | sed -e 's/\\/\\\\/g' -e 's/"/\\"/g' -e 's/</\\u003c/g')"
-export ID HTML_NAME JSON_NAME TYPE
-perl -pe 's/\{\{BOARD_TYPE\}\}/$ENV{TYPE}/g; s/\{\{BOARD_ID\}\}/$ENV{ID}/g; s/\{\{BOARD_NAME_JSON\}\}/$ENV{JSON_NAME}/g; s/\{\{BOARD_NAME\}\}/$ENV{HTML_NAME}/g' \
+export ID HTML_NAME JSON_NAME
+perl -pe 's/\{\{BOARD_ID\}\}/$ENV{ID}/g; s/\{\{BOARD_NAME_JSON\}\}/$ENV{JSON_NAME}/g; s/\{\{BOARD_NAME\}\}/$ENV{HTML_NAME}/g' \
   "$HERE/board.html" > "$DIR/index.html"
 echo "ready $DIR/index.html $URL"
