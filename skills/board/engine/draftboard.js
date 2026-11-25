@@ -53517,12 +53517,20 @@ function t4({ store: e, shapesOpen: t, setShapesOpen: n }) {
 		onClick: () => {
 			o(), jQ(e);
 		}
-	}, "note"), m = c ? [
+	}, "note"), m = /* @__PURE__ */ (0, $.jsx)(e4, {
+		icon: /* @__PURE__ */ (0, $.jsx)(TX, {}),
+		label: "Select",
+		shortcut: "V",
+		on: a === "select",
+		onClick: o
+	}, "select"), h = c ? [
+		m,
 		l,
 		u,
 		f,
 		p
 	] : [
+		m,
 		/* @__PURE__ */ (0, $.jsx)(e4, {
 			icon: /* @__PURE__ */ (0, $.jsx)(sZ, {}),
 			label: "Devices",
@@ -53566,7 +53574,7 @@ function t4({ store: e, shapesOpen: t, setShapesOpen: n }) {
 		"aria-label": "Tools",
 		children: [/* @__PURE__ */ (0, $.jsx)("div", {
 			className: "tiles",
-			children: m
+			children: h
 		}), /* @__PURE__ */ (0, $.jsx)("input", {
 			ref: i,
 			type: "file",
@@ -54056,18 +54064,21 @@ function k4({ store: e, session: t, info: n, onClose: r, onRename: i }) {
 					})
 				]
 			}),
-			p.access === "edit" && /* @__PURE__ */ (0, $.jsxs)("aside", {
+			p.access === "edit" && /* @__PURE__ */ (0, $.jsxs)($.Fragment, { children: [/* @__PURE__ */ (0, $.jsx)("aside", {
 				className: "side-stack",
-				children: [/* @__PURE__ */ (0, $.jsx)(t4, {
+				children: /* @__PURE__ */ (0, $.jsx)(o4, {
 					store: e,
 					shapesOpen: u,
 					setShapesOpen: f
-				}), /* @__PURE__ */ (0, $.jsx)(o4, {
+				})
+			}), /* @__PURE__ */ (0, $.jsx)("div", {
+				className: "bottom-dock",
+				children: /* @__PURE__ */ (0, $.jsx)(t4, {
 					store: e,
 					shapesOpen: u,
 					setShapesOpen: f
-				})]
-			}),
+				})
+			})] }),
 			/* @__PURE__ */ (0, $.jsx)("div", {
 				className: "top-center",
 				children: /* @__PURE__ */ (0, $.jsx)(l4, { store: e })

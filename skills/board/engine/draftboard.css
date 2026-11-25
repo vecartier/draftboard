@@ -1133,4 +1133,24 @@ button:focus:not(:focus-visible) { outline: none; }
 .bento .card { border-radius: var(--radius-xl); }
 .bento .cell, .bento .tile { border-radius: var(--radius-md); }
 .bento .doc-title { font-size: 18px; letter-spacing: -0.015em; height: var(--bar); display: flex; align-items: center; padding-top: 0; padding-bottom: 0; }
+
+/* Tools along the bottom, centred on one line; the picked tool's options and the selection's style stack just above. */
+.bento .bottom-dock {
+  position: absolute; left: 50%; transform: translateX(-50%); bottom: max(16px, env(safe-area-inset-bottom)); z-index: 7;
+  display: flex; flex-direction: column; align-items: center; gap: 10px; pointer-events: none;
+  max-height: calc(100% - var(--cards-top) - 16px);
+}
+.bento .bottom-dock > * { pointer-events: auto; }
+.bento .bottom-dock .tools-card { height: var(--bar); box-sizing: border-box; padding: 4px; border-radius: var(--radius-pill); flex-direction: row; }
+.bento .bottom-dock .tools-card .tiles { display: flex; gap: 2px; }
+.bento .bottom-dock .tools-card .tile { width: 40px; height: 34px; padding: 0; border-radius: var(--radius-pill); display: grid; place-items: center; }
+.bento .bottom-dock .tools-card .tile svg { width: 19px; height: 19px; }
+.bento .bottom-dock .tile[data-tip]:hover::after { top: auto; bottom: calc(100% + 10px); }
+.bento .bottom-dock .options-card { width: 300px; min-height: 0; animation-name: pop-in-up; }
+.bento .bottom-dock .options-card.scrolls { overflow-y: auto; }
+/* Its menus open beside it, to the right, clear of the canvas centre. */
+.bento .bottom-dock .options-card .menu, .bento .bottom-dock .options-card .style-bar .menu {
+  top: auto; bottom: 0; left: calc(100% + 10px); right: auto; transform-origin: bottom left; animation-name: pop-in-up;
+}
+.bento .bottom-dock .cells { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 /*$vite$:1*/
