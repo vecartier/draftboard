@@ -1364,4 +1364,27 @@ button:focus:not(:focus-visible) { outline: none; }
 .bento .cells.four { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
 .bento .cells.four .cell { flex-direction: row; justify-content: flex-start; gap: 10px; padding: 9px 12px; }
 .bento .cells.four .cell small { font-size: 12px; padding: 0; }
+.inspector .opacity-sample { font-size: 12px; font-variant-numeric: tabular-nums; }
+
+/* Style card rhythm: one left edge for titles, labels and swatches; 6px from a label to its options; 14px between
+   sections, in Advanced too; the title sits 10px above the first section. */
+.options-card .card-head { padding-left: 2px; }
+.inspector { gap: 14px; padding-top: 4px; }
+.inspector-row { gap: 6px; }
+.inspector-label { padding-left: 0; line-height: 14px; }
+.inspector-more { margin: -6px 0 -4px -6px; }
+.inspector-more-rows { gap: 14px; }
+.inspector-actions { margin-top: 0; padding-top: 10px; }
+/* Option frames start on the title's edge (the icon sits inside its frame), so a picked option lines up with the title. */
+.inspector-control { margin-left: 0; }
+.inspector .quick-swatches { margin-left: 0; }
+/* The picked colour's ring (4px) starts on the title's edge too, and Advanced's frame like every other button. */
+.inspector .quick-swatches { margin-left: 4px; }
+.inspector-more { margin-left: 0; }
+/* Every options card shares one left edge: the title's text, section labels, and the frames of cells, rows,
+   search fields and picked options all start on the card's inner edge. */
+.options-card .card-head { padding-left: 0; padding-right: 0; }
+.bento .options-card .inspector { padding: 0; }
+.bento .options-card .library-section { margin-left: 0; margin-right: 0; }
+.bento .options-card .card-sub { padding-left: 0; margin-left: 0; }
 /*$vite$:1*/
