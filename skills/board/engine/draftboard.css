@@ -1408,6 +1408,7 @@ button:focus:not(:focus-visible) { outline: none; }
 .slider-value { font-size: 12px; font-variant-numeric: tabular-nums; color: var(--text-secondary); min-width: 34px; text-align: right; }
 .bento .canvas.erasing { cursor: none; }
 .inspector-label:empty { display: none; }
+.menu-version { font-size: 11px; color: var(--text-tertiary); padding: 4px 10px 2px; font-variant-numeric: tabular-nums; user-select: text; }
 /* ---------- Responsive bento ----------
    Loaded after styles.css. Three sizes:
    - Wide (≥ 1200): Layers open on the left, cards on the right, tools centred at the bottom.

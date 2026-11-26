@@ -50981,6 +50981,10 @@ var f0 = 600, p0 = 10, m0 = 1.5, h0 = 8, g0 = 4, _0 = 450, v0 = 48, y0 = class {
 		let s = this.hit(e), c = s && !s.hidden ? s.id : null;
 		return c !== i && this.store.set({ hoverID: c }), s && this.store.state.selection.has(s.id) && !W$(s) ? "move" : "";
 	}
+	/** Whether iPadOS Scribble may turn Pencil writing into text: only with the Text tool or while editing text. */
+	get allowsScribble() {
+		return this.store.state.tool === "text" || this.store.state.editingTextID !== null;
+	}
 	clearHover() {
 		this.store.state.hoverID !== null && this.store.set({ hoverID: null }), this.store.state.eraserAt !== null && this.store.set({ eraserAt: null });
 	}
@@ -51035,7 +51039,17 @@ var x0 = .01, S0 = (e) => ({
 			],
 			["contextmenu", (e) => e.preventDefault()],
 			["dblclick", ((e) => this.controller.doubleTap(this.local(e)))],
-			["pointerleave", this.onLeave]
+			["pointerleave", this.onLeave],
+			[
+				"touchstart",
+				this.onStylusTouch,
+				{ passive: !1 }
+			],
+			[
+				"touchmove",
+				this.onStylusTouch,
+				{ passive: !1 }
+			]
 		];
 		return t.forEach(([t, n, r]) => e.addEventListener(t, n, r)), window.addEventListener("keydown", this.onModifierKey), window.addEventListener("keyup", this.onModifierKey), () => {
 			t.forEach(([t, n]) => e.removeEventListener(t, n)), window.removeEventListener("keydown", this.onModifierKey), window.removeEventListener("keyup", this.onModifierKey);
@@ -51071,6 +51085,14 @@ var x0 = .01, S0 = (e) => ({
 		this.activePointer = e.pointerId, this.activeIsPen = t === "pen";
 		let n = t === "mouse" && (e.button === 1 || this.spaceHeld);
 		this.element.style.cursor = "", this.controller.begin(this.local(e), t, n, S0(e));
+	};
+	onStylusTouch = (e) => {
+		if (!this.controller.allowsScribble) {
+			for (let t of Array.from(e.changedTouches)) if (t.touchType === "stylus") {
+				e.preventDefault();
+				return;
+			}
+		}
 	};
 	onModifierKey = (e) => {
 		(e.key === "Shift" || e.key === "Alt" || e.key === "Meta") && this.controller.setModifiers(S0(e));
@@ -55366,6 +55388,11 @@ function j3({ store: e }) {
 							e.toggleSnap(), i();
 						},
 						children: "Snap to grid"
+					}),
+					/* @__PURE__ */ (0, $.jsx)("div", { className: "menu-separator" }),
+					/* @__PURE__ */ (0, $.jsxs)("div", {
+						className: "menu-version",
+						children: ["Draftboard ", "0.9.3"]
 					})
 				]
 			}),
