@@ -42066,18 +42066,23 @@ function JH(e, t) {
 	}
 }
 function YH(e, t) {
-	let n = sB(e);
-	return e.length < 2 || !n ? null : {
+	let n = e.length === 1 ? e[0] : void 0;
+	n && (e = [n, {
+		x: n.x + .01,
+		y: n.y + .01
+	}]);
+	let r = sB(e);
+	return e.length < 2 || !r ? null : {
 		id: G(),
 		kind: {
 			type: "ink",
 			stroke: {
 				points: e,
-				sourceBounds: n,
+				sourceBounds: r,
 				...t ? { brush: t } : {}
 			}
 		},
-		frame: n,
+		frame: r,
 		style: Iz.ink
 	};
 }
@@ -46362,7 +46367,6 @@ var jJ = (e) => 1 - (1 - e) ** 3, MJ = {
 			eraserSize: vJ.initial,
 			eraserAt: null,
 			croppingID: null,
-			drawingLayer: null,
 			camera: tG,
 			snapToGrid: !0,
 			draftStroke: [],
@@ -49263,20 +49267,24 @@ function JQ(e, t, n = null) {
 	if (!r) return;
 	let [i] = IH(e.state.document, [e.styledFor("pen", r)]);
 	if (!i) return;
-	let a = YQ(e), o = {
+	let a = i.parentID ?? null, o = YQ(e, a), s = {
 		...i,
-		groupID: a
-	}, s = e.state.document, c = s.elements.filter((e) => e.kind.type === "ink" && e.groupID !== a);
-	if (e.commit(HH(c.length > 0 ? q(s, c.map((e) => ({
+		groupID: o
+	}, c = e.state.document, l = c.elements.filter((e) => e.kind.type === "ink" && (e.parentID ?? null) === a && e.groupID !== o);
+	if (e.commit(HH(l.length > 0 ? q(c, l.map((e) => ({
 		...e,
-		groupID: a
-	}))) : s, [o])), !n) return;
-	let l = UH(e.state.document, /* @__PURE__ */ new Set([o.id]));
-	e.commit(n.replaces ? q(l, [n.element]) : HH(l, [n.element]));
+		groupID: o
+	}))) : c, [s])), !n) return;
+	let u = UH(e.state.document, /* @__PURE__ */ new Set([s.id]));
+	e.commit(n.replaces ? q(u, [n.element]) : HH(u, [n.element]));
 }
-/** The board's one drawing layer: the group every stroke belongs to. */
-function YQ(e) {
-	return e.state.document.elements.find((e) => e.kind.type === "ink" && e.groupID)?.groupID ?? e.state.drawingLayer ?? G();
+/**
+* The drawing a stroke belongs to: one on the board itself, and one on each Freeform canvas (a canvas is its own
+* sheet, so its drawing moves and clips with it).
+*/
+function YQ(e, t) {
+	let n = e.state.document.elements, r = n.find((e) => e.kind.type === "ink" && e.groupID && (e.parentID ?? null) === t), i = t !== null && r && n.some((e) => e.groupID === r.groupID && (e.parentID ?? null) !== t);
+	return r?.groupID && !i ? r.groupID : G();
 }
 /** Empties the drawing layer (one undo brings it back). */
 function XQ(e) {
@@ -50508,6 +50516,8 @@ var f0 = 600, p0 = 10, m0 = 1.5, h0 = 8, g0 = 4, _0 = 450, v0 = 48, y0 = class {
 	lastScreen = null;
 	/** When the last click or drag made a shape, step or section. */
 	createdAt = -Infinity;
+	/** When the last stroke was drawn. */
+	lastInkEnd = -Infinity;
 	constructor(e) {
 		this.store = e;
 	}
@@ -50677,11 +50687,12 @@ var f0 = 600, p0 = 10, m0 = 1.5, h0 = 8, g0 = 4, _0 = 450, v0 = 48, y0 = class {
 				break;
 			}
 			case "drawing": {
-				let t = this.held ? qQ(this.store, e.points) : null;
+				this.lastInkEnd = performance.now();
+				let t = this.lastScreen ? iG(this.store.state.camera, this.lastScreen) : null, n = e.points[e.points.length - 1], r = t && n && Jz(t, n) > 0 ? [...e.points, t] : e.points, i = this.held ? qQ(this.store, r) : null;
 				this.stopHold(), this.store.set({
 					draftStroke: [],
 					draftSnap: null
-				}), JQ(this.store, e.points, t);
+				}), JQ(this.store, r, i);
 				break;
 			}
 			case "marquee":
@@ -50703,6 +50714,10 @@ var f0 = 600, p0 = 10, m0 = 1.5, h0 = 8, g0 = 4, _0 = 450, v0 = 48, y0 = class {
 		t && this.handleTap(t);
 	}
 	cancel() {
+		if (this.mode.type === "drawing") {
+			this.end();
+			return;
+		}
 		let e = this.mode;
 		this.mode = { type: "idle" }, this.tap = null, this.stopHold(), this.store.set({
 			marquee: null,
@@ -50713,7 +50728,7 @@ var f0 = 600, p0 = 10, m0 = 1.5, h0 = 8, g0 = 4, _0 = 450, v0 = 48, y0 = class {
 	}
 	/** Double-click (Mac) opens text or a component label for editing straight away. */
 	doubleTap(e) {
-		if (performance.now() - this.createdAt < f0 || this.store.state.tool === "draw" || this.store.state.tool === "erase") return;
+		if (performance.now() - this.createdAt < f0 || this.store.state.tool === "draw" || this.store.state.tool === "erase" || performance.now() - this.lastInkEnd < f0) return;
 		let t = this.deviceLabelAt(e);
 		if (t) {
 			this.store.zoomTo(t.frame);
@@ -51035,9 +51050,9 @@ var x0 = .01, S0 = (e) => ({
 	}
 	onDown = (e) => {
 		if (e.pointerType === "mouse" && e.button !== 0 && e.button !== 1) return;
-		e.preventDefault(), document.activeElement !== this.element && this.element.focus({ preventScroll: !0 });
+		e.preventDefault();
 		let t = C0(e);
-		if (t === "touch") {
+		if (t !== "pen" && document.activeElement !== this.element && this.element.focus({ preventScroll: !0 }), t === "touch") {
 			if (this.isPenActive()) return;
 			if (this.touches.set(e.pointerId, this.local(e)), this.touches.size === 2) {
 				this.startPinch();
