@@ -1419,6 +1419,15 @@ button:focus:not(:focus-visible) { outline: none; }
 
 .mode-menu { display: none; }
 .insert-chevron { display: none; }
+@media (max-width: 899px) {
+  .bento .insert-tile { position: relative; }
+  .bento .insert-tile .insert-chevron { display: block; position: absolute; right: 2px; bottom: 4px; width: 9px !important; height: 9px !important; color: var(--text-tertiary); }
+  .bento .bottom-dock .tools-card .menu-anchor { position: static; display: contents; }
+  .bento .bottom-dock .menu { top: auto; bottom: calc(100% + 12px); left: 50%; transform: translateX(-50%); transform-origin: bottom center; animation-name: pop-in-up; min-width: 180px; }
+  .bento .insert-item { display: flex; align-items: center; gap: 10px; }
+  .bento .insert-item svg { width: 18px; height: 18px; color: var(--text-secondary); }
+  .bento .insert-item.checked svg { color: inherit; }
+}
 
 /* Layers is reachable at every size (it used to disappear below 760 px). */
 .bento .panel.layers-panel { display: flex; }
@@ -1527,5 +1536,25 @@ button:focus:not(:focus-visible) { outline: none; }
   .bento .side-stack .inspector-row { display: grid; grid-template-columns: 56px 1fr; align-items: center; gap: 8px; min-height: 28px; }
   .bento .side-stack .inspector-control { margin-left: -6px; }
   .bento .side-stack .inspector { gap: 2px; }
+}
+
+/* ---------- Touch screens bigger than a phone (iPad) ----------
+   Finger and Pencil need bigger targets than a mouse, and an iPad held at arm's length reads smaller than a laptop,
+   so all the chrome (pills, tool bar, cards, Layers, menus inside them) draws 20% larger. Only the cards scale, not
+   the containers that place them, so everything still lines up on the same grid. */
+@media (pointer: coarse) and (min-width: 601px) {
+  .bento { --ui: 1.2; --cards-top: calc(var(--top-inset) + var(--bar) * var(--ui) + 14px); }
+  .bento .top-bar > *, .bento .top-center > *, .bento .bottom-row > *, .bento .bottom-dock > *, .bento .side-stack > * { zoom: var(--ui); }
+  .bento .top-bar, .bento .top-center { height: auto; }
+  .bento .side-stack { width: calc(264px * var(--ui)); max-height: calc(100% - var(--cards-top) - var(--bar) * var(--ui) - 40px); }
+  .bento .bottom-dock { max-height: calc(100% - var(--cards-top) - 16px); }
+  /* Layers and comments are placed and sized in their own lengths, which zoom scales too: divide first. */
+  .screen.bento .panel.layers-panel, .bento .panel.comments-panel { zoom: var(--ui); }
+  .screen.bento .panel.layers-panel { top: calc(var(--cards-top) / var(--ui)); left: calc(16px / var(--ui)); max-height: calc((100% - var(--cards-top) - var(--bar) * var(--ui) - 40px) / var(--ui)); }
+  .bento .panel.comments-panel { top: calc(var(--cards-top) / var(--ui)); right: calc(16px / var(--ui)); }
+}
+/* Big iPads held sideways (iPad Pro 13" landscape) have the room for a little more. */
+@media (pointer: coarse) and (min-width: 1100px) {
+  .bento { --ui: 1.3; }
 }
 /*$vite$:1*/
