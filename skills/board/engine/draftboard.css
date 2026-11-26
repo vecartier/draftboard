@@ -1387,4 +1387,144 @@ button:focus:not(:focus-visible) { outline: none; }
 .bento .options-card .inspector { padding: 0; }
 .bento .options-card .library-section { margin-left: 0; margin-right: 0; }
 .bento .options-card .card-sub { padding-left: 0; margin-left: 0; }
+
+/* Draw mode. Brushes are a 2×2 grid of mark + name, since each one draws differently. */
+.inspector .inline-options.brushes { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; width: 100%; }
+.inspector .inline-options.brushes button { justify-content: flex-start; gap: 8px; padding: 0 8px; min-height: 34px; font-size: 12px; }
+.inspector .inline-options.brushes button svg { width: 28px; height: 16px; flex: none; }
+/* Procreate-style sliders: a soft track that fills with the accent up to the value, the value at the end. */
+.slider { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 28px; }
+.slider input[type='range'] {
+  -webkit-appearance: none; appearance: none; flex: 1; min-width: 0; height: 6px; border-radius: 3px; margin: 0; cursor: pointer;
+  background: linear-gradient(to right, var(--pick-fg) 0 var(--fill, 50%), var(--surface-sunken) var(--fill, 50%) 100%);
+}
+.slider input[type='range']::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%; background: #fff;
+  box-shadow: 0 0 0 0.5px rgba(20, 20, 30, 0.2), 0 1px 3px rgba(20, 20, 30, 0.25); transition: transform var(--dur-fast) var(--ease-out);
+}
+.slider input[type='range']:active::-webkit-slider-thumb { transform: scale(1.12); }
+.slider input[type='range']::-moz-range-thumb { width: 18px; height: 18px; border: none; border-radius: 50%; background: #fff; box-shadow: 0 0 0 0.5px rgba(20, 20, 30, 0.2), 0 1px 3px rgba(20, 20, 30, 0.25); }
+.slider input[type='range']:focus-visible { outline: 2px solid var(--pick-bg); outline-offset: 4px; }
+.slider-value { font-size: 12px; font-variant-numeric: tabular-nums; color: var(--text-secondary); min-width: 34px; text-align: right; }
+.bento .canvas.erasing { cursor: none; }
+.inspector-label:empty { display: none; }
+/* ---------- Responsive bento ----------
+   Loaded after styles.css. Three sizes:
+   - Wide (≥ 1200): Layers open on the left, cards on the right, tools centred at the bottom.
+   - Tablet (601–1199, iPad portrait and landscape): same layout, Layers folded to its title, nothing overlaps.
+   - Phone (≤ 600): three tidy rows. Top: title and file actions. Under them: Layers, the mode, zoom, as small pills.
+     Bottom: one tool bar that also holds undo and redo; the wireframe tools you place things with nest under Insert.
+     Whatever a tool or selection needs opens as one card just above the bar, full width, and scrolls inside. */
+
+.mode-menu { display: none; }
+.insert-chevron { display: none; }
+
+/* Layers is reachable at every size (it used to disappear below 760 px). */
+.bento .panel.layers-panel { display: flex; }
+
+/* Nothing to style (a screen, an image): the name and its actions share one line, at every size. */
+.bento .side-stack .selection-card:not(:has(.inspector-row)) { flex-direction: row; align-items: center; justify-content: space-between; padding: 6px 6px 6px 10px; }
+.bento .side-stack .selection-card:not(:has(.inspector-row)) .inspector-actions { border-top: none; margin: 0; padding: 0; }
+
+/* Tablet: the file actions shed their labels before they can run into the centred mode switch. */
+@media (max-width: 900px) {
+  .bento .file-actions .claude-pill span { display: none; }
+  .bento .doc-title { max-width: calc(50vw - 200px); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: block; line-height: var(--bar); }
+}
+/* Tablet: cards on the right never run under the tool bar, and lists inside them scroll. */
+@media (min-width: 601px) {
+  .bento .side-stack { max-height: calc(100% - var(--cards-top) - var(--bar) - 40px); }
+  .bento .panel.layers-panel { max-height: calc(100% - var(--cards-top) - var(--bar) - 40px); }
+}
+
+@media (max-width: 600px) {
+  .bento { --gutter: 12px; --row2: calc(var(--top-inset) + var(--bar) + 8px); --bar-bottom: max(12px, env(safe-area-inset-bottom)); }
+
+  /* Row 1: title on the left, file actions on the right. */
+  .bento .top-bar { left: var(--gutter); right: var(--gutter); }
+  .bento .doc-title { font-size: 16px; max-width: calc(100vw - 200px); display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; line-height: var(--bar); padding-left: 10px; }
+
+  /* Row 2: Layers left, mode centre, zoom right; all small pills on one line. */
+  .bento .top-center { top: var(--row2); }
+  .bento .mode-switch { display: none; }
+  .bento .mode-menu { display: block; }
+  .bento .mode-menu-button {
+    display: flex; align-items: center; gap: 4px; height: var(--bar); padding: 0 12px 0 16px; border: 1px solid var(--border);
+    font: inherit; font-size: 14px; font-weight: 500; color: var(--text); cursor: pointer;
+  }
+  .bento .mode-menu-button .chevron { width: 14px; height: 14px; color: var(--text-tertiary); }
+  .bento .mode-menu .menu { left: 50%; transform: translateX(-50%); min-width: 160px; transform-origin: top center; }
+
+  .bento .screen .panel.layers-panel, .bento .panel.layers-panel, .screen.bento .panel.layers-panel {
+    top: var(--row2); left: var(--gutter); z-index: 9;
+    width: min(300px, calc(100vw - 2 * var(--gutter))); max-height: min(60vh, calc(100% - var(--row2) - var(--bar) - 40px));
+  }
+  .screen.bento .panel.layers-panel.collapsed { width: auto; height: var(--bar); box-sizing: border-box; padding: 0 4px; justify-content: center; border-radius: var(--radius-pill); }
+  .bento .layers-panel.collapsed .layers-toggle { padding: 0 8px 0 12px; height: 34px; }
+  .bento .layers-panel.collapsed .layers-toggle h2 { font-size: 14px; }
+
+  .bento .bottom-row { top: var(--row2); bottom: auto; left: auto; right: var(--gutter); width: auto; display: flex; }
+  .bento .bottom-row > span, .bento .bottom-row .undo-controls { display: none; }
+  .bento .zoom-controls .icon-button { display: none; }
+  .bento .zoom-controls .zoom-button { padding: 0 12px; font-size: 13px; }
+
+  /* Row 3: one tool bar, centred, with dividers between undo, select, make and annotate. */
+  .bento .bottom-dock { bottom: var(--bar-bottom); max-width: calc(100vw - 2 * var(--gutter)); }
+  .bento .bottom-dock .tools-card .tile { width: 36px; }
+  .bento .bottom-dock .tools-card .separator { display: block; height: 20px; margin: 0 3px; }
+  .bento .bottom-dock .tools-card .undo-tile { width: 34px; }
+  .bento .bottom-dock .tools-card .undo-tile:disabled { opacity: 0.35; cursor: default; }
+  .bento .insert-tile { position: relative; }
+  .bento .insert-tile .insert-chevron { display: block; position: absolute; right: 1px; bottom: 3px; width: 9px !important; height: 9px !important; color: var(--text-tertiary); }
+  .bento .bottom-dock .menu { top: auto; bottom: calc(100% + 12px); left: 50%; transform: translateX(-50%); transform-origin: bottom center; animation-name: pop-in-up; min-width: 180px; }
+  .bento .insert-item { display: flex; align-items: center; gap: 10px; }
+  .bento .insert-item svg { width: 18px; height: 18px; color: var(--text-secondary); }
+  .bento .insert-item.checked svg { color: inherit; }
+
+  /* What the tool or the selection needs: one sheet of cards just above the bar, full width, scrolling inside. */
+  .bento .side-stack, .screen.bento .side-stack {
+    top: auto; left: var(--gutter); right: var(--gutter); width: auto;
+    bottom: calc(var(--bar-bottom) + var(--bar) + 10px);
+    max-height: min(46vh, calc(100% - var(--row2) - var(--bar) * 2 - 40px));
+    gap: 8px;
+  }
+  /* Long lists (devices, components, icons) scroll inside their card, with no bar showing; style cards keep their
+     natural height so their menus are never cut off. */
+  .bento .side-stack { max-height: none; }
+  .bento .side-stack .card { flex: none; animation-name: sheet-in; transform-origin: bottom center; }
+  .bento .side-stack .card.scrolls { max-height: min(46vh, calc(100vh - var(--row2) - var(--bar) * 2 - 40px)); overflow-y: auto; overscroll-behavior: contain; scrollbar-width: none; }
+  .bento .side-stack .card::-webkit-scrollbar { display: none; }
+  .bento .side-stack .presence[data-state="closed"] > .card { animation-name: sheet-out; }
+  /* Style menus open over the card rather than off the side of the screen. */
+  .bento .options-card .inspector .menu, .bento .side-stack .menu { left: 0; right: auto; top: auto; bottom: calc(100% + 6px); transform-origin: bottom left; }
+  .bento .options-card .library-grid, .bento .options-card .component-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+  /* Insert's menu hangs off the bar itself, so the sliding highlight measures the tile against the bar. */
+  .bento .bottom-dock .tools-card .menu-anchor { position: static; display: contents; }
+  .bento .side-stack .cells { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  /* Style rows put the label beside its choices, so the card stays short. */
+  .bento .side-stack .inspector-row { display: grid; grid-template-columns: 56px 1fr; align-items: center; gap: 8px; min-height: 34px; }
+  .bento .side-stack .inspector-control { margin-left: -6px; }
+  .bento .side-stack .inspector { gap: 4px; }
+
+  /* Older phone rules that no longer apply. */
+  .bento .doc-title { display: block; }
+}
+
+@keyframes sheet-in { from { opacity: 0; transform: translateY(12px) scale(0.98); } to { opacity: 1; transform: none; } }
+@keyframes sheet-out { from { opacity: 1; transform: none; } to { opacity: 0; transform: translateY(12px) scale(0.98); } }
+
+/* Phones on their side: short, so cards keep to the room between the top row and the bar. */
+@media (max-height: 500px) and (min-width: 601px) {
+  .bento .side-stack { max-height: calc(100% - var(--cards-top) - var(--bar) - 28px); gap: 6px; }
+  .screen.bento .panel.layers-panel { max-height: calc(100% - var(--cards-top) - var(--bar) - 28px); }
+  /* Shapes as icons only, four across, and style rows with the label beside the choices. */
+  .bento .side-stack .cells { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .bento .side-stack .cell small { display: none; }
+  .bento .side-stack .cell { justify-content: center; }
+  .bento .side-stack .card { padding: 8px 10px; gap: 6px; }
+  .bento .side-stack .inspector-row { display: grid; grid-template-columns: 56px 1fr; align-items: center; gap: 8px; min-height: 28px; }
+  .bento .side-stack .inspector-control { margin-left: -6px; }
+  .bento .side-stack .inspector { gap: 2px; }
+}
 /*$vite$:1*/
