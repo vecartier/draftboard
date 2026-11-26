@@ -1308,4 +1308,60 @@ button:focus:not(:focus-visible) { outline: none; }
 .inspector-more .chevron { transition: transform var(--dur) var(--ease-out); }
 .inspector-more .chevron.up { transform: rotate(180deg); }
 .inspector-more-rows { display: flex; flex-direction: column; gap: 2px; animation: pop-in var(--dur) var(--ease-out); }
+
+/* Style card, tighter: each label sits above its control, so nothing leaves a column of dead space. */
+.inspector { gap: 8px; }
+.inspector-row { display: flex; flex-direction: column; align-items: stretch; gap: 3px; min-height: 0; }
+.inspector-label { font-size: 11px; font-weight: 500; color: var(--text-tertiary); padding-left: 1px; }
+.inspector-control { margin-left: -6px; }
+.inspector .quick-swatches { margin-left: 6px; }
+.quick-swatches { align-items: center; }
+.quick-swatches .swatches { padding: 2px 0; }
+.inspector .more-swatch { margin-top: 0; }
+.inspector .swatch { width: 18px; height: 18px; }
+.inspector .more-swatch { width: 18px; height: 18px; }
+.inspector-more { margin-left: -6px; }
+
+/* A picked option reads by a soft fill and a darker icon, never by an orange ring. */
+.bento .cell.on { box-shadow: inset 0 0 0 1px var(--border-strong); background: var(--active-bg); }
+.bento .cell.on small { color: var(--text); font-weight: 600; }
+/* Cell labels always fit their cell. */
+.bento .cell small { font-size: 10px; max-width: 100%; padding: 0 3px; box-sizing: border-box; }
+.canvas:focus, .canvas:focus-visible { outline: none; }
+/* Editing text looks like the text selected: no tint behind it, the same thin outline in the selection colour. */
+.text-editor:not(.note):not(.flow-label) { background: transparent; outline: none; box-shadow: 0 0 0 1px var(--selection); caret-color: var(--selection); }
+.text-editor.flow-label { caret-color: var(--selection); }
+
+/* One accent everywhere. The canvas selection colour is also the colour of every picked thing in the UI: a soft
+   tint behind it and the accent on its icon or label. Same tint, same hue, whether it's a tool, a mode, a shape,
+   a swatch, a layer or a checked menu item. */
+:root {
+  --pick-bg: color-mix(in srgb, var(--selection) 13%, transparent);
+  --pick-bg-hover: color-mix(in srgb, var(--selection) 18%, transparent);
+  --pick-fg: color-mix(in srgb, var(--selection) 82%, #1b1b1f);
+}
+.bento .slide-thumb { background: var(--pick-bg); }
+.bento .mode-option.on { color: var(--pick-fg); }
+.bento .bottom-dock .tools-card .tile.on { color: var(--pick-fg); }
+.bento .cell.on { background: var(--pick-bg); box-shadow: none; color: var(--pick-fg); }
+.bento .cell.on small { color: var(--pick-fg); }
+.bento .cell.on:hover { background: var(--pick-bg-hover); }
+.bento .inspector button.selected, .bento .style-bar button.selected { background: var(--pick-bg); color: var(--pick-fg); }
+.swatch.selected { box-shadow: inset 0 0 0 1px rgba(20, 20, 30, 0.14), 0 0 0 2px var(--surface), 0 0 0 3.5px var(--selection); }
+.layer-row.selected { background: var(--pick-bg); }
+.layer-row.selected .layer-name { color: var(--pick-fg); }
+.menu-item.checked { background: var(--pick-bg); color: var(--pick-fg); }
+.bento .icon-button.active { background: var(--pick-bg); color: var(--pick-fg); }
+
+/* A little more air between a card's title and what's in it. */
+.bento .card-head { margin-bottom: 6px; }
+.bento .cell.on small { font-weight: 500; }
+.bento .cells.four .cell small { font-size: 9.5px; letter-spacing: -0.01em; padding: 0 1px; }
+/* Room for the longest shape name with clear space on both sides. */
+.bento .side-stack { width: 280px; }
+.bento .cells.four .cell small { font-size: 10px; letter-spacing: 0; padding: 0 6px; }
+/* Basic shapes as a 2 × 2 grid of wide cells, icon beside its name, so every name has room to breathe. */
+.bento .cells.four { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
+.bento .cells.four .cell { flex-direction: row; justify-content: flex-start; gap: 10px; padding: 9px 12px; }
+.bento .cells.four .cell small { font-size: 12px; padding: 0; }
 /*$vite$:1*/

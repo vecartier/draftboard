@@ -44463,7 +44463,7 @@ var xG = class {
 }, SG = .2, CG = .15;
 function wG(e, t, n, r, i = t.name) {
 	let a = new Path2D();
-	if (a.roundRect(n.x, n.y, n.width, n.height, Math.min(t.cornerRadius * r, n.width / 2, n.height / 2)), e.save(), e.shadowColor = "rgba(0, 0, 0, 0.10)", e.shadowBlur = 28, e.shadowOffsetY = 6, e.fillStyle = "#fff", e.fill(a), e.restore(), e.lineWidth = 1, e.strokeStyle = "rgba(0, 0, 0, 0.18)", e.stroke(a), i !== null && r >= CG && (e.fillStyle = "rgba(60, 60, 67, 0.6)", e.font = `500 12px ${wB}`, e.textAlign = "left", e.textBaseline = "bottom", e.fillText(i, n.x, n.y - 6)), r <= SG) return;
+	if (a.roundRect(n.x, n.y, n.width, n.height, Math.min(t.cornerRadius * r, n.width / 2, n.height / 2)), e.save(), e.shadowColor = "rgba(0, 0, 0, 0.10)", e.shadowBlur = 28, e.shadowOffsetY = 6, e.fillStyle = "#fff", e.fill(a), e.restore(), e.lineWidth = 1, e.strokeStyle = "rgba(0, 0, 0, 0.18)", e.stroke(a), i !== null && r >= CG && (e.fillStyle = "rgba(60, 60, 67, 0.6)", e.font = `500 12px ${wB}`, e.textAlign = "left", e.textBaseline = "bottom", e.fillText(OG(e, i, n.width), n.x, n.y - 6)), r <= SG) return;
 	let o = (e, t) => ({
 		x: n.x + n.width * e,
 		y: n.y + t * r
@@ -44549,18 +44549,29 @@ function DG(e, t, n, r) {
 	let a = Math.max(Math.min(Math.floor((t.height / n - 80) / 64), 5), 1);
 	for (let r = 0; r < a; r++) e.fillStyle = "rgba(0, 0, 0, 0.12)", e.beginPath(), e.roundRect(t.x + i / 2 - 24 * n, t.y + (56 + r * 64) * n, 48 * n, 48 * n, 11 * n), e.fill();
 }
+/** `text` cut with an ellipsis to fit `width` (nothing at all when not even one letter fits). */
+function OG(e, t, n) {
+	if (e.measureText(t).width <= n) return t;
+	if (e.measureText("…").width > n) return "";
+	let r = 0, i = t.length;
+	for (; r < i;) {
+		let a = Math.ceil((r + i) / 2);
+		e.measureText(`${t.slice(0, a).trimEnd()}…`).width <= n ? r = a : i = a - 1;
+	}
+	return r === 0 ? "" : `${t.slice(0, r).trimEnd()}…`;
+}
 // src/canvas/elementRenderer.ts
-var OG = 16, kG = Math.PI / 6.5, AG = 10;
-function jG(e, t, n, r = !0) {
+var kG = 16, AG = Math.PI / 6.5, jG = 10;
+function MG(e, t, n, r = !0) {
 	let i = eG(n, t.frame), { style: a } = t;
 	e.lineWidth = Math.max(a.strokeWidth * n.scale, .5), e.setLineDash(Oz(QV(t) ? a.dash : "solid", e.lineWidth)), e.lineCap = "round", e.lineJoin = "round", e.strokeStyle = Az(a.stroke), e.fillStyle = Az(a.fill);
 	try {
-		MG(e, t, i, n, r);
+		NG(e, t, i, n, r);
 	} finally {
 		e.setLineDash([]);
 	}
 }
-function MG(e, t, n, r, i) {
+function NG(e, t, n, r, i) {
 	let { style: a, kind: o } = t;
 	switch (o.type) {
 		case "device": {
@@ -44584,17 +44595,17 @@ function MG(e, t, n, r, i) {
 		case "arrow": {
 			let n = YV(t);
 			if (!n) return;
-			UG(e, $W(r, o.headAtEnd ? n.start : n.end), $W(r, o.headAtEnd ? n.end : n.start), r.scale);
+			KG(e, $W(r, o.headAtEnd ? n.start : n.end), $W(r, o.headAtEnd ? n.end : n.start), r.scale);
 			return;
 		}
 		case "ink":
-			WG(e, JV(o.stroke, t.frame).map((e) => $W(r, e)));
+			qG(e, JV(o.stroke, t.frame).map((e) => $W(r, e)));
 			return;
 		case "text":
-			VG(e, o.content, n, r.scale, Az(a.stroke));
+			WG(e, o.content, n, r.scale, Az(a.stroke));
 			return;
 		case "symbol":
-			o.name === "" ? GG(e, n, Az(a.stroke), r.scale) : mG(e, o.name, n.x + n.width / 2, n.y + n.height / 2, Math.min(n.width, n.height), Az(a.stroke));
+			o.name === "" ? JG(e, n, Az(a.stroke), r.scale) : mG(e, o.name, n.x + n.width / 2, n.y + n.height / 2, Math.min(n.width, n.height), Az(a.stroke));
 			return;
 		case "note": {
 			let t = r.scale, i = 12 * t, s = cH(a);
@@ -44602,7 +44613,7 @@ function MG(e, t, n, r, i) {
 			let c = n.y + i + 4 * t;
 			mG(e, "StickyNote", n.x + i + 6 * t, c, 12 * t, s.header), e.fillStyle = s.header, e.font = `600 ${10.5 * t}px -apple-system, BlinkMacSystemFont, system-ui, sans-serif`, e.textBaseline = "middle", "letterSpacing" in e && (e.letterSpacing = `${.6 * t}px`), e.fillText("NOTE", n.x + i + 17 * t, c + .5 * t), e.restore();
 			let l = n.y + i + 20 * t, u = o.content.string.trim() === "";
-			VG(e, u ? {
+			WG(e, u ? {
 				...o.content,
 				string: "Add a note"
 			} : o.content, {
@@ -44614,65 +44625,94 @@ function MG(e, t, n, r, i) {
 			return;
 		}
 		case "placeholder":
-			KG(e, n, Az(a.fill), Az(a.stroke), Math.max(a.strokeWidth * r.scale, .5));
+			YG(e, n, Az(a.fill), Az(a.stroke), Math.max(a.strokeWidth * r.scale, .5));
 			return;
 		case "component":
 			bG(e, o.content, a, n, r.scale);
 			return;
 		case "image":
-			HG(e, o.assetID, n);
+			GG(e, o.assetID, n);
 			return;
 		case "flow":
-			e.beginPath(), JB(e, o.shape, n), e.fill(), a.strokeWidth > 0 && e.stroke(), e.beginPath(), XB(e, o.shape, n) && a.strokeWidth > 0 && e.stroke(), e.setLineDash([]), o.content.string.trim() !== "" && NG(e, o.content, eG(r, ZB(o.shape, t.frame)), r.scale, Az(a.stroke));
+			e.beginPath(), JB(e, o.shape, n), e.fill(), a.strokeWidth > 0 && e.stroke(), e.beginPath(), XB(e, o.shape, n) && a.strokeWidth > 0 && e.stroke(), e.setLineDash([]), o.content.string.trim() !== "" && IG(e, o.content, eG(r, ZB(o.shape, t.frame)), r.scale, Az(a.stroke));
 			return;
 		case "connector":
-			LG(e, t, r);
+			BG(e, t, r);
 			return;
 	}
 }
-/** Wrapped lines centred in `r`, both ways. */
-function NG(e, t, n, r, i) {
-	let a = DB(t, r), o = NB(t, r), s = n.y + n.height / 2 - o.length * a / 2;
-	e.fillStyle = i, e.font = EB(t, r), e.textAlign = "center", e.textBaseline = "middle", o.forEach((t, r) => e.fillText(t, n.x + n.width / 2, s + a * (r + .5))), e.textAlign = "left";
+/** Below this on-screen size text is unreadable noise, so it's drawn as soft bars (as Figma does zoomed out). */
+var PG = 4;
+/** Stand-in bars for text too small to read: one per line, in the text's colour, faint. */
+function FG(e, t, n, r, i, a, o) {
+	e.save(), e.globalAlpha *= .28, e.fillStyle = o, t.forEach((t, o) => {
+		let s = n(t);
+		if (s <= 0) return;
+		let c = Math.max(a * .45, .75);
+		e.fillRect(r(s), i + a * (o + .5) - c / 2, s, c);
+	}), e.restore();
 }
-var PG = 10, FG = 8, IG = 10;
+/**
+* Wrapped lines centred in `r`, both ways. Text that's too tall for `r` shrinks (down to 70%) and then stops at
+* the last line that fits, with an ellipsis, so a label never spills out of its shape.
+*/
+function IG(e, t, n, r, i) {
+	let a = t, o = NB(a, r);
+	for (let e = .95; o.length * DB(a, r) > n.height + .5 && e >= .7; e -= .05) a = {
+		...t,
+		fontSize: t.fontSize * e,
+		wrapWidth: t.wrapWidth
+	}, o = NB(a, r);
+	let s = DB(a, r), c = Math.max(1, Math.floor((n.height + .5) / s));
+	if (o.length > c) {
+		o = o.slice(0, c), e.font = EB(a, r);
+		let t = o.length - 1, i = o[t];
+		for (; i.length > 1 && e.measureText(`${i}…`).width > n.width;) i = i.slice(0, -1);
+		o[t] = `${i.trimEnd()}…`;
+	}
+	let l = n.y + n.height / 2 - o.length * s / 2;
+	e.font = EB(a, r), a.fontSize * r < PG ? FG(e, o, (t) => e.measureText(t).width, (e) => n.x + (n.width - e) / 2, l, s, i) : (e.fillStyle = i, e.textAlign = "center", e.textBaseline = "middle", o.forEach((t, r) => e.fillText(t, n.x + n.width / 2, l + s * (r + .5))), e.textAlign = "left");
+}
+var LG = 10, RG = 8, zG = 10;
 /** A connector: rounded elbows (or a curve), filled arrowheads, and its label on a paper chip halfway along. */
-function LG(e, t, n) {
+function BG(e, t, n) {
 	if (t.kind.type !== "connector") return;
 	let r = t.kind, i = r.path.map((e) => $W(n, e));
 	if (i.length < 2) return;
-	let a = n.scale, o = Math.max(PG * a * Math.max(1, t.style.strokeWidth / 1.5) ** .5, 6), s = Math.max(FG * a * Math.max(1, t.style.strokeWidth / 1.5) ** .5, 5), c = RG(i[i.length - 2], i[i.length - 1]), l = RG(i[1], i[0]), u = [...i];
-	if (r.heads !== "none" && (u[u.length - 1] = zG(i[i.length - 1], c, o * .8)), r.heads === "both" && (u[0] = zG(i[0], l, o * .8)), e.beginPath(), e.moveTo(u[0].x, u[0].y), r.route === "curved" && u.length === 4) e.bezierCurveTo(u[1].x, u[1].y, u[2].x, u[2].y, u[3].x, u[3].y);
+	let a = n.scale, o = Math.min(1, Math.max(.45, .3 + a));
+	e.save(), e.globalAlpha *= o;
+	let s = Math.max(LG * a * Math.max(1, t.style.strokeWidth / 1.5) ** .5, a < .5 ? 4 : 6), c = Math.max(RG * a * Math.max(1, t.style.strokeWidth / 1.5) ** .5, a < .5 ? 3.5 : 5), l = VG(i[i.length - 2], i[i.length - 1]), u = VG(i[1], i[0]), d = [...i];
+	if (r.heads !== "none" && (d[d.length - 1] = HG(i[i.length - 1], l, s * .8)), r.heads === "both" && (d[0] = HG(i[0], u, s * .8)), e.beginPath(), e.moveTo(d[0].x, d[0].y), r.route === "curved" && d.length === 4) e.bezierCurveTo(d[1].x, d[1].y, d[2].x, d[2].y, d[3].x, d[3].y);
 	else {
-		for (let t = 1; t < u.length - 1; t++) {
-			let n = u[t], r = u[t - 1], i = u[t + 1], o = Math.min(IG * a, Jz(r, n) / 2, Jz(n, i) / 2), s = zG(n, RG(r, n), o), c = zG(n, RG(i, n), o);
+		for (let t = 1; t < d.length - 1; t++) {
+			let n = d[t], r = d[t - 1], i = d[t + 1], o = Math.min(zG * a, Jz(r, n) / 2, Jz(n, i) / 2), s = HG(n, VG(r, n), o), c = HG(n, VG(i, n), o);
 			e.lineTo(s.x, s.y), e.quadraticCurveTo(n.x, n.y, c.x, c.y);
 		}
-		let t = u[u.length - 1];
+		let t = d[d.length - 1];
 		e.lineTo(t.x, t.y);
 	}
-	e.stroke(), e.setLineDash([]), e.fillStyle = Az(t.style.stroke), r.heads !== "none" && BG(e, i[i.length - 1], c, o, s), r.heads === "both" && BG(e, i[0], l, o, s);
-	let d = r.label.trim();
-	if (d === "") return;
-	let f = $W(n, jV(AV(r.route, r.path))), p = {
-		string: d,
+	e.stroke(), e.setLineDash([]), e.fillStyle = Az(t.style.stroke), r.heads !== "none" && UG(e, i[i.length - 1], l, s, c), r.heads === "both" && UG(e, i[0], u, s, c), e.restore();
+	let f = r.label.trim();
+	if (f === "" || 13 * a < 6) return;
+	let p = $W(n, jV(AV(r.route, r.path))), m = {
+		string: f,
 		fontSize: 13,
 		isBold: !1,
 		wrapWidth: null
-	}, m = NB(p, a);
-	e.font = EB(p, a);
-	let h = Math.max(...m.map((t) => e.measureText(t).width)), g = DB(p, a), _ = {
-		width: h + 12 * a,
-		height: m.length * g + 6 * a
+	}, h = NB(m, a);
+	e.font = EB(m, a);
+	let g = Math.max(...h.map((t) => e.measureText(t).width)), _ = DB(m, a), v = {
+		width: g + 12 * a,
+		height: h.length * _ + 6 * a
 	};
-	e.beginPath(), e.roundRect(f.x - _.width / 2, f.y - _.height / 2, _.width, _.height, Math.min(6 * a, _.height / 2)), e.fillStyle = "#fbfaf7", e.fill(), e.lineWidth = 1, e.strokeStyle = "rgba(20, 20, 30, 0.12)", e.stroke(), NG(e, p, {
-		x: f.x - _.width / 2,
-		y: f.y - _.height / 2,
-		width: _.width,
-		height: _.height
+	e.beginPath(), e.roundRect(p.x - v.width / 2, p.y - v.height / 2, v.width, v.height, Math.min(6 * a, v.height / 2)), e.fillStyle = "#fbfaf7", e.fill(), e.lineWidth = 1, e.strokeStyle = "rgba(20, 20, 30, 0.12)", e.stroke(), IG(e, m, {
+		x: p.x - v.width / 2,
+		y: p.y - v.height / 2,
+		width: v.width,
+		height: v.height
 	}, a, Az(t.style.stroke));
 }
-function RG(e, t) {
+function VG(e, t) {
 	let n = Jz(e, t);
 	return n === 0 ? {
 		x: 0,
@@ -44682,33 +44722,33 @@ function RG(e, t) {
 		y: (t.y - e.y) / n
 	};
 }
-var zG = (e, t, n) => ({
+var HG = (e, t, n) => ({
 	x: e.x - t.x * n,
 	y: e.y - t.y * n
 });
-function BG(e, t, n, r, i) {
-	let a = zG(t, n, r), o = {
+function UG(e, t, n, r, i) {
+	let a = HG(t, n, r), o = {
 		x: -n.y,
 		y: n.x
 	};
 	e.beginPath(), e.moveTo(t.x, t.y), e.lineTo(a.x + o.x * i / 2, a.y + o.y * i / 2), e.lineTo(a.x - o.x * i / 2, a.y - o.y * i / 2), e.closePath(), e.fill();
 }
-function VG(e, t, n, r, i) {
+function WG(e, t, n, r, i) {
 	let a = DB(t, r);
-	e.fillStyle = i, e.font = EB(t, r), e.textAlign = "left", e.textBaseline = "middle", NB(t, r).forEach((t, i) => e.fillText(t, n.x + r, n.y + r + a * (i + .5)));
+	e.font = EB(t, r), t.fontSize * r < PG ? FG(e, NB(t, r), (t) => e.measureText(t).width, () => n.x + r, n.y + r, a, i) : (e.fillStyle = i, e.textAlign = "left", e.textBaseline = "middle", NB(t, r).forEach((t, i) => e.fillText(t, n.x + r, n.y + r + a * (i + .5))));
 }
-function HG(e, t, n) {
+function GG(e, t, n) {
 	let r = v.image(t);
 	r ? e.drawImage(r, n.x, n.y, n.width, n.height) : (e.fillStyle = Az(Pz), e.fillRect(n.x, n.y, n.width, n.height));
 }
-function UG(e, t, n, r) {
-	let i = Jz(t, n), a = Math.min(Math.max(OG * r, AG), i * .4), o = Math.atan2(n.y - t.y, n.x - t.x), s = (e) => ({
+function KG(e, t, n, r) {
+	let i = Jz(t, n), a = Math.min(Math.max(kG * r, jG), i * .4), o = Math.atan2(n.y - t.y, n.x - t.x), s = (e) => ({
 		x: n.x - a * Math.cos(o + e),
 		y: n.y - a * Math.sin(o + e)
-	}), c = s(kG), l = s(-kG);
+	}), c = s(AG), l = s(-AG);
 	e.beginPath(), e.moveTo(t.x, t.y), e.lineTo(n.x, n.y), e.moveTo(c.x, c.y), e.lineTo(n.x, n.y), e.lineTo(l.x, l.y), e.stroke();
 }
-function WG(e, t) {
+function qG(e, t) {
 	let n = t[0], r = t[t.length - 1];
 	if (n && r) {
 		e.beginPath(), e.moveTo(n.x, n.y);
@@ -44720,14 +44760,14 @@ function WG(e, t) {
 	}
 }
 /** A rounded square with a cross: "an icon goes here". */
-function GG(e, t, n, r) {
+function JG(e, t, n, r) {
 	let i = Math.min(t.width, t.height) * (20 / 24), a = t.x + (t.width - i) / 2, o = t.y + (t.height - i) / 2;
 	e.strokeStyle = n, e.lineWidth = Math.max(1.5 * r, .5), e.beginPath(), e.roundRect(a, o, i, i, i * .25), e.moveTo(a + i * .3, o + i * .3), e.lineTo(a + i * .7, o + i * .7), e.moveTo(a + i * .7, o + i * .3), e.lineTo(a + i * .3, o + i * .7), e.stroke();
 }
-function KG(e, t, n, r, i) {
+function YG(e, t, n, r, i) {
 	e.fillStyle = n, e.fillRect(t.x, t.y, t.width, t.height), e.save(), e.beginPath(), e.rect(t.x, t.y, t.width, t.height), e.clip(), e.strokeStyle = r, e.lineWidth = i, e.globalAlpha = .5, e.beginPath(), e.moveTo(t.x, t.y), e.lineTo(t.x + t.width, t.y + t.height), e.moveTo(t.x + t.width, t.y), e.lineTo(t.x, t.y + t.height), e.stroke(), e.globalAlpha = 1, e.strokeRect(t.x, t.y, t.width, t.height), e.restore();
 }
-var qG = 12, JG = 6, YG = 6, XG = 3, ZG = [
+var XG = 12, ZG = 6, QG = 6, $G = 3, eK = [
 	["topLeft", (e) => ({
 		x: e.x,
 		y: e.y
@@ -44744,20 +44784,20 @@ var qG = 12, JG = 6, YG = 6, XG = 3, ZG = [
 		x: e.x,
 		y: H(e)
 	})]
-], QG = (e) => e.width < 24 || e.height < 24;
+], tK = (e) => e.width < 24 || e.height < 24;
 /**
 * Figma-style grabs: visible corner handles, plus invisible strips along each edge. Grabs reach further
 * outside the box than inside it, so a click inside a small label still selects or edits it.
 */
-function $G(e, t) {
+function nK(e, t) {
 	let n = rB(nB(e, 1, 1), t);
-	if (n && QG(e)) return null;
-	let r = n ? JG : qG, i = ZG.find(([, n]) => Jz(n(e), t) <= r);
+	if (n && tK(e)) return null;
+	let r = n ? ZG : XG, i = eK.find(([, n]) => Jz(n(e), t) <= r);
 	if (i) return i[0];
-	let a = n ? XG : YG, o = t.x >= e.x && t.x <= V(e), s = t.y >= e.y && t.y <= H(e);
+	let a = n ? $G : QG, o = t.x >= e.x && t.x <= V(e), s = t.y >= e.y && t.y <= H(e);
 	return s && Math.abs(t.x - e.x) <= a ? "left" : s && Math.abs(t.x - V(e)) <= a ? "right" : o && Math.abs(t.y - e.y) <= a ? "top" : o && Math.abs(t.y - H(e)) <= a ? "bottom" : null;
 }
-var eK = {
+var rK = {
 	topLeft: "nwse-resize",
 	bottomRight: "nwse-resize",
 	topRight: "nesw-resize",
@@ -44766,28 +44806,28 @@ var eK = {
 	right: "ew-resize",
 	top: "ns-resize",
 	bottom: "ns-resize"
-}, tK = (e) => eK[e], nK = ZG.map(([e]) => e), rK = 18, iK = 4;
+}, iK = (e) => rK[e], aK = eK.map(([e]) => e), oK = 18, sK = 4;
 /** A small padlock above the top-left corner of each selected locked element. */
-function aK(e, t, n) {
+function cK(e, t, n) {
 	for (let r of n) {
 		if (!r.locked) continue;
 		let n = eG(t, r.frame);
-		oK(e, n.x, n.y - rK - iK);
+		lK(e, n.x, n.y - oK - sK);
 	}
 }
-function oK(e, t, n) {
-	e.save(), e.fillStyle = "#007aff", e.beginPath(), e.roundRect(t, n, rK, rK, 5), e.fill(), e.strokeStyle = "#fff", e.fillStyle = "#fff", e.lineWidth = 1.5, e.beginPath(), e.arc(t + rK / 2, n + 8, 3, Math.PI, 0), e.stroke(), e.beginPath(), e.roundRect(t + 4.5, n + 8, 9, 6.5, 1.5), e.fill(), e.restore();
+function lK(e, t, n) {
+	e.save(), e.fillStyle = "#007aff", e.beginPath(), e.roundRect(t, n, oK, oK, 5), e.fill(), e.strokeStyle = "#fff", e.fillStyle = "#fff", e.lineWidth = 1.5, e.beginPath(), e.arc(t + oK / 2, n + 8, 3, Math.PI, 0), e.stroke(), e.beginPath(), e.roundRect(t + 4.5, n + 8, 9, 6.5, 1.5), e.fill(), e.restore();
 }
 // src/canvas/theme.ts
-var sK = "#d4622a", cK = null;
+var uK = "#d4622a", dK = null;
 /** Canvas selection colour from the `--selection` CSS token, so it follows the UI theme. */
-function lK() {
-	if (cK) return cK;
+function fK() {
+	if (dK) return dK;
 	let e = typeof document > "u" ? "" : getComputedStyle(document.documentElement).getPropertyValue("--selection").trim();
-	return cK = /^#[0-9a-f]{6}$/i.test(e) ? e : sK, cK;
+	return dK = /^#[0-9a-f]{6}$/i.test(e) ? e : uK, dK;
 }
-function uK(e) {
-	let t = lK(), [n, r, i] = [
+function pK(e) {
+	let t = fK(), [n, r, i] = [
 		1,
 		3,
 		5
@@ -44796,7 +44836,7 @@ function uK(e) {
 }
 // src/canvas/guideRenderer.ts
 /** Figma's palette: red for alignment and distances, magenta for equal spacing, blue for the size badge. */
-var dK = "#f24822", fK = "#e93ee0", pK = 3, mK = 4, hK = "600 11px -apple-system, BlinkMacSystemFont, system-ui, sans-serif", gK = 16, _K = 8, vK = (e, t) => {
+var mK = "#f24822", hK = "#e93ee0", gK = 3, _K = 4, vK = "600 11px -apple-system, BlinkMacSystemFont, system-ui, sans-serif", yK = 16, bK = 8, xK = (e, t) => {
 	let n = t.axis === "vertical";
 	return [$W(e, n ? {
 		x: t.position,
@@ -44813,14 +44853,14 @@ var dK = "#f24822", fK = "#e93ee0", pK = 3, mK = 4, hK = "600 11px -apple-system
 	})];
 };
 /** Alignment lines with x marks; distance lines with end ticks and a value label, like Figma. */
-function yK(e, t, n) {
+function SK(e, t, n) {
 	if (n.length !== 0) {
 		e.save(), e.lineWidth = 1;
 		for (let r of n) {
-			let [n, i] = vK(t, r), a = r.kind === "equal" ? fK : dK;
+			let [n, i] = xK(t, r), a = r.kind === "equal" ? hK : mK;
 			e.strokeStyle = a, e.beginPath(), e.moveTo(n.x, n.y), e.lineTo(i.x, i.y);
-			for (let t of [n, i]) !r.kind || r.kind === "align" ? bK(e, t) : xK(e, t, r.axis);
-			e.stroke(), r.label && r.kind !== "align" && SK(e, {
+			for (let t of [n, i]) !r.kind || r.kind === "align" ? CK(e, t) : wK(e, t, r.axis);
+			e.stroke(), r.label && r.kind !== "align" && TK(e, {
 				x: (n.x + i.x) / 2,
 				y: (n.y + i.y) / 2
 			}, r.label, a);
@@ -44828,41 +44868,41 @@ function yK(e, t, n) {
 		e.restore();
 	}
 }
-function bK(e, t) {
-	e.moveTo(t.x - pK, t.y - pK), e.lineTo(t.x + pK, t.y + pK), e.moveTo(t.x + pK, t.y - pK), e.lineTo(t.x - pK, t.y + pK);
+function CK(e, t) {
+	e.moveTo(t.x - gK, t.y - gK), e.lineTo(t.x + gK, t.y + gK), e.moveTo(t.x + gK, t.y - gK), e.lineTo(t.x - gK, t.y + gK);
 }
-function xK(e, t, n) {
-	n === "horizontal" ? (e.moveTo(t.x, t.y - mK), e.lineTo(t.x, t.y + mK)) : (e.moveTo(t.x - mK, t.y), e.lineTo(t.x + mK, t.y));
+function wK(e, t, n) {
+	n === "horizontal" ? (e.moveTo(t.x, t.y - _K), e.lineTo(t.x, t.y + _K)) : (e.moveTo(t.x - _K, t.y), e.lineTo(t.x + _K, t.y));
 }
-function SK(e, t, n, r) {
-	e.font = hK;
+function TK(e, t, n, r) {
+	e.font = vK;
 	let i = e.measureText(n).width + 8;
-	e.fillStyle = r, e.beginPath(), e.roundRect(t.x - i / 2, t.y - gK / 2, i, gK, 3), e.fill(), e.fillStyle = "#fff", e.textAlign = "center", e.textBaseline = "middle", e.fillText(n, t.x, t.y + .5);
+	e.fillStyle = r, e.beginPath(), e.roundRect(t.x - i / 2, t.y - yK / 2, i, yK, 3), e.fill(), e.fillStyle = "#fff", e.textAlign = "center", e.textBaseline = "middle", e.fillText(n, t.x, t.y + .5);
 }
 /** The selection's width × height under its bottom edge, as Figma shows it; it updates live while resizing. */
-function CK(e, t, n) {
+function EK(e, t, n) {
 	if (n.every((e) => e.kind.type === "connector" || e.kind.type === "flow")) return;
 	let r = xH(n);
 	if (!r) return;
 	let i = eG(t, r);
-	e.save(), SK(e, {
+	e.save(), TK(e, {
 		x: i.x + i.width / 2,
-		y: i.y + i.height + _K + gK / 2
-	}, `${Math.round(r.width)} × ${Math.round(r.height)}`, lK()), e.restore();
+		y: i.y + i.height + bK + yK / 2
+	}, `${Math.round(r.width)} × ${Math.round(r.height)}`, fK()), e.restore();
 }
 // src/canvas/renderer.ts
-var wK = 16, TK = 14, EK = 1.6, DK = 10;
-function OK(e, t, n, r) {
-	r.clear !== !1 && e.clearRect(0, 0, t, n), r.showsGrid && AK(e, r.camera, t, n);
+var DK = 16, OK = 14, kK = 1.6, AK = 10;
+function jK(e, t, n, r) {
+	r.clear !== !1 && e.clearRect(0, 0, t, n), r.showsGrid && NK(e, r.camera, t, n);
 	for (let { frame: t, elements: n } of FH(r.document)) if (!t?.hidden) {
-		t && jG(e, t, r.camera, r.frameLabels !== !1), e.save(), t && FK(e, t, r.camera);
-		for (let t of n) t.hidden || (t.id === r.hiddenID ? (t.kind.type === "flow" || t.kind.type === "connector") && jG(e, kK(t), r.camera) : jG(e, t, r.camera));
+		t && MG(e, t, r.camera, r.frameLabels !== !1), e.save(), t && RK(e, t, r.camera);
+		for (let t of n) t.hidden || (t.id === r.hiddenID ? (t.kind.type === "flow" || t.kind.type === "connector") && MG(e, MK(t), r.camera) : MG(e, t, r.camera));
 		e.restore();
 	}
-	jK(e, r), r.marquee && MK(e, eG(r.camera, r.marquee)), NK(e, r), PK(e, r), aK(e, r.camera, r.selected), r.hiddenID === null && CK(e, r.camera, r.selected), yK(e, r.camera, r.guides ?? []), r.overlay?.(e);
+	PK(e, r), r.marquee && FK(e, eG(r.camera, r.marquee)), IK(e, r), LK(e, r), cK(e, r.camera, r.selected), r.hiddenID === null && EK(e, r.camera, r.selected), SK(e, r.camera, r.guides ?? []), r.overlay?.(e);
 }
 /** A step or connector being labelled is drawn without its label, which is being typed over it. */
-function kK(e) {
+function MK(e) {
 	return e.kind.type === "flow" ? {
 		...e,
 		kind: {
@@ -44880,9 +44920,9 @@ function kK(e) {
 		}
 	} : e;
 }
-function AK(e, t, n, r) {
-	let i = wK;
-	for (; i * t.scale < TK;) i *= 2;
+function NK(e, t, n, r) {
+	let i = DK;
+	for (; i * t.scale < OK;) i *= 2;
 	let a = tG(t, {
 		x: 0,
 		y: 0
@@ -44896,29 +44936,29 @@ function AK(e, t, n, r) {
 			x: n,
 			y: r
 		});
-		e.rect(i.x - EK / 2, i.y - EK / 2, EK, EK);
+		e.rect(i.x - kK / 2, i.y - kK / 2, kK, kK);
 	}
 	e.fill();
 }
-function jK(e, t) {
+function PK(e, t) {
 	if (t.draftSnap) {
-		jG(e, t.draftSnap, t.camera);
+		MG(e, t.draftSnap, t.camera);
 		return;
 	}
 	if (t.draftStroke.length < 2) return;
 	let n = t.draftStyle;
-	e.lineWidth = Math.max(n.strokeWidth * t.camera.scale, .5), e.setLineDash(Oz(n.dash, e.lineWidth)), e.lineCap = "round", e.lineJoin = "round", e.strokeStyle = Az(n.stroke), WG(e, t.draftStroke.map((e) => $W(t.camera, e))), e.setLineDash([]);
+	e.lineWidth = Math.max(n.strokeWidth * t.camera.scale, .5), e.setLineDash(Oz(n.dash, e.lineWidth)), e.lineCap = "round", e.lineJoin = "round", e.strokeStyle = Az(n.stroke), qG(e, t.draftStroke.map((e) => $W(t.camera, e))), e.setLineDash([]);
 }
-function MK(e, t) {
-	e.fillStyle = uK(.08), e.fillRect(t.x, t.y, t.width, t.height), e.setLineDash([4, 3]), e.lineWidth = 1, e.strokeStyle = lK(), e.strokeRect(t.x, t.y, t.width, t.height), e.setLineDash([]);
+function FK(e, t) {
+	e.fillStyle = pK(.08), e.fillRect(t.x, t.y, t.width, t.height), e.setLineDash([4, 3]), e.lineWidth = 1, e.strokeStyle = fK(), e.strokeRect(t.x, t.y, t.width, t.height), e.setLineDash([]);
 }
-function NK(e, { camera: t, hovered: n }) {
+function IK(e, { camera: t, hovered: n }) {
 	if (!n) return;
 	let r = eG(t, n);
-	e.save(), e.lineWidth = 1, e.strokeStyle = lK(), e.strokeRect(r.x, r.y, r.width, r.height), e.restore();
+	e.save(), e.lineWidth = 1, e.strokeStyle = fK(), e.strokeRect(r.x, r.y, r.width, r.height), e.restore();
 }
-function PK(e, { camera: t, selected: n, handleRect: r }) {
-	if (e.lineWidth = 1.5, e.strokeStyle = lK(), r && n.length > 1) {
+function LK(e, { camera: t, selected: n, handleRect: r }) {
+	if (e.lineWidth = 1.5, e.strokeStyle = fK(), r && n.length > 1) {
 		let n = eG(t, r);
 		e.strokeRect(n.x, n.y, n.width, n.height);
 	} else for (let r of n) {
@@ -44928,37 +44968,37 @@ function PK(e, { camera: t, selected: n, handleRect: r }) {
 	}
 	if (!r) return;
 	let i = eG(t, r);
-	if (QG(i)) return;
+	if (tK(i)) return;
 	let a = n.length === 1 && nH(n[0]);
-	for (let t of a ? ["top", "bottom"] : nK) {
+	for (let t of a ? ["top", "bottom"] : aK) {
 		let n = mB(t, i);
-		e.beginPath(), e.roundRect(n.x - DK / 2, n.y - DK / 2, DK, DK, 2), e.fillStyle = "#fff", e.fill(), e.stroke();
+		e.beginPath(), e.roundRect(n.x - AK / 2, n.y - AK / 2, AK, AK, 2), e.fillStyle = "#fff", e.fill(), e.stroke();
 	}
 }
 /** Children are clipped to their frame's screen shape. */
-function FK(e, t, n) {
+function RK(e, t, n) {
 	let r = eG(n, t.frame), i = t.kind.type === "device" ? (Gz(t.kind.templateID)?.cornerRadius ?? 0) * n.scale : 0;
 	e.beginPath(), e.roundRect(r.x, r.y, r.width, r.height, Math.min(i, r.width / 2, r.height / 2)), e.clip();
 }
 // src/handoff/svgPath.ts
-var IK = {
+var zK = {
 	a: 1,
 	b: 0,
 	c: 0,
 	d: 1,
 	e: 0,
 	f: 0
-}, LK = (e, t) => ({
+}, BK = (e, t) => ({
 	a: e.a * t.a + e.c * t.b,
 	b: e.b * t.a + e.d * t.b,
 	c: e.a * t.c + e.c * t.d,
 	d: e.b * t.c + e.d * t.d,
 	e: e.a * t.e + e.c * t.f + e.e,
 	f: e.b * t.e + e.d * t.f + e.f
-}), RK = (e, t) => ({
+}), VK = (e, t) => ({
 	x: e.a * t.x + e.c * t.y + e.e,
 	y: e.b * t.x + e.d * t.y + e.f
-}), zK = (e) => Math.sqrt(Math.abs(e.a * e.d - e.b * e.c)), BK = (e) => String(Math.round(e * 100) / 100), VK = class e {
+}), HK = (e) => Math.sqrt(Math.abs(e.a * e.d - e.b * e.c)), UK = (e) => String(Math.round(e * 100) / 100), WK = class e {
 	ops = [];
 	constructor(t) {
 		if (typeof t == "string") throw Error("SVG export cannot read Path2D path strings.");
@@ -45048,7 +45088,7 @@ var IK = {
 	}
 	/** Adds `other`'s segments mapped through `m` (translate + uniform scale, which is all Draftboard uses). */
 	append(e, t) {
-		let n = zK(t), r = (e) => RK(t, e);
+		let n = HK(t), r = (e) => VK(t, e);
 		for (let t of e.ops) switch (t.type) {
 			case "M":
 			case "L":
@@ -45094,8 +45134,8 @@ var IK = {
 	/** SVG path data with every point mapped through `m`. */
 	toData(e) {
 		let t = [], n = (t) => {
-			let n = RK(e, t);
-			return `${BK(n.x)} ${BK(n.y)}`;
+			let n = VK(e, t);
+			return `${UK(n.x)} ${UK(n.y)}`;
 		}, r = !1;
 		for (let i of this.ops) switch (i.type) {
 			case "M":
@@ -45111,30 +45151,30 @@ var IK = {
 			case "Z":
 				t.push("Z");
 				break;
-			case "E": t.push(HK(i, e, r)), r = !0;
+			case "E": t.push(GK(i, e, r)), r = !0;
 		}
 		return t.join("");
 	}
 };
-function HK(e, t, n) {
-	let r = zK(t), i = (n) => {
+function GK(e, t, n) {
+	let r = HK(t), i = (n) => {
 		let r = e.rx * Math.cos(n), i = e.ry * Math.sin(n), a = Math.cos(e.rot), o = Math.sin(e.rot);
-		return RK(t, {
+		return VK(t, {
 			x: e.cx + r * a - i * o,
 			y: e.cy + r * o + i * a
 		});
 	}, a = e.ccw ? e.a0 - e.a1 : e.a1 - e.a0;
 	a < 0 && (a += Math.PI * 2 * Math.ceil(-a / (Math.PI * 2)));
-	let o = a >= Math.PI * 2 - 1e-6, s = i(e.a0), c = `${BK(e.rx * r)} ${BK(e.ry * r)} ${BK(e.rot * 180 / Math.PI)}`, l = +!e.ccw, u = `${n ? "L" : "M"}${BK(s.x)} ${BK(s.y)}`;
+	let o = a >= Math.PI * 2 - 1e-6, s = i(e.a0), c = `${UK(e.rx * r)} ${UK(e.ry * r)} ${UK(e.rot * 180 / Math.PI)}`, l = +!e.ccw, u = `${n ? "L" : "M"}${UK(s.x)} ${UK(s.y)}`;
 	if (o) {
 		let t = i(e.a0 + (e.ccw ? -Math.PI : Math.PI));
-		return `${u}A${c} 0 ${l} ${BK(t.x)} ${BK(t.y)}A${c} 0 ${l} ${BK(s.x)} ${BK(s.y)}`;
+		return `${u}A${c} 0 ${l} ${UK(t.x)} ${UK(t.y)}A${c} 0 ${l} ${UK(s.x)} ${UK(s.y)}`;
 	}
 	let d = i(e.ccw ? e.a0 - a : e.a0 + a);
-	return `${u}A${c} ${+(a > Math.PI)} ${l} ${BK(d.x)} ${BK(d.y)}`;
+	return `${u}A${c} ${+(a > Math.PI)} ${l} ${UK(d.x)} ${UK(d.y)}`;
 }
 // src/handoff/svgContext.ts
-var UK = {
+var KK = {
 	fillStyle: "#000",
 	strokeStyle: "#000",
 	lineWidth: 1,
@@ -45145,11 +45185,11 @@ var UK = {
 	font: "10px sans-serif",
 	textAlign: "start",
 	textBaseline: "alphabetic",
-	matrix: IK,
+	matrix: zK,
 	clipID: null
-}, WK = (e) => String(Math.round(e * 100) / 100), GK = (e) => e.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}, qK = (e) => String(Math.round(e * 100) / 100), JK = (e) => e.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 /** Splits a CSS colour into an SVG paint and its alpha, since Figma ignores rgba() alpha in some places. */
-function KK(e) {
+function YK(e) {
 	let t = /^rgba?\(\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)\s*(?:,\s*([\d.]+)\s*)?\)$/.exec(e);
 	return t ? {
 		color: `#${[
@@ -45164,7 +45204,7 @@ function KK(e) {
 	};
 }
 /** Font size, weight and family out of a canvas `font` shorthand like "600 17px -apple-system, …". */
-function qK(e) {
+function XK(e) {
 	let t = /^\s*(?:(\d{3}|bold|normal)\s+)?([\d.]+)px\s+(.+)$/.exec(e);
 	return t ? {
 		weight: t[1] === "bold" ? "700" : t[1] ?? "400",
@@ -45177,16 +45217,16 @@ function qK(e) {
 	};
 }
 /** Baseline offset (in font sizes) that turns a canvas textBaseline into SVG's alphabetic baseline. */
-var JK = {
+var ZK = {
 	middle: .35,
 	top: .8,
 	hanging: .8,
 	bottom: -.2,
 	ideographic: -.2
-}, YK = class {
-	state = { ...UK };
+}, QK = null, $K = class {
+	state = { ...KK };
 	stack = [];
-	path = new VK();
+	path = new WK();
 	body = [];
 	defs = [];
 	clipCount = 0;
@@ -45261,7 +45301,7 @@ var JK = {
 		});
 	}
 	restore() {
-		this.state = this.stack.pop() ?? { ...UK };
+		this.state = this.stack.pop() ?? { ...KK };
 	}
 	translate(e, t) {
 		this.transform(1, 0, 0, 1, e, t);
@@ -45270,7 +45310,7 @@ var JK = {
 		this.transform(e, 0, 0, t, 0, 0);
 	}
 	transform(e, t, n, r, i, a) {
-		this.state.matrix = LK(this.state.matrix, {
+		this.state.matrix = BK(this.state.matrix, {
 			a: e,
 			b: t,
 			c: n,
@@ -45280,7 +45320,7 @@ var JK = {
 		});
 	}
 	beginPath() {
-		this.path = new VK();
+		this.path = new WK();
 	}
 	closePath() {
 		this.path.closePath();
@@ -45312,8 +45352,8 @@ var JK = {
 	fill(e) {
 		let t = this.data(e);
 		if (t === "") return;
-		let { color: n, alpha: r } = KK(this.state.fillStyle);
-		r * this.state.globalAlpha !== 0 && this.emit(`<path d="${t}" fill="${GK(n)}"${this.opacity("fill-opacity", r)}/>`);
+		let { color: n, alpha: r } = YK(this.state.fillStyle);
+		r * this.state.globalAlpha !== 0 && this.emit(`<path d="${t}" fill="${JK(n)}"${this.opacity("fill-opacity", r)}/>`);
 	}
 	stroke(e) {
 		let t = this.data(e);
@@ -45324,32 +45364,37 @@ var JK = {
 		this.defs.push(`<clipPath id="${n}"${r}><path d="${t}"/></clipPath>`), this.state.clipID = n;
 	}
 	fillRect(e, t, n, r) {
-		let i = new VK();
+		let i = new WK();
 		i.rect(e, t, n, r), this.fill(i);
 	}
 	strokeRect(e, t, n, r) {
-		let i = new VK();
+		let i = new WK();
 		i.rect(e, t, n, r), this.stroke(i);
 	}
 	clearRect() {}
+	/** Text widths as a canvas would report them (an estimate where no canvas exists, as in tests). */
+	measureText(e) {
+		let t = Number(/(\d+(?:\.\d+)?)px/.exec(this.state.font)?.[1] ?? 10);
+		return !QK && typeof OffscreenCanvas < "u" && (QK = new OffscreenCanvas(1, 1).getContext("2d")), !QK && typeof document < "u" && (QK = document.createElement("canvas").getContext("2d")), QK ? (QK.font = this.state.font, { width: QK.measureText(e).width }) : { width: e.length * t * .55 };
+	}
 	fillText(e, t, n) {
 		if (e === "") return;
-		let r = qK(this.state.font), i = zK(this.state.matrix), a = (JK[this.state.textBaseline] ?? 0) * r.size, o = RK(this.state.matrix, {
+		let r = XK(this.state.font), i = HK(this.state.matrix), a = (ZK[this.state.textBaseline] ?? 0) * r.size, o = VK(this.state.matrix, {
 			x: t,
 			y: n + a
-		}), s = this.state.textAlign === "center" ? "middle" : this.state.textAlign === "right" || this.state.textAlign === "end" ? "end" : "start", { color: c, alpha: l } = KK(this.state.fillStyle);
-		this.emit(`<text x="${WK(o.x)}" y="${WK(o.y)}" font-family="${GK(r.family.replace(/"/g, "'"))}" font-size="${WK(r.size * i)}" font-weight="${r.weight}"${s === "start" ? "" : ` text-anchor="${s}"`} fill="${GK(c)}"${this.opacity("fill-opacity", l)} xml:space="preserve">${GK(e)}</text>`);
+		}), s = this.state.textAlign === "center" ? "middle" : this.state.textAlign === "right" || this.state.textAlign === "end" ? "end" : "start", { color: c, alpha: l } = YK(this.state.fillStyle);
+		this.emit(`<text x="${qK(o.x)}" y="${qK(o.y)}" font-family="${JK(r.family.replace(/"/g, "'"))}" font-size="${qK(r.size * i)}" font-weight="${r.weight}"${s === "start" ? "" : ` text-anchor="${s}"`} fill="${JK(c)}"${this.opacity("fill-opacity", l)} xml:space="preserve">${JK(e)}</text>`);
 	}
 	/** Lucide icons arrive as their own SVG nodes (see canvas/icons.ts) rather than as Path2D. */
 	drawIconNode(e, t, n, r, i) {
-		let a = LK(this.state.matrix, {
+		let a = BK(this.state.matrix, {
 			a: r / 24,
 			b: 0,
 			c: 0,
 			d: r / 24,
 			e: t,
 			f: n
-		}), { color: o, alpha: s } = KK(i), c = e.map(([e, t]) => `<${e} ${Object.entries(t).filter(([e, t]) => t !== void 0 && e !== "key").map(([e, t]) => `${e}="${GK(String(t))}"`).join(" ")}/>`).join("");
+		}), { color: o, alpha: s } = YK(i), c = e.map(([e, t]) => `<${e} ${Object.entries(t).filter(([e, t]) => t !== void 0 && e !== "key").map(([e, t]) => `${e}="${JK(String(t))}"`).join(" ")}/>`).join("");
 		this.emit(`<g transform="matrix(${[
 			a.a,
 			a.b,
@@ -45357,47 +45402,47 @@ var JK = {
 			a.d,
 			a.e,
 			a.f
-		].map(WK).join(" ")})" fill="none" stroke="${GK(o)}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"${this.opacity("stroke-opacity", s)}>${c}</g>`);
+		].map(qK).join(" ")})" fill="none" stroke="${JK(o)}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"${this.opacity("stroke-opacity", s)}>${c}</g>`);
 	}
 	/** Raw SVG markup in the current transform (used for images). */
 	drawRaw(e) {
 		this.emit(e);
 	}
 	beginGroup(e) {
-		this.body.push(`<g id="${GK(e)}">`);
+		this.body.push(`<g id="${JK(e)}">`);
 	}
 	endGroup() {
 		this.body.push("</g>");
 	}
 	toSVG(e, t, n = "#fff") {
-		let r = n ? `<rect width="${WK(e)}" height="${WK(t)}" fill="${n}"/>` : "", i = this.defs.length > 0 ? `<defs>${this.defs.join("")}</defs>` : "";
-		return `<svg xmlns="http://www.w3.org/2000/svg" width="${WK(e)}" height="${WK(t)}" viewBox="0 0 ${WK(e)} ${WK(t)}">${i}${r}${this.body.join("")}</svg>`;
+		let r = n ? `<rect width="${qK(e)}" height="${qK(t)}" fill="${n}"/>` : "", i = this.defs.length > 0 ? `<defs>${this.defs.join("")}</defs>` : "";
+		return `<svg xmlns="http://www.w3.org/2000/svg" width="${qK(e)}" height="${qK(t)}" viewBox="0 0 ${qK(e)} ${qK(t)}">${i}${r}${this.body.join("")}</svg>`;
 	}
 	pathOp(e) {
-		let t = new VK();
+		let t = new WK();
 		e(t), this.path.append(t, this.state.matrix);
 	}
 	data(e) {
-		if (e === void 0) return this.path.toData(IK);
-		if (e instanceof VK) return e.toData(this.state.matrix);
+		if (e === void 0) return this.path.toData(zK);
+		if (e instanceof WK) return e.toData(this.state.matrix);
 		throw Error("SVG export got a Path2D it cannot read.");
 	}
 	strokeAttributes() {
-		let { color: e, alpha: t } = KK(this.state.strokeStyle), n = zK(this.state.matrix), r = this.state.lineWidth * n, i = this.state.dash.length > 0 ? ` stroke-dasharray="${this.state.dash.map((e) => WK(e * n)).join(" ")}"` : "", a = this.state.lineCap === "butt" ? "" : ` stroke-linecap="${this.state.lineCap}"`, o = this.state.lineJoin === "miter" ? "" : ` stroke-linejoin="${this.state.lineJoin}"`;
-		return ` stroke="${GK(e)}" stroke-width="${WK(r)}"${i}${a}${o}${this.opacity("stroke-opacity", t)}`;
+		let { color: e, alpha: t } = YK(this.state.strokeStyle), n = HK(this.state.matrix), r = this.state.lineWidth * n, i = this.state.dash.length > 0 ? ` stroke-dasharray="${this.state.dash.map((e) => qK(e * n)).join(" ")}"` : "", a = this.state.lineCap === "butt" ? "" : ` stroke-linecap="${this.state.lineCap}"`, o = this.state.lineJoin === "miter" ? "" : ` stroke-linejoin="${this.state.lineJoin}"`;
+		return ` stroke="${JK(e)}" stroke-width="${qK(r)}"${i}${a}${o}${this.opacity("stroke-opacity", t)}`;
 	}
 	opacity(e, t) {
 		let n = [];
-		return t < 1 && n.push(` ${e}="${WK(t)}"`), this.state.globalAlpha < 1 && n.push(` opacity="${WK(this.state.globalAlpha)}"`), n.join("");
+		return t < 1 && n.push(` ${e}="${qK(t)}"`), this.state.globalAlpha < 1 && n.push(` opacity="${qK(this.state.globalAlpha)}"`), n.join("");
 	}
 	emit(e) {
 		this.body.push(this.state.clipID ? `<g clip-path="url(#${this.state.clipID})">${e}</g>` : e);
 	}
-}, XK = (e) => e;
+}, eq = (e) => e;
 /** Runs `draw` with `Path2D` swapped for the recording path, so renderers that build Path2D objects work. */
-function ZK(e) {
+function tq(e) {
 	let t = globalThis.Path2D;
-	globalThis.Path2D = VK;
+	globalThis.Path2D = WK;
 	try {
 		return e();
 	} finally {
@@ -45405,20 +45450,20 @@ function ZK(e) {
 	}
 }
 // src/handoff/render.ts
-var QK = 24, $K = 24, eq = (e, t) => ({ elements: [t, ...AH(e, t.id)] });
+var nq = 24, rq = 24, iq = (e, t) => ({ elements: [t, ...AH(e, t.id)] });
 /** Everything on the canvas, padded, with room for frame labels. */
-function tq(e) {
+function aq(e) {
 	let [t, ...n] = e.elements;
 	if (!t) return null;
-	let r = n.reduce((e, t) => oB(e, t.frame), t.frame), i = Math.floor(r.x - QK), a = Math.floor(r.y - QK - $K);
+	let r = n.reduce((e, t) => oB(e, t.frame), t.frame), i = Math.floor(r.x - nq), a = Math.floor(r.y - nq - rq);
 	return {
 		x: i,
 		y: a,
-		width: Math.ceil(r.x + r.width + QK) - i,
-		height: Math.ceil(r.y + r.height + QK) - a
+		width: Math.ceil(r.x + r.width + nq) - i,
+		height: Math.ceil(r.y + r.height + nq) - a
 	};
 }
-var nq = (e) => ({
+var oq = (e) => ({
 	offset: {
 		x: -e.x,
 		y: -e.y
@@ -45426,37 +45471,37 @@ var nq = (e) => ({
 	scale: 1
 });
 /** Data URLs for every image the document uses, so the SVG is self-contained. */
-async function rq(e) {
+async function sq(e) {
 	let t = [...new Set(e.elements.flatMap((e) => e.kind.type === "image" ? [e.kind.assetID] : []))], n = await Promise.all(t.map(async (e) => {
 		let t = await v.blob(e);
-		return t ? [e, await iq(t)] : null;
+		return t ? [e, await cq(t)] : null;
 	}));
 	return new Map(n.filter((e) => e !== null));
 }
-function iq(e) {
+function cq(e) {
 	return new Promise((t, n) => {
 		let r = new FileReader();
 		r.onload = () => t(String(r.result)), r.onerror = () => n(r.error ?? /* @__PURE__ */ Error("An image couldn't be read.")), r.readAsDataURL(e);
 	});
 }
 /** Vector SVG of `region`: each frame is a named group with its children clipped to it. */
-function aq(e, t, n) {
-	let r = new YK(), i = XK(r), a = nq(t), o = (e) => {
+function lq(e, t, n) {
+	let r = new $K(), i = eq(r), a = oq(t), o = (e) => {
 		if (e.kind.type === "image") {
 			let i = n.get(e.kind.assetID), a = e.frame.x - t.x, o = e.frame.y - t.y;
-			r.drawRaw(i ? `<image x="${a}" y="${o}" width="${e.frame.width}" height="${e.frame.height}" preserveAspectRatio="none" href="${GK(i)}"/>` : `<rect x="${a}" y="${o}" width="${e.frame.width}" height="${e.frame.height}" fill="#e8e8ed"/>`);
-		} else jG(i, e, a);
+			r.drawRaw(i ? `<image x="${a}" y="${o}" width="${e.frame.width}" height="${e.frame.height}" preserveAspectRatio="none" href="${JK(i)}"/>` : `<rect x="${a}" y="${o}" width="${e.frame.width}" height="${e.frame.height}" fill="#e8e8ed"/>`);
+		} else MG(i, e, a);
 	};
-	return ZK(() => {
-		for (let { frame: n, elements: a } of FH(e)) n && (r.beginGroup(n.kind.type === "device" ? n.kind.name ?? Gz(n.kind.templateID)?.name ?? "Frame" : "Frame"), o(n), r.save(), oq(i, n, t)), a.forEach(o), n && (r.restore(), r.endGroup());
+	return tq(() => {
+		for (let { frame: n, elements: a } of FH(e)) n && (r.beginGroup(n.kind.type === "device" ? n.kind.name ?? Gz(n.kind.templateID)?.name ?? "Frame" : "Frame"), o(n), r.save(), uq(i, n, t)), a.forEach(o), n && (r.restore(), r.endGroup());
 	}), r.toSVG(t.width, t.height);
 }
-function oq(e, t, n) {
+function uq(e, t, n) {
 	let r = t.kind.type === "device" ? Gz(t.kind.templateID)?.cornerRadius ?? 0 : 0, i = t.frame;
 	e.beginPath(), e.roundRect(i.x - n.x, i.y - n.y, i.width, i.height, Math.min(r, i.width / 2, i.height / 2)), e.clip();
 }
 /** Waits (briefly) for the document's images to decode so a raster render includes them. */
-async function sq(e) {
+async function dq(e) {
 	let t = e.elements.flatMap((e) => e.kind.type === "image" ? [e.kind.assetID] : []);
 	t.every((e) => v.image(e) !== null) || await new Promise((e) => {
 		let n = setTimeout(i, 3e3), r = v.subscribe(() => {
@@ -45468,15 +45513,15 @@ async function sq(e) {
 	});
 }
 /** PNG of `region` at `scale`, on white, without grid or selection. */
-async function cq(e, t, n) {
-	await sq(e);
+async function fq(e, t, n) {
+	await dq(e);
 	let r = document.createElement("canvas");
 	r.width = Math.max(1, Math.round(t.width * n)), r.height = Math.max(1, Math.round(t.height * n));
 	let i = r.getContext("2d");
 	if (!i) throw Error("The image couldn't be rendered.");
-	return i.fillStyle = "#fff", i.fillRect(0, 0, r.width, r.height), i.scale(n, n), OK(i, t.width, t.height, {
+	return i.fillStyle = "#fff", i.fillRect(0, 0, r.width, r.height), i.scale(n, n), jK(i, t.width, t.height, {
 		document: e,
-		camera: nq(t),
+		camera: oq(t),
 		selected: [],
 		handleRect: null,
 		draftStroke: [],
@@ -45493,12 +45538,12 @@ async function cq(e, t, n) {
 * 127.0.0.1. Claude's requests arrive here because the documents (localStorage) and the renderer
 * (canvas) live in the browser. The app keeps retrying quietly while nothing is listening.
 */
-var lq = 5199, uq = [
+var pq = 5199, mq = [
 	1e3,
 	2e3,
 	4e3,
 	8e3
-], dq = 2e3, fq = 5e3, pq = 1, mq = 3, hq = class {
+], hq = 2e3, gq = 5e3, _q = 1, vq = 3, yq = class {
 	state = {
 		status: "waiting",
 		lastActivity: null
@@ -45529,7 +45574,7 @@ var lq = 5199, uq = [
 	/** With several Draftboard tabs open, Claude talks to the one used last; tell the hub when that was. */
 	markUsed() {
 		let e = Date.now();
-		e - this.lastUsed < dq || (this.lastUsed = e, this.announceUse());
+		e - this.lastUsed < hq || (this.lastUsed = e, this.announceUse());
 	}
 	announceUse() {
 		this.socket?.readyState === WebSocket.OPEN && this.socket.send(JSON.stringify({
@@ -45542,7 +45587,7 @@ var lq = 5199, uq = [
 		return this.open?.id === e || (window.location.hash = `#/doc/${e}`, await new Promise((t, n) => {
 			let r = setTimeout(() => {
 				this.openWaiters.delete(i), n(/* @__PURE__ */ Error("Draftboard couldn't open the board."));
-			}, fq), i = () => {
+			}, gq), i = () => {
 				this.open?.id === e && (clearTimeout(r), this.openWaiters.delete(i), t());
 			};
 			this.openWaiters.add(i);
@@ -45550,7 +45595,7 @@ var lq = 5199, uq = [
 	}
 	connect() {
 		if (this.stopped || this.socket) return;
-		let e = new WebSocket(`ws://127.0.0.1:${lq}/app`);
+		let e = new WebSocket(`ws://127.0.0.1:${pq}/app`);
 		this.socket = e, e.onopen = () => {
 			this.attempt = 0, e.send(JSON.stringify({
 				type: "hello",
@@ -45558,7 +45603,7 @@ var lq = 5199, uq = [
 				version: 1
 			})), document.hasFocus() && (this.lastUsed = Date.now()), this.announceUse(), this.setStatus("connected");
 		}, e.onmessage = (t) => void this.handle(e, String(t.data)), e.onclose = () => {
-			this.socket === e && (this.socket = null, this.setStatus("waiting"), this.retrySoon(uq[Math.min(this.attempt++, uq.length - 1)]));
+			this.socket === e && (this.socket = null, this.setStatus("waiting"), this.retrySoon(mq[Math.min(this.attempt++, mq.length - 1)]));
 		};
 	}
 	retrySoon(e) {
@@ -45660,7 +45705,7 @@ var lq = 5199, uq = [
 	async get(e) {
 		let t = this.resolve(e.document);
 		this.note("get", t.name);
-		let { document: n, comments: r } = this.read(t), i = KW(n, t, r), a = Math.min(Math.max(Number(e.scale ?? pq) || pq, .25), mq), o = e.images === !1 ? [] : await this.images(n, a);
+		let { document: n, comments: r } = this.read(t), i = KW(n, t, r), a = Math.min(Math.max(Number(e.scale ?? _q) || _q, .25), vq), o = e.images === !1 ? [] : await this.images(n, a);
 		return {
 			document: t,
 			outline: YW(i),
@@ -45673,13 +45718,13 @@ var lq = 5199, uq = [
 			frame: n.id,
 			name: TW(n),
 			mimeType: "image/png",
-			data: await gq(await cq(eq(e, n), n.frame, t))
-		}))), i = e.elements.some((e) => e.kind.type !== "device" && !n.some((t) => t.id === e.parentID)), a = tq(e);
+			data: await bq(await fq(iq(e, n), n.frame, t))
+		}))), i = e.elements.some((e) => e.kind.type !== "device" && !n.some((t) => t.id === e.parentID)), a = aq(e);
 		return !a || !i && n.length === 1 ? r : [{
 			frame: null,
 			name: "Whole canvas",
 			mimeType: "image/png",
-			data: await gq(await cq(e, a, Math.min(t, 1)))
+			data: await bq(await fq(e, a, Math.min(t, 1)))
 		}, ...r];
 	}
 	async svg(e) {
@@ -45687,12 +45732,12 @@ var lq = 5199, uq = [
 		this.note("svg", t.name);
 		let { document: n } = this.read(t), r = e.frame === void 0 ? null : String(e.frame), i = r === null ? null : jH(n).find((e) => e.id === r || TW(e).toLowerCase() === r.toLowerCase());
 		if (r !== null && !i) throw Error(`No frame "${r}" in "${t.name}".`);
-		let a = i ? eq(n, i) : n, o = i ? i.frame : tq(n);
+		let a = i ? iq(n, i) : n, o = i ? i.frame : aq(n);
 		if (!o) throw Error(`"${t.name}" is empty.`);
 		return {
 			document: t,
 			frame: i ? TW(i) : null,
-			svg: aq(a, o, await rq(a))
+			svg: lq(a, o, await sq(a))
 		};
 	}
 	create(e) {
@@ -45719,29 +45764,29 @@ var lq = 5199, uq = [
 		};
 	}
 };
-async function gq(e) {
+async function bq(e) {
 	let t = new Uint8Array(await e.arrayBuffer()), n = "";
 	for (let e = 0; e < t.length; e += 32768) n += String.fromCharCode(...t.subarray(e, e + 32768));
 	return btoa(n);
 }
-var _q = new hq(), vq = "draftboard.linked", yq = 8e4, bq = 3e3, xq = () => h(), Sq = (e) => h() ? "" : `?board=${e}`;
-function Cq() {
+var xq = new yq(), Sq = "draftboard.linked", Cq = 8e4, wq = 3e3, Tq = () => h(), Eq = (e) => h() ? "" : `?board=${e}`;
+function Dq() {
 	try {
-		return new Set(JSON.parse(localStorage.getItem(vq) ?? "[]"));
+		return new Set(JSON.parse(localStorage.getItem(Sq) ?? "[]"));
 	} catch {
 		return /* @__PURE__ */ new Set();
 	}
 }
 /** Writes the board's readable copy. Tail chunks first, then the head that names them. */
-async function wq(e, t, n, r) {
+async function Oq(e, t, n, r) {
 	let i = xe();
 	if (!i) throw Error("Board links need Draftboard open in Claude, signed in.");
 	let a = KW(n.document, {
 		id: e,
 		name: t
-	}, n.comments), o = JSON.stringify(a), s = Math.max(1, Math.ceil(o.length / yq)), c = i.col.doc(`handoff.${e}`), l = (await c.get()).data(), u = `${Date.now()}`;
+	}, n.comments), o = JSON.stringify(a), s = Math.max(1, Math.ceil(o.length / Cq)), c = i.col.doc(`handoff.${e}`), l = (await c.get()).data(), u = `${Date.now()}`;
 	for (let t = 1; t < s; t++) await i.col.doc(`handoff.${e}~${t}`).set({
-		v: o.slice(t * yq, (t + 1) * yq),
+		v: o.slice(t * Cq, (t + 1) * Cq),
 		t: u
 	});
 	await c.set({
@@ -45749,20 +45794,20 @@ async function wq(e, t, n, r) {
 		board: e,
 		name: t,
 		updated: (/* @__PURE__ */ new Date()).toISOString(),
-		link: Sq(e),
+		link: Eq(e),
 		outline: YW(a).slice(0, 6e4),
 		parts: s,
 		t: u,
-		json: o.slice(0, yq),
+		json: o.slice(0, Cq),
 		png: r === "keep" ? l?.png ?? null : r
 	});
 	let d = typeof l?.parts == "number" ? l.parts : 0;
 	for (let t = s; t < d; t++) await i.col.doc(`handoff.${e}~${t}`).delete();
 }
-async function Tq(e) {
-	let t = xe(), n = tq(e.document);
+async function kq(e) {
+	let t = xe(), n = aq(e.document);
 	if (!t?.assets || !n) return null;
-	let r = Math.min(2, 2400 / Math.max(n.width, n.height)), { id: i, url: a } = await t.assets.upload(await cq(e.document, n, r));
+	let r = Math.min(2, 2400 / Math.max(n.width, n.height)), { id: i, url: a } = await t.assets.upload(await fq(e.document, n, r));
 	return {
 		assetId: i,
 		url: a,
@@ -45770,37 +45815,37 @@ async function Tq(e) {
 	};
 }
 /** Refreshes the readable copy (with a new picture). */
-async function Eq(e, t, n) {
-	await wq(e, t, n, await Tq(n).catch((e) => (console.error("Drawing the board picture failed", e), null)));
-	let r = Cq();
-	r.has(e) || localStorage.setItem(vq, JSON.stringify([...r, e]));
+async function Aq(e, t, n) {
+	await Oq(e, t, n, await kq(n).catch((e) => (console.error("Drawing the board picture failed", e), null)));
+	let r = Dq();
+	r.has(e) || localStorage.setItem(Sq, JSON.stringify([...r, e]));
 }
-var Dq = /* @__PURE__ */ new Map(), Oq = 12e4, kq = 0;
+var jq = /* @__PURE__ */ new Map(), Mq = 12e4, Nq = 0;
 /** Called on every save: boards that have a link get their readable copy refreshed after a pause. */
-function Aq(e, t, n) {
-	if (!xq() || !Cq().has(e)) return;
-	let r = Dq.get(e);
-	r && clearTimeout(r), Dq.set(e, setTimeout(() => {
-		Dq.delete(e);
+function Pq(e, t, n) {
+	if (!Tq() || !Dq().has(e)) return;
+	let r = jq.get(e);
+	r && clearTimeout(r), jq.set(e, setTimeout(() => {
+		jq.delete(e);
 		let r = n();
 		if (!r) return;
-		let i = h() && Date.now() - kq > Oq;
-		i && (kq = Date.now()), (i ? Tq(r).catch(() => "keep") : Promise.resolve("keep")).then((n) => wq(e, t, r, n ?? "keep")).catch((e) => console.error("Refreshing the board link failed", e));
-	}, bq));
+		let i = h() && Date.now() - Nq > Mq;
+		i && (Nq = Date.now()), (i ? kq(r).catch(() => "keep") : Promise.resolve("keep")).then((n) => Oq(e, t, r, n ?? "keep")).catch((e) => console.error("Refreshing the board link failed", e));
+	}, wq));
 }
 /** `?board=<id>` on the page's own address, when the viewer passes it through. */
-function jq() {
+function Fq() {
 	let e = new URLSearchParams(window.location.search).get("board");
 	return e && /^[\w-]+$/.test(e) ? e : null;
 }
 // src/model/links.ts
 /** Gap left between the content of pages when older multi-page boards are flattened onto one canvas. */
-var Mq = 400;
+var Iq = 400;
 /**
 * Lays every page's content side by side, left to right in page order, so nothing overlaps and nothing is lost.
 * Element and comment IDs are kept, so links and comment anchors stay valid.
 */
-function Nq(e) {
+function Lq(e) {
 	let t = [], n = [], r = null;
 	for (let i of e) {
 		let e = IH(i.document), a = e && r !== null ? r - e.x : 0, o = i.document.elements.map((e) => ({
@@ -45819,7 +45864,7 @@ function Nq(e) {
 				}
 			}
 		}));
-		t = [...t, ...o], n = [...n, ...s], e && (r = V(e) + a + Mq);
+		t = [...t, ...o], n = [...n, ...s], e && (r = V(e) + a + Iq);
 	}
 	return {
 		document: { elements: t },
@@ -45827,22 +45872,22 @@ function Nq(e) {
 	};
 }
 // src/store/library.ts
-var Pq = "draftboard.documents", Fq = "draftboard.document.v1", Iq = (e) => `draftboard.doc.${e}`, Lq = (e) => ({
+var Rq = "draftboard.documents", zq = "draftboard.document.v1", Bq = (e) => `draftboard.doc.${e}`, Vq = (e) => ({
 	view: 0,
 	comment: 1,
 	edit: 2
 })[e];
-function Rq(e) {
+function Hq(e) {
 	let t = JSON.parse(e), n = t;
 	if (typeof t != "object" || !t || !Array.isArray(n.elements)) throw Error("Saved canvas has an unexpected format.");
-	let r = zq(t.pages);
-	return r ? Nq(r) : {
+	let r = Uq(t.pages);
+	return r ? Lq(r) : {
 		document: { elements: n.elements },
 		comments: Array.isArray(n.comments) ? n.comments : []
 	};
 }
 /** Boards saved while pages existed carry a `pages` array; they are flattened onto one canvas and saved without it. */
-function zq(e) {
+function Uq(e) {
 	if (!Array.isArray(e) || e.length === 0) return null;
 	if (!e.every((e) => {
 		let t = e;
@@ -45853,16 +45898,16 @@ function zq(e) {
 		comments: Array.isArray(e.comments) ? e.comments : []
 	}));
 }
-var Bq = (e) => JSON.stringify({
+var Wq = (e) => JSON.stringify({
 	elements: e.document.elements,
 	comments: e.comments
-}), Vq = class {
+}), Gq = class {
 	docs = [];
 	listeners = /* @__PURE__ */ new Set();
 	errorMessage = null;
 	constructor() {
 		try {
-			let e = localStorage.getItem(Pq);
+			let e = localStorage.getItem(Rq);
 			this.docs = e ? JSON.parse(e) : [], this.migrateLegacy();
 		} catch (e) {
 			console.error("Library load failed", e), this.errorMessage = "Your boards list couldn't be read.";
@@ -45877,19 +45922,19 @@ var Bq = (e) => JSON.stringify({
 		return this.docs.find((t) => t.id === e);
 	}
 	load(e) {
-		let t = localStorage.getItem(Iq(e));
-		return t === null ? null : Rq(t);
+		let t = localStorage.getItem(Bq(e));
+		return t === null ? null : Hq(t);
 	}
 	/** Keeps unreadable data under a side key before it can be overwritten. */
 	backup(e) {
-		let t = localStorage.getItem(Iq(e));
-		t !== null && localStorage.setItem(`${Iq(e)}.corrupt-${Date.now()}`, t);
+		let t = localStorage.getItem(Bq(e));
+		t !== null && localStorage.setItem(`${Bq(e)}.corrupt-${Date.now()}`, t);
 	}
 	save(e, t) {
-		localStorage.setItem(Iq(e), Bq(t)), this.update(this.docs.map((t) => t.id === e ? {
+		localStorage.setItem(Bq(e), Wq(t)), this.update(this.docs.map((t) => t.id === e ? {
 			...t,
 			modified: (/* @__PURE__ */ new Date()).toISOString()
-		} : t)), Aq(e, this.info(e)?.name ?? "Untitled", () => this.load(e));
+		} : t)), Pq(e, this.info(e)?.name ?? "Untitled", () => this.load(e));
 	}
 	create(e, t = {
 		document: { elements: [] },
@@ -45900,7 +45945,7 @@ var Bq = (e) => JSON.stringify({
 			name: e ?? this.nextUntitledName(),
 			modified: (/* @__PURE__ */ new Date()).toISOString()
 		};
-		return localStorage.setItem(Iq(n.id), Bq(t)), this.update([...this.docs, n]), n;
+		return localStorage.setItem(Bq(n.id), Wq(t)), this.update([...this.docs, n]), n;
 	}
 	findCloud(e) {
 		return this.docs.find((t) => t.cloud?.id === e);
@@ -45914,7 +45959,7 @@ var Bq = (e) => JSON.stringify({
 	/** Adds a document someone shared (or that another of this person's devices synced), or returns the existing copy. */
 	addCloud(e, t) {
 		let n = this.findCloud(e.id);
-		if (n) return n.cloud?.key !== e.key && Lq(e.role) > Lq(n.cloud?.role ?? "view") && this.setCloud(n.id, {
+		if (n) return n.cloud?.key !== e.key && Vq(e.role) > Vq(n.cloud?.role ?? "view") && this.setCloud(n.id, {
 			...n.cloud,
 			...e
 		}), this.info(n.id) ?? n;
@@ -45933,7 +45978,7 @@ var Bq = (e) => JSON.stringify({
 		return !t || !n ? null : this.create(`${t.name} copy`, n);
 	}
 	delete(e) {
-		localStorage.removeItem(Iq(e)), this.update(this.docs.filter((t) => t.id !== e));
+		localStorage.removeItem(Bq(e)), this.update(this.docs.filter((t) => t.id !== e));
 	}
 	nextUntitledName() {
 		let e = new Set(this.docs.map((e) => e.name));
@@ -45943,23 +45988,23 @@ var Bq = (e) => JSON.stringify({
 		return `Untitled ${t}`;
 	}
 	migrateLegacy() {
-		let e = localStorage.getItem(Fq);
-		e !== null && (this.create("My Canvas", Rq(e)), localStorage.removeItem(Fq));
+		let e = localStorage.getItem(zq);
+		e !== null && (this.create("My Canvas", Hq(e)), localStorage.removeItem(zq));
 	}
 	update(e) {
-		localStorage.setItem(Pq, JSON.stringify(e)), this.docs = e, this.listeners.forEach((e) => e());
+		localStorage.setItem(Rq, JSON.stringify(e)), this.docs = e, this.listeners.forEach((e) => e());
 	}
-}, Hq = (e) => e.selectedElements.filter((e) => aH(e) !== null);
-function Uq(e, t) {
-	let n = bB.find((e) => e.preset === t), r = Hq(e);
+}, Kq = (e) => e.selectedElements.filter((e) => aH(e) !== null);
+function qq(e, t) {
+	let n = bB.find((e) => e.preset === t), r = Kq(e);
 	n && r.length !== 0 && e.commit(BH(e.state.document, r.map((e) => dH(e, {
 		...aH(e),
 		fontSize: n.fontSize,
 		isBold: n.isBold
 	}))));
 }
-function Wq(e) {
-	let t = Hq(e);
+function Jq(e) {
+	let t = Kq(e);
 	if (t.length === 0) return;
 	let n = !t.every((e) => aH(e).isBold);
 	e.commit(BH(e.state.document, t.map((e) => dH(e, {
@@ -45968,59 +46013,59 @@ function Wq(e) {
 	}))));
 }
 /** The preset every selected text box matches by size, if they all agree. */
-function Gq(e) {
-	let t = new Set(Hq(e).map((e) => aH(e).fontSize));
+function Yq(e) {
+	let t = new Set(Kq(e).map((e) => aH(e).fontSize));
 	if (t.size !== 1) return null;
 	let [n] = t;
 	return bB.find((e) => e.fontSize === n)?.preset ?? null;
 }
-var Kq = (e) => {
-	let t = Hq(e);
+var Xq = (e) => {
+	let t = Kq(e);
 	return t.length > 0 && t.every((e) => aH(e).isBold);
-}, qq = "draftboard.textFont";
+}, Zq = "draftboard.textFont";
 /** The font new text uses, remembered in this browser. */
-function Jq() {
+function Qq() {
 	try {
-		let e = localStorage.getItem(qq);
+		let e = localStorage.getItem(Zq);
 		return vB.some((t) => t.font === e) ? e : "system";
 	} catch {
 		return "system";
 	}
 }
 /** Sets the font on selected text (if any) and remembers it for new text. */
-function Yq(e, t) {
+function $q(e, t) {
 	try {
-		localStorage.setItem(qq, t);
+		localStorage.setItem(Zq, t);
 	} catch (e) {
 		console.warn("Could not remember the font choice", e);
 	}
 	e.set({ textFont: t });
-	let n = Hq(e);
+	let n = Kq(e);
 	n.length !== 0 && e.commit(BH(e.state.document, n.map((e) => dH(e, {
 		...aH(e),
 		font: t
 	}))));
 }
-function Xq(e) {
-	let t = new Set(Hq(e).map((e) => aH(e).font ?? "system")), [n] = t;
+function eJ(e) {
+	let t = new Set(Kq(e).map((e) => aH(e).font ?? "system")), [n] = t;
 	return t.size === 1 && n ? n : e.state.textFont;
 }
 /** Sets an exact size on the selected text, keeping its weight. */
-function Zq(e, t) {
-	let n = Hq(e);
+function tJ(e, t) {
+	let n = Kq(e);
 	n.length !== 0 && e.commit(BH(e.state.document, n.map((e) => dH(e, {
 		...aH(e),
 		fontSize: t
 	}))));
 }
 /** The size every selected text shares, or null when they differ. */
-function Qq(e) {
-	let t = new Set(Hq(e).map((e) => aH(e).fontSize)), [n] = t;
+function nJ(e) {
+	let t = new Set(Kq(e).map((e) => aH(e).fontSize)), [n] = t;
 	return t.size === 1 && n !== void 0 ? n : null;
 }
 // src/model/cameraEasing.ts
 /** Eases from one camera to another: the viewport centre moves in a line and the scale changes geometrically. */
-function $q(e, t, n, r) {
+function rJ(e, t, n, r) {
 	let i = {
 		x: n.width / 2,
 		y: n.height / 2
@@ -46030,13 +46075,13 @@ function $q(e, t, n, r) {
 		y: a.y + (o.y - a.y) * r
 	}, n, s);
 }
-var eJ = (e) => 1 - (1 - e) ** 3, tJ = {
+var iJ = (e) => 1 - (1 - e) ** 3, aJ = {
 	undo: [],
 	redo: []
-}, nJ = (e, t) => ({
+}, oJ = (e, t) => ({
 	undo: [...e.undo, t].slice(-200),
 	redo: []
-}), rJ = {
+}), sJ = {
 	pen: {
 		...Iz.ink,
 		dash: "solid"
@@ -46048,7 +46093,7 @@ var eJ = (e) => 1 - (1 - e) ** 3, tJ = {
 	text: Mz,
 	flow: zB,
 	connector: BB
-}, iJ = 260, aJ = class {
+}, cJ = 260, lJ = class {
 	persistence;
 	current;
 	listeners = /* @__PURE__ */ new Set();
@@ -46065,13 +46110,13 @@ var eJ = (e) => 1 - (1 - e) ** 3, tJ = {
 			draftSnap: null,
 			marquee: null,
 			pencilDetected: !1,
-			toolStyles: rJ,
-			textFont: Jq(),
+			toolStyles: sJ,
+			textFont: Qq(),
 			viewport: {
 				width: 0,
 				height: 0
 			},
-			history: tJ,
+			history: aJ,
 			errorMessage: n,
 			editingTextID: null,
 			editingText: "",
@@ -46087,7 +46132,7 @@ var eJ = (e) => 1 - (1 - e) ** 3, tJ = {
 			flowShape: "process",
 			connectDraft: null,
 			shapePreset: "rectangle",
-			mode: cJ(e)
+			mode: fJ(e)
 		};
 	}
 	get state() {
@@ -46159,7 +46204,7 @@ var eJ = (e) => 1 - (1 - e) ** 3, tJ = {
 		let { document: t, history: n } = this.current;
 		e !== t && this.current.access === "edit" && (this.set({
 			document: e,
-			history: nJ(n, t)
+			history: oJ(n, t)
 		}), this.save());
 	}
 	beginTransient() {
@@ -46170,7 +46215,7 @@ var eJ = (e) => 1 - (1 - e) ** 3, tJ = {
 	}
 	endTransient() {
 		let e = this.transientBase;
-		this.transientBase = null, e && !lJ(e, this.current.document) && (this.set({ history: nJ(this.current.history, e) }), this.save());
+		this.transientBase = null, e && !pJ(e, this.current.document) && (this.set({ history: oJ(this.current.history, e) }), this.save());
 	}
 	cancelTransient() {
 		this.transientBase && this.set({ document: this.transientBase }), this.transientBase = null;
@@ -46250,7 +46295,7 @@ var eJ = (e) => 1 - (1 - e) ** 3, tJ = {
 	applyStyle(e) {
 		let t = this.selectedElements.filter((e) => !K(e));
 		if (t.length > 0) {
-			this.commit(BH(this.current.document, t.map((t) => gH(t, uJ(t, e)))));
+			this.commit(BH(this.current.document, t.map((t) => gH(t, mJ(t, e)))));
 			return;
 		}
 		let n = this.styleTarget;
@@ -46329,7 +46374,7 @@ var eJ = (e) => 1 - (1 - e) ** 3, tJ = {
 		});
 	};
 	setMode = (e) => {
-		sJ(e), this.set({
+		dJ(e), this.set({
 			mode: e,
 			tool: "select",
 			libraryTab: null
@@ -46411,8 +46456,8 @@ var eJ = (e) => 1 - (1 - e) ** 3, tJ = {
 				this.cameraTarget = null;
 				return;
 			}
-			let o = Math.min((a - n) / iJ, 1);
-			r = o >= 1 ? e : $q(t, e, this.current.viewport, eJ(o)), this.set({ camera: r }), o < 1 ? this.cameraFrame = requestAnimationFrame(i) : this.cameraTarget = null;
+			let o = Math.min((a - n) / cJ, 1);
+			r = o >= 1 ? e : rJ(t, e, this.current.viewport, iJ(o)), this.set({ camera: r }), o < 1 ? this.cameraFrame = requestAnimationFrame(i) : this.cameraTarget = null;
 		};
 		this.cameraFrame = requestAnimationFrame(i);
 	}
@@ -46420,26 +46465,26 @@ var eJ = (e) => 1 - (1 - e) ** 3, tJ = {
 		let { camera: t, viewport: n } = this.current;
 		this.set({ camera: aG(e, n, t.scale) });
 	}
-}, oJ = "draftboard.mode";
-function sJ(e) {
+}, uJ = "draftboard.mode";
+function dJ(e) {
 	try {
-		localStorage.setItem(oJ, e);
+		localStorage.setItem(uJ, e);
 	} catch {}
 }
 /** A board that's only flowchart opens in flowchart mode; one with screens in wireframe; otherwise the last mode used. */
-function cJ(e) {
+function fJ(e) {
 	let t = new Set(e.document.elements.map((e) => e.kind.type));
 	if (t.has("device")) return "wireframe";
 	if (t.has("flow")) return "flow";
 	try {
-		return localStorage.getItem(oJ) === "flow" ? "flow" : "wireframe";
+		return localStorage.getItem(uJ) === "flow" ? "flow" : "wireframe";
 	} catch {
 		return "wireframe";
 	}
 }
-var lJ = (e, t) => e === t || JSON.stringify(e) === JSON.stringify(t);
+var pJ = (e, t) => e === t || JSON.stringify(e) === JSON.stringify(t);
 /** Only the parts of a patch that make sense for this kind of element. */
-function uJ(e, t) {
+function mJ(e, t) {
 	let n = QV(e);
 	return {
 		...e.style,
@@ -46449,11 +46494,11 @@ function uJ(e, t) {
 		...t.dash && n ? { dash: t.dash } : {}
 	};
 }
-var dJ = (e) => aH(e) !== null, fJ = "/api";
-async function pJ(e, t = {}) {
+var hJ = (e) => aH(e) !== null, gJ = "/api";
+async function _J(e, t = {}) {
 	let n;
 	try {
-		n = await fetch(`${fJ}${e}`, t);
+		n = await fetch(`${gJ}${e}`, t);
 	} catch (e) {
 		throw Error("Couldn't reach the Draftboard server. Check your connection.", { cause: e });
 	}
@@ -46463,11 +46508,11 @@ async function pJ(e, t = {}) {
 	}
 	return await n.json();
 }
-var mJ = (e) => pJ("/docs", {
+var vJ = (e) => _J("/docs", {
 	method: "POST",
 	headers: { "Content-Type": "application/json" },
 	body: JSON.stringify({ state: e })
-}), hJ = (e, t) => pJ(`/docs/${e}/role`, { headers: { "X-Draftboard-Key": t } }), gJ = (e, t) => pJ(`/docs/${e.id}/name`, {
+}), yJ = (e, t) => _J(`/docs/${e}/role`, { headers: { "X-Draftboard-Key": t } }), bJ = (e, t) => _J(`/docs/${e.id}/name`, {
 	method: "PUT",
 	headers: {
 		"X-Draftboard-Key": e.key,
@@ -46475,48 +46520,48 @@ var mJ = (e) => pJ("/docs", {
 	},
 	body: JSON.stringify({ name: t })
 });
-async function _J(e, t) {
-	let n = await fetch(`${fJ}/docs/${e.id}/images/${t}`, { headers: { "X-Draftboard-Key": e.key } });
+async function xJ(e, t) {
+	let n = await fetch(`${gJ}/docs/${e.id}/images/${t}`, { headers: { "X-Draftboard-Key": e.key } });
 	if (n.status === 404) return null;
 	if (!n.ok) throw Error(`Image download failed (${n.status}).`);
 	return n.blob();
 }
-var vJ = (e, t, n) => pJ(`/docs/${e.id}/images/${t}`, {
+var SJ = (e, t, n) => _J(`/docs/${e.id}/images/${t}`, {
 	method: "PUT",
 	body: n,
 	headers: {
 		"X-Draftboard-Key": e.key,
 		"Content-Type": n.type || "image/png"
 	}
-}), yJ = (e) => {
+}), CJ = (e) => {
 	let { protocol: t, host: n } = window.location;
-	return `${t === "https:" ? "wss:" : "ws:"}//${n}${fJ}/docs/${e}/ws`;
-}, bJ = () => pJ("/library"), xJ = (e) => pJ("/library", {
+	return `${t === "https:" ? "wss:" : "ws:"}//${n}${gJ}/docs/${e}/ws`;
+}, wJ = () => _J("/library"), TJ = (e) => _J("/library", {
 	method: "PUT",
 	headers: { "Content-Type": "application/json" },
 	body: JSON.stringify(e)
-}), SJ = (e) => pJ(`/library?id=${encodeURIComponent(e)}`, { method: "DELETE" }), CJ = (e) => `draftboard.history.${e}`;
+}), EJ = (e) => _J(`/library?id=${encodeURIComponent(e)}`, { method: "DELETE" }), DJ = (e) => `draftboard.history.${e}`;
 /** Comment history for documents that live only on this device (synced ones get theirs from the server). */
-function wJ(e) {
+function OJ(e) {
 	try {
-		let t = localStorage.getItem(CJ(e)), n = t ? JSON.parse(t) : [];
+		let t = localStorage.getItem(DJ(e)), n = t ? JSON.parse(t) : [];
 		return Array.isArray(n) ? n : [];
 	} catch (e) {
 		return console.error("Comment history could not be read", e), [];
 	}
 }
-function TJ(e, t) {
+function kJ(e, t) {
 	let n = t.slice(-500);
 	try {
-		localStorage.setItem(CJ(e), JSON.stringify(n));
+		localStorage.setItem(DJ(e), JSON.stringify(n));
 	} catch (e) {
 		console.error("Comment history could not be saved", e);
 	}
 	return n;
 }
-function EJ(e) {
+function AJ(e) {
 	try {
-		localStorage.removeItem(CJ(e));
+		localStorage.removeItem(DJ(e));
 	} catch (e) {
 		console.error("Comment history could not be removed", e);
 	}
@@ -46527,10 +46572,10 @@ function EJ(e) {
 * tells a deletion made elsewhere (in the base, gone from the server) from something made here that
 * never reached the server (not in the base): the first is removed, the second uploaded.
 */
-var DJ = (e) => `draftboard.syncbase.${e}`;
-function OJ(e) {
+var jJ = (e) => `draftboard.syncbase.${e}`;
+function MJ(e) {
 	try {
-		let t = localStorage.getItem(DJ(e));
+		let t = localStorage.getItem(jJ(e));
 		if (!t) return null;
 		let n = JSON.parse(t);
 		return !Array.isArray(n.elements) || !Array.isArray(n.threads) ? null : {
@@ -46541,9 +46586,9 @@ function OJ(e) {
 		return console.error("Sync base could not be read", e), null;
 	}
 }
-function kJ(e, t) {
+function NJ(e, t) {
 	try {
-		localStorage.setItem(DJ(e), JSON.stringify({
+		localStorage.setItem(jJ(e), JSON.stringify({
 			elements: t.elements.map((e) => e.id),
 			threads: t.comments.map((e) => e.id)
 		}));
@@ -46551,31 +46596,31 @@ function kJ(e, t) {
 		console.error("Sync base could not be saved", e);
 	}
 }
-function AJ(e) {
+function PJ(e) {
 	try {
-		localStorage.removeItem(DJ(e));
+		localStorage.removeItem(jJ(e));
 	} catch (e) {
 		console.error("Sync base could not be removed", e);
 	}
 }
 // src/sync/deviceSync.ts
-var jJ = /* @__PURE__ */ new Map();
+var FJ = /* @__PURE__ */ new Map();
 /** Puts a local document on the server once, even if the list sync and an open canvas ask at the same time. */
-function MJ(e, t) {
+function IJ(e, t) {
 	let n = e.info(t)?.cloud;
 	if (n) return Promise.resolve(n);
-	let r = jJ.get(t);
+	let r = FJ.get(t);
 	if (r) return r;
-	let i = NJ(e, t).finally(() => jJ.delete(t));
-	return jJ.set(t, i), i;
+	let i = LJ(e, t).finally(() => FJ.delete(t));
+	return FJ.set(t, i), i;
 }
-async function NJ(e, t) {
+async function LJ(e, t) {
 	let n = e.info(t);
 	if (!n) throw Error("Board not found.");
 	let r = e.load(t) ?? {
 		document: { elements: [] },
 		comments: []
-	}, { id: i, keys: a } = await mJ({
+	}, { id: i, keys: a } = await vJ({
 		name: n.name,
 		elements: r.document.elements,
 		comments: r.comments
@@ -46588,12 +46633,12 @@ async function NJ(e, t) {
 	for (let e of r.document.elements) {
 		if (e.kind.type !== "image") continue;
 		let t = await v.blob(e.kind.assetID);
-		t && await vJ(o, e.kind.assetID, t);
+		t && await SJ(o, e.kind.assetID, t);
 	}
-	return e.setCloud(t, o), await PJ(o, n.name), o;
+	return e.setCloud(t, o), await RJ(o, n.name), o;
 }
-async function PJ(e, t) {
-	e.role === "edit" && await xJ({
+async function RJ(e, t) {
+	e.role === "edit" && await TJ({
 		id: e.id,
 		key: e.key,
 		name: t
@@ -46603,14 +46648,14 @@ async function PJ(e, t) {
 * Makes this device's list match the signed-in person's: uploads documents that only exist here and adds
 * ones made on other devices (their contents load when opened).
 */
-async function FJ(e) {
+async function zJ(e) {
 	let t = [];
 	for (let n of e.sorted) if (!n.cloud) try {
-		await MJ(e, n.id);
+		await IJ(e, n.id);
 	} catch (e) {
 		console.error(`Couldn't upload “${n.name}”`, e), t.push(n.name);
 	}
-	let { docs: n } = await bJ();
+	let { docs: n } = await wJ();
 	for (let t of n) {
 		let n = e.addCloud({
 			id: t.id,
@@ -46622,20 +46667,20 @@ async function FJ(e) {
 	if (t.length > 0) throw Error(`Couldn't sync ${t.map((e) => `“${e}”`).join(", ")}. ${t.length === 1 ? "It stays" : "They stay"} on this device.`);
 }
 /** Removes the document from this person's devices, but not from people it was shared with. */
-async function IJ(e, t) {
+async function BJ(e, t) {
 	let n = e.info(t)?.cloud;
-	e.delete(t), EJ(t), AJ(t), n?.role === "edit" && await SJ(n.id);
+	e.delete(t), AJ(t), PJ(t), n?.role === "edit" && await EJ(n.id);
 }
 /** Renames from the document list, where no live connection is open. */
-async function LJ(e, t, n) {
+async function VJ(e, t, n) {
 	e.rename(t, n);
 	let r = e.info(t);
-	r?.cloud && r.cloud.role === "edit" && (await gJ(r.cloud, r.name), await PJ(r.cloud, r.name));
+	r?.cloud && r.cloud.role === "edit" && (await bJ(r.cloud, r.name), await RJ(r.cloud, r.name));
 }
 // src/sync/history.ts
-var RJ = 120, zJ = (e) => e === void 0 ? "" : e.length > RJ ? `${e.slice(0, 119)}…` : e;
+var HJ = 120, UJ = (e) => e === void 0 ? "" : e.length > HJ ? `${e.slice(0, 119)}…` : e;
 /** Describes what a batch of comment ops did, judged against the state before it was applied. */
-function BJ(e, t, n, r = /* @__PURE__ */ new Date()) {
+function WJ(e, t, n, r = /* @__PURE__ */ new Date()) {
 	let i = (e) => t.comments.find((t) => t.id === e), a = (e, t, i) => ({
 		id: crypto.randomUUID(),
 		at: r.toISOString(),
@@ -46643,7 +46688,7 @@ function BJ(e, t, n, r = /* @__PURE__ */ new Date()) {
 		actorEmail: n.email,
 		action: e,
 		threadID: t,
-		excerpt: zJ(i)
+		excerpt: UJ(i)
 	});
 	return e.flatMap((e) => {
 		switch (e.k) {
@@ -46674,31 +46719,31 @@ function BJ(e, t, n, r = /* @__PURE__ */ new Date()) {
 }
 // src/sync/identity.ts
 /** Without the sync server (e.g. plain `npm run dev`), Draftboard is a personal, on-device tool and comments are yours. */
-var VJ = {
+var GJ = {
 	email: "local",
 	name: "Me"
-}, HJ = null, UJ = !1, WJ = !1;
+}, KJ = null, qJ = !1, JJ = !1;
 /**
 * Asks the sync server who is signed in. No server, or one without sign-in set up, means local mode:
 * everything stays on this device. Only an expired sign-in is an error.
 */
-async function GJ() {
-	return KJ();
+async function YJ() {
+	return XJ();
 }
-function KJ() {
-	return HJ = VJ, UJ = !1, WJ = !1, HJ;
+function XJ() {
+	return KJ = GJ, qJ = !1, JJ = !1, KJ;
 }
-function qJ() {
-	if (!HJ) throw Error("Not signed in yet.");
-	return HJ;
+function ZJ() {
+	if (!KJ) throw Error("Not signed in yet.");
+	return KJ;
 }
 /** True when the sync server answered, so sharing and cross-device sync are available. */
-var JJ = () => UJ, YJ = () => WJ;
+var QJ = () => qJ, $J = () => JJ;
 // src/sync/protocol.ts
-function XJ(e, t) {
-	return t.reduce(ZJ, e);
+function eY(e, t) {
+	return t.reduce(tY, e);
 }
-function ZJ(e, t) {
+function tY(e, t) {
 	switch (t.k) {
 		case "put": {
 			let n = e.elements.some((e) => e.id === t.el.id);
@@ -46713,7 +46758,7 @@ function ZJ(e, t) {
 		};
 		case "order": return {
 			...e,
-			elements: $J(e.elements, t.ids)
+			elements: rY(e.elements, t.ids)
 		};
 		case "name": return {
 			...e,
@@ -46723,7 +46768,7 @@ function ZJ(e, t) {
 			...e,
 			comments: [...e.comments, t.thread]
 		};
-		case "threadMeta": return QJ(e, t.id, (e) => ({
+		case "threadMeta": return nY(e, t.id, (e) => ({
 			...e,
 			resolved: t.resolved,
 			anchor: t.anchor
@@ -46732,40 +46777,40 @@ function ZJ(e, t) {
 			...e,
 			comments: e.comments.filter((e) => e.id !== t.id)
 		};
-		case "msg": return QJ(e, t.threadID, (e) => e.messages.some((e) => e.id === t.message.id) ? e : {
+		case "msg": return nY(e, t.threadID, (e) => e.messages.some((e) => e.id === t.message.id) ? e : {
 			...e,
 			messages: [...e.messages, t.message].sort((e, t) => e.createdAt.localeCompare(t.createdAt))
 		});
-		case "unmsg": return QJ(e, t.threadID, (e) => ({
+		case "unmsg": return nY(e, t.threadID, (e) => ({
 			...e,
 			messages: e.messages.filter((e) => e.id !== t.id)
 		}));
-		case "approve": return QJ(e, t.id, (e) => ({
+		case "approve": return nY(e, t.id, (e) => ({
 			...e,
 			approvedBy: t.approvedBy
 		}));
 	}
 }
-var QJ = (e, t, n) => ({
+var nY = (e, t, n) => ({
 	...e,
 	comments: e.comments.map((e) => e.id === t ? n(e) : e)
 });
 /** Follows the requested order, keeping anything the sender didn't know about (added concurrently) at the end. */
-function $J(e, t) {
+function rY(e, t) {
 	let n = new Map(e.map((e) => [e.id, e])), r = t.flatMap((e) => n.get(e) ?? []), i = new Set(r.map((e) => e.id));
 	return [...r, ...e.filter((e) => !i.has(e.id))];
 }
-function eY(e, t) {
+function iY(e, t) {
 	let n = [];
 	return e.name !== t.name && n.push({
 		k: "name",
 		name: t.name
-	}), n.push(...tY(e.elements, t.elements)), n.push(...nY(e.comments, t.comments)), n;
+	}), n.push(...aY(e.elements, t.elements)), n.push(...oY(e.comments, t.comments)), n;
 }
-function tY(e, t) {
+function aY(e, t) {
 	let n = new Map(e.map((e) => [e.id, e])), r = new Set(t.map((e) => e.id)), i = t.filter((e) => {
 		let t = n.get(e.id);
-		return t !== e && !rY(t, e);
+		return t !== e && !sY(t, e);
 	}).map((e) => ({
 		k: "put",
 		el: e
@@ -46780,7 +46825,7 @@ function tY(e, t) {
 		ids: o
 	}), i;
 }
-function nY(e, t) {
+function oY(e, t) {
 	let n = new Map(e.map((e) => [e.id, e])), r = new Set(t.map((e) => e.id)), i = [];
 	for (let e of t) {
 		let t = n.get(e.id);
@@ -46792,12 +46837,12 @@ function nY(e, t) {
 			continue;
 		}
 		if (t === e) continue;
-		t.resolved === e.resolved && rY(t.anchor, e.anchor) || i.push({
+		t.resolved === e.resolved && sY(t.anchor, e.anchor) || i.push({
 			k: "threadMeta",
 			id: e.id,
 			resolved: e.resolved,
 			anchor: e.anchor
-		}), rY(t.approvedBy ?? null, e.approvedBy ?? null) || i.push({
+		}), sY(t.approvedBy ?? null, e.approvedBy ?? null) || i.push({
 			k: "approve",
 			id: e.id,
 			approvedBy: e.approvedBy ?? null
@@ -46818,7 +46863,7 @@ function nY(e, t) {
 		id: e.id
 	})), i;
 }
-var rY = (e, t) => JSON.stringify(e) === JSON.stringify(t), iY = 3e4, aY = 4003, oY = class {
+var sY = (e, t) => JSON.stringify(e) === JSON.stringify(t), cY = 3e4, lY = 4003, uY = class {
 	docID;
 	key;
 	handlers;
@@ -46852,12 +46897,12 @@ var rY = (e, t) => JSON.stringify(e) === JSON.stringify(t), iY = 3e4, aY = 4003,
 	connect() {
 		if (this.closed) return;
 		this.handlers.onStatus("connecting", null);
-		let e = new WebSocket(yJ(this.docID));
+		let e = new WebSocket(CJ(this.docID));
 		this.socket = e, e.onopen = () => e.send(JSON.stringify({
 			t: "auth",
 			key: this.key
 		})), e.onmessage = (e) => this.receive(e.data), e.onclose = (t) => {
-			this.socket === e && (this.ready = !1, this.socket = null, t.code === aY ? this.handlers.onStatus("denied", t.reason || "This link is not valid any more.") : (this.handlers.onStatus("offline", null), this.scheduleRetry()));
+			this.socket === e && (this.ready = !1, this.socket = null, t.code === lY ? this.handlers.onStatus("denied", t.reason || "This link is not valid any more.") : (this.handlers.onStatus("offline", null), this.scheduleRetry()));
 		};
 	}
 	receive(e) {
@@ -46897,13 +46942,13 @@ var rY = (e, t) => JSON.stringify(e) === JSON.stringify(t), iY = 3e4, aY = 4003,
 	}
 	scheduleRetry() {
 		if (this.closed) return;
-		let e = Math.min(iY, 1e3 * 2 ** this.attempts) * (.75 + Math.random() * .5);
+		let e = Math.min(cY, 1e3 * 2 ** this.attempts) * (.75 + Math.random() * .5);
 		this.attempts++, this.retryTimer = setTimeout(() => this.connect(), e);
 	}
 	reconnectNow = () => {
 		this.socket || this.closed || (this.retryTimer && clearTimeout(this.retryTimer), this.attempts = 0, this.connect());
 	};
-}, sY = (e) => e.flatMap((e) => e.k === "put" && e.el.kind.type === "image" ? [e.el.kind.assetID] : []), cY = class {
+}, dY = (e) => e.flatMap((e) => e.k === "put" && e.el.kind.type === "image" ? [e.el.kind.assetID] : []), fY = class {
 	library;
 	localID;
 	store = null;
@@ -46926,7 +46971,7 @@ var rY = (e, t) => JSON.stringify(e) === JSON.stringify(t), iY = 3e4, aY = 4003,
 			message: null,
 			role: r?.cloud?.role ?? "edit",
 			sharing: !1,
-			history: r?.cloud ? [] : wJ(t)
+			history: r?.cloud ? [] : OJ(t)
 		};
 	}
 	attach(e) {
@@ -46934,7 +46979,7 @@ var rY = (e, t) => JSON.stringify(e) === JSON.stringify(t), iY = 3e4, aY = 4003,
 	}
 	start() {
 		let e = this.cloud;
-		e ? this.connect(e) : JJ() && this.share().catch((e) => {
+		e ? this.connect(e) : QJ() && this.share().catch((e) => {
 			console.error("Automatic sync failed", e), this.update({
 				status: "offline",
 				message: "Couldn't upload this board yet. It's saved on this device."
@@ -46961,7 +47006,7 @@ var rY = (e, t) => JSON.stringify(e) === JSON.stringify(t), iY = 3e4, aY = 4003,
 		if (e) return e;
 		this.update({ sharing: !0 });
 		try {
-			let e = await MJ(this.library, this.localID);
+			let e = await IJ(this.library, this.localID);
 			return this.connect(e), e;
 		} finally {
 			this.update({ sharing: !1 });
@@ -46973,9 +47018,9 @@ var rY = (e, t) => JSON.stringify(e) === JSON.stringify(t), iY = 3e4, aY = 4003,
 			...this.local,
 			name: t
 		};
-		this.send(eY(this.local, n)), this.local = n;
+		this.send(iY(this.local, n)), this.local = n;
 		let r = this.cloud;
-		r?.role === "edit" && PJ(r, t).catch((e) => console.error("Library update failed", e));
+		r?.role === "edit" && RJ(r, t).catch((e) => console.error("Library update failed", e));
 	}
 	saveLocal(e) {
 		this.library.save(this.localID, e);
@@ -46983,12 +47028,12 @@ var rY = (e, t) => JSON.stringify(e) === JSON.stringify(t), iY = 3e4, aY = 4003,
 			...this.local,
 			elements: e.document.elements,
 			comments: e.comments
-		}, n = eY(this.local, t);
+		}, n = iY(this.local, t);
 		this.cloud || this.recordLocally(n), this.local = t, this.send(n);
 	}
 	recordLocally(e) {
-		let t = BJ(e, this.local, qJ());
-		t.length > 0 && this.update({ history: TJ(this.localID, [...this.snapshot.history, ...t]) });
+		let t = WJ(e, this.local, ZJ());
+		t.length > 0 && this.update({ history: kJ(this.localID, [...this.snapshot.history, ...t]) });
 	}
 	send(e) {
 		if (e.length === 0 || this.snapshot.role === "view") return;
@@ -46997,7 +47042,7 @@ var rY = (e, t) => JSON.stringify(e) === JSON.stringify(t), iY = 3e4, aY = 4003,
 			this.unsent = [...this.unsent, ...e];
 			return;
 		}
-		let r = sY(e).filter((e) => !this.uploaded.has(e));
+		let r = dY(e).filter((e) => !this.uploaded.has(e));
 		r.length === 0 && this.isOutboxIdle ? (n.send(e), this.markSynced()) : (this.outboxBusy++, this.outbox = this.outbox.then(() => this.uploadImages(t, r)).catch((e) => {
 			console.error("Image upload failed", e), this.store?.reportError("An image couldn't be uploaded, so others may not see it.");
 		}).then(() => {
@@ -47014,11 +47059,11 @@ var rY = (e, t) => JSON.stringify(e) === JSON.stringify(t), iY = 3e4, aY = 4003,
 	async uploadImages(e, t) {
 		for (let n of t) {
 			let t = await v.blob(n);
-			t && (await vJ(e, n, t), this.uploaded.add(n));
+			t && (await SJ(e, n, t), this.uploaded.add(n));
 		}
 	}
 	connect(e) {
-		if (this.client?.close(), v.setRemote((t) => _J(e, t)), this.client = new oY(e.id, e.key, {
+		if (this.client?.close(), v.setRemote((t) => xJ(e, t)), this.client = new uY(e.id, e.key, {
 			onSnapshot: (e, t) => this.receiveSnapshot(e, t),
 			onOps: (e) => this.receive(e),
 			onHistory: (e, t) => {
@@ -47039,7 +47084,7 @@ var rY = (e, t) => JSON.stringify(e) === JSON.stringify(t), iY = 3e4, aY = 4003,
 	* instead of letting the server copy delete it. Without a sync base yet, everything local is kept.
 	*/
 	keepingLocalOnly(e, t) {
-		let n = OJ(this.localID), r = new Set(e.elements.map((e) => e.id)), i = new Set(e.comments.map((e) => e.id)), a = t === "edit" ? this.local.elements.filter((e) => !r.has(e.id) && !n?.elements.has(e.id)) : [], o = t === "view" ? [] : this.local.comments.filter((e) => !i.has(e.id) && !n?.threads.has(e.id));
+		let n = MJ(this.localID), r = new Set(e.elements.map((e) => e.id)), i = new Set(e.comments.map((e) => e.id)), a = t === "edit" ? this.local.elements.filter((e) => !r.has(e.id) && !n?.elements.has(e.id)) : [], o = t === "view" ? [] : this.local.comments.filter((e) => !i.has(e.id) && !n?.threads.has(e.id));
 		return {
 			...e,
 			elements: [...e.elements, ...a],
@@ -47048,15 +47093,15 @@ var rY = (e, t) => JSON.stringify(e) === JSON.stringify(t), iY = 3e4, aY = 4003,
 	}
 	/** Only while connected: offline edits must not look like things the server already has. */
 	markSynced(e = this.snapshot.status === "online") {
-		e && kJ(this.localID, this.local);
+		e && NJ(this.localID, this.local);
 	}
 	receiveSnapshot(e, t) {
 		e.elements.forEach((e) => {
 			e.kind.type === "image" && this.uploaded.add(e.kind.assetID);
 		});
-		let n = XJ(e, this.client?.pendingOps ?? []), r = this.keepingLocalOnly(n, t), i = this.local.elements.length === 0;
-		this.receive(eY(this.local, r));
-		let a = eY(n, r);
+		let n = eY(e, this.client?.pendingOps ?? []), r = this.keepingLocalOnly(n, t), i = this.local.elements.length === 0;
+		this.receive(iY(this.local, r));
+		let a = iY(n, r);
 		a.length > 0 && this.client?.send(a), this.markSynced(!0), i && r.elements.length > 0 && this.store?.zoomToFit();
 		let o = this.cloud;
 		o && o.role !== t && this.library.setCloud(this.localID, {
@@ -47075,16 +47120,16 @@ var rY = (e, t) => JSON.stringify(e) === JSON.stringify(t), iY = 3e4, aY = 4003,
 	}
 	receive(e) {
 		if (e.length === 0) return;
-		this.local = XJ(this.local, e), this.markSynced();
+		this.local = eY(this.local, e), this.markSynced();
 		let t = e.findLast((e) => e.k === "name");
 		t?.k === "name" && this.library.rename(this.localID, t.name);
 		let n = this.store;
 		if (!n) return;
-		let r = (t) => ({ elements: XJ({
+		let r = (t) => ({ elements: eY({
 			name: "",
 			elements: t.elements,
 			comments: []
-		}, e).elements }), i = XJ({
+		}, e).elements }), i = eY({
 			name: "",
 			elements: [],
 			comments: n.state.comments
@@ -47099,11 +47144,11 @@ var rY = (e, t) => JSON.stringify(e) === JSON.stringify(t), iY = 3e4, aY = 4003,
 			console.error("Local cache save failed", e);
 		}
 	}
-}, lY = (e, t) => `${window.location.origin}${window.location.pathname}#/s/${e}/${t}`, uY = (e, t) => ({
-	edit: lY(e, t.edit),
-	comment: lY(e, t.comment),
-	view: lY(e, t.view)
-}), dY = (e) => {
+}, pY = (e, t) => `${window.location.origin}${window.location.pathname}#/s/${e}/${t}`, mY = (e, t) => ({
+	edit: pY(e, t.edit),
+	comment: pY(e, t.comment),
+	view: pY(e, t.view)
+}), hY = (e) => {
 	let t = /^#\/s\/([\w-]+)\/([\w-]+)$/.exec(e);
 	return t?.[1] && t[2] ? {
 		id: t[1],
@@ -47112,11 +47157,11 @@ var rY = (e, t) => JSON.stringify(e) === JSON.stringify(t), iY = 3e4, aY = 4003,
 };
 // src/sync/incomingLinks.ts
 /** Turns a share link in the URL into a local copy of that document and returns its local id. */
-async function fY(e, t) {
-	let n = dY(t);
+async function gY(e, t) {
+	let n = hY(t);
 	if (!n) return null;
-	if (!JJ()) throw Error("Share links need the sync server, which isn’t running.");
-	let { role: r, name: i } = await hJ(n.id, n.key);
+	if (!QJ()) throw Error("Share links need the sync server, which isn’t running.");
+	let { role: r, name: i } = await yJ(n.id, n.key);
 	return e.addCloud({
 		id: n.id,
 		key: n.key,
@@ -47130,7 +47175,7 @@ async function fY(e, t) {
 * This source code is licensed under the ISC license.
 * See the LICENSE file in the root directory of this source tree.
 */
-var pY = (e) => (e.match(/\d+[xX]\d+|[A-Z]?[a-z]+|[A-Z]|\d+/g) ?? []).join("-").toLowerCase();
+var _Y = (e) => (e.match(/\d+[xX]\d+|[A-Z]?[a-z]+|[A-Z]|\d+/g) ?? []).join("-").toLowerCase();
 // node_modules/lucide-react/dist/esm/shared/src/utils/toLucideIconData.mjs
 /**
 * @license lucide-react v1.78.0 - ISC
@@ -47138,10 +47183,10 @@ var pY = (e) => (e.match(/\d+[xX]\d+|[A-Z]?[a-z]+|[A-Z]|\d+/g) ?? []).join("-").
 * This source code is licensed under the ISC license.
 * See the LICENSE file in the root directory of this source tree.
 */
-function mY(e, t, n = []) {
+function vY(e, t, n = []) {
 	if (t == null) throw Error("[lucide]: iconNode is required when icon name is used");
 	return {
-		name: pY(e),
+		name: _Y(e),
 		size: 24,
 		node: t,
 		...n.length > 0 ? { aliases: n } : {}
@@ -47154,20 +47199,20 @@ function mY(e, t, n = []) {
 * This source code is licensed under the ISC license.
 * See the LICENSE file in the root directory of this source tree.
 */
-var hY = (e) => {
+var yY = (e) => {
 	let t = "", n = !1;
 	for (let r of e) r === "-" || r === "_" || r <= " " ? n = t.length > 0 : (t.length === 0 ? t += r.toLowerCase() : t += n ? r.toUpperCase() : r, n = !1);
 	return t;
-}, gY = (e) => {
+}, bY = (e) => {
 	/**
 	* @license lucide-react v1.78.0 - ISC
 	*
 	* This source code is licensed under the ISC license.
 	* See the LICENSE file in the root directory of this source tree.
 	*/
-	let t = hY(e);
+	let t = yY(e);
 	return t.charAt(0).toUpperCase() + t.slice(1);
-}, _Y = (...e) => {
+}, xY = (...e) => {
 	/**
 	* @license lucide-react v1.78.0 - ISC
 	*
@@ -47177,7 +47222,7 @@ var hY = (e) => {
 	let t = /* @__PURE__ */ new Set();
 	for (let n of e) if (typeof n == "string") for (let e of n.split(/\s+/)) e && t.add(e);
 	return [...t].join(" ");
-}, vY = {
+}, SY = {
 	xmlns: "http://www.w3.org/2000/svg",
 	width: 24,
 	height: 24,
@@ -47201,26 +47246,26 @@ var hY = (e) => {
 * This source code is licensed under the ISC license.
 * See the LICENSE file in the root directory of this source tree.
 */
-function yY(e) {
+function CY(e) {
 	return e != null;
 }
-function bY(e, t = {}) {
-	let n = t.attributeNames ?? {}, r = (e) => n[e] ?? e, i = e.size ?? e.width ?? vY.width, a = e.size ?? e.height ?? vY.height, o = e.aliases?.filter((e) => typeof e == "string" && e.trim() !== "").map((e) => `lucide-${e}`) ?? [], s = [...e.name ? [`lucide-${e.name}`] : [], ...o], c = t.className?.split(" ").filter(Boolean) ?? [], l = t.includeDefaultClasses === !1 ? _Y(...c) : _Y("lucide", ...s, ...c), u = t.strokeWidth ?? vY["stroke-width"];
+function wY(e, t = {}) {
+	let n = t.attributeNames ?? {}, r = (e) => n[e] ?? e, i = e.size ?? e.width ?? SY.width, a = e.size ?? e.height ?? SY.height, o = e.aliases?.filter((e) => typeof e == "string" && e.trim() !== "").map((e) => `lucide-${e}`) ?? [], s = [...e.name ? [`lucide-${e.name}`] : [], ...o], c = t.className?.split(" ").filter(Boolean) ?? [], l = t.includeDefaultClasses === !1 ? xY(...c) : xY("lucide", ...s, ...c), u = t.strokeWidth ?? SY["stroke-width"];
 	if (t.absoluteStrokeWidth) {
-		let n = Number(u) * Number(e.size ?? e.width ?? vY.width) / Number(t.size ?? t.width ?? vY.width);
+		let n = Number(u) * Number(e.size ?? e.width ?? SY.width) / Number(t.size ?? t.width ?? SY.width);
 		Number.isFinite(n) && (u = n);
 	}
 	return [
 		"svg",
 		{
-			...Object.entries(vY).reduce((e, [t, n]) => (e[r(t)] = n, e), {}),
+			...Object.entries(SY).reduce((e, [t, n]) => (e[r(t)] = n, e), {}),
 			..."color" in t && t.color && { [r("stroke")]: t.color },
-			..."size" in t && yY(t.size) && {
+			..."size" in t && CY(t.size) && {
 				[r("width")]: t.size,
 				[r("height")]: t.size
 			},
-			..."width" in t && yY(t.width) && { [r("width")]: t.width },
-			..."height" in t && yY(t.height) && { [r("height")]: t.height },
+			..."width" in t && CY(t.width) && { [r("width")]: t.width },
+			..."height" in t && CY(t.height) && { [r("height")]: t.height },
 			[r("stroke-width")]: u,
 			...l && { [r("class")]: l },
 			[r("viewBox")]: `0 0 ${i} ${a}`,
@@ -47247,8 +47292,8 @@ function bY(e, t = {}) {
 * This source code is licensed under the ISC license.
 * See the LICENSE file in the root directory of this source tree.
 */
-function xY(e, t = {}) {
-	return bY(e, {
+function TY(e, t = {}) {
+	return wY(e, {
 		...t,
 		attributeNames: {
 			...t.attributeNames,
@@ -47267,11 +47312,11 @@ function xY(e, t = {}) {
 * This source code is licensed under the ISC license.
 * See the LICENSE file in the root directory of this source tree.
 */
-var SY = (e) => {
+var EY = (e) => {
 	if (typeof e != "object" || !e) return !1;
 	for (let t in e) if (Object.prototype.hasOwnProperty.call(e, t) && (t.startsWith("aria-") || t === "role" || t === "title") && e[t] != null) return !0;
 	return !1;
-}, CY = (0, d.createContext)({}), wY = () => (0, d.useContext)(CY), TY = (0, d.forwardRef)(({ color: e, size: t, width: n, height: r, strokeWidth: i, absoluteStrokeWidth: a, nonScalingStroke: o, className: s = "", children: c, iconNode: l = [], icon: u = {
+}, DY = (0, d.createContext)({}), OY = () => (0, d.useContext)(DY), kY = (0, d.forwardRef)(({ color: e, size: t, width: n, height: r, strokeWidth: i, absoluteStrokeWidth: a, nonScalingStroke: o, className: s = "", children: c, iconNode: l = [], icon: u = {
 	node: l,
 	aliases: [],
 	size: 24
@@ -47288,14 +47333,14 @@ var SY = (e) => {
 	* This source code is licensed under the ISC license.
 	* See the LICENSE file in the root directory of this source tree.
 	*/
-	let { size: m = 24, strokeWidth: h = 2, absoluteStrokeWidth: g = !1, nonScalingStroke: _ = !1, color: v = "currentColor", className: y = "" } = wY() ?? {}, b = !!c || SY(f), [ee, x, S = []] = xY(u, {
+	let { size: m = 24, strokeWidth: h = 2, absoluteStrokeWidth: g = !1, nonScalingStroke: _ = !1, color: v = "currentColor", className: y = "" } = OY() ?? {}, b = !!c || EY(f), [ee, x, S = []] = TY(u, {
 		color: e ?? v,
 		width: n ?? t ?? m,
 		height: r ?? t ?? m,
 		strokeWidth: i ?? h,
 		absoluteStrokeWidth: a ?? g,
 		nonScalingStroke: o ?? _,
-		className: _Y(y, s),
+		className: xY(y, s),
 		hasA11yProp: b,
 		attributes: f
 	});
@@ -47312,13 +47357,13 @@ var SY = (e) => {
 * See the LICENSE file in the root directory of this source tree.
 */
 function Q(e, t = [], n = []) {
-	let r = typeof e == "string" ? mY(e, t, n) : e, i = (0, d.forwardRef)(({ className: e, ...t }, n) => (0, d.createElement)(TY, {
+	let r = typeof e == "string" ? vY(e, t, n) : e, i = (0, d.forwardRef)(({ className: e, ...t }, n) => (0, d.createElement)(kY, {
 		ref: n,
 		icon: r,
 		className: e,
 		...t
 	}));
-	return r.name && (i.displayName = gY(r.name)), i;
+	return r.name && (i.displayName = bY(r.name)), i;
 }
 // node_modules/lucide-react/dist/esm/icons/arrow-up.mjs
 /**
@@ -47327,7 +47372,7 @@ function Q(e, t = [], n = []) {
 * This source code is licensed under the ISC license.
 * See the LICENSE file in the root directory of this source tree.
 */
-var EY = {
+var AY = {
 	name: "arrow-up",
 	size: 24,
 	node: [["path", {
@@ -47338,8 +47383,8 @@ var EY = {
 		key: "x0mq9r"
 	}]]
 };
-EY.node;
-var DY = Q(EY), OY = {
+AY.node;
+var jY = Q(AY), MY = {
 	name: "badge-check",
 	size: 24,
 	node: [["path", {
@@ -47357,8 +47402,8 @@ var DY = Q(EY), OY = {
 * This source code is licensed under the ISC license.
 * See the LICENSE file in the root directory of this source tree.
 */
-OY.node;
-var kY = Q(OY), AY = {
+MY.node;
+var NY = Q(MY), PY = {
 	name: "check",
 	size: 24,
 	node: [["path", {
@@ -47372,8 +47417,8 @@ var kY = Q(OY), AY = {
 * This source code is licensed under the ISC license.
 * See the LICENSE file in the root directory of this source tree.
 */
-AY.node;
-var jY = Q(AY), MY = {
+PY.node;
+var FY = Q(PY), IY = {
 	name: "chevron-down",
 	size: 24,
 	node: [["path", {
@@ -47387,8 +47432,8 @@ var jY = Q(AY), MY = {
 * This source code is licensed under the ISC license.
 * See the LICENSE file in the root directory of this source tree.
 */
-MY.node;
-var NY = Q(MY), PY = {
+IY.node;
+var LY = Q(IY), RY = {
 	name: "chevron-left",
 	size: 24,
 	node: [["path", {
@@ -47402,8 +47447,8 @@ var NY = Q(MY), PY = {
 * This source code is licensed under the ISC license.
 * See the LICENSE file in the root directory of this source tree.
 */
-PY.node;
-var FY = Q(PY), IY = {
+RY.node;
+var zY = Q(RY), BY = {
 	name: "chevron-right",
 	size: 24,
 	node: [["path", {
@@ -47417,8 +47462,8 @@ var FY = Q(PY), IY = {
 * This source code is licensed under the ISC license.
 * See the LICENSE file in the root directory of this source tree.
 */
-IY.node;
-var LY = Q(IY), RY = {
+BY.node;
+var VY = Q(BY), HY = {
 	name: "circle",
 	size: 24,
 	node: [["circle", {
@@ -47434,8 +47479,8 @@ var LY = Q(IY), RY = {
 * This source code is licensed under the ISC license.
 * See the LICENSE file in the root directory of this source tree.
 */
-RY.node;
-var zY = Q(RY), BY = {
+HY.node;
+var UY = Q(HY), WY = {
 	name: "cloud-off",
 	size: 24,
 	node: [
@@ -47459,8 +47504,8 @@ var zY = Q(RY), BY = {
 * This source code is licensed under the ISC license.
 * See the LICENSE file in the root directory of this source tree.
 */
-BY.node;
-var VY = Q(BY), HY = {
+WY.node;
+var GY = Q(WY), KY = {
 	name: "cloud",
 	size: 24,
 	node: [["path", {
@@ -47474,8 +47519,8 @@ var VY = Q(BY), HY = {
 * This source code is licensed under the ISC license.
 * See the LICENSE file in the root directory of this source tree.
 */
-HY.node;
-var UY = Q(HY), WY = {
+KY.node;
+var qY = Q(KY), JY = {
 	name: "columns-3",
 	size: 24,
 	node: [
@@ -47504,8 +47549,8 @@ var UY = Q(HY), WY = {
 * This source code is licensed under the ISC license.
 * See the LICENSE file in the root directory of this source tree.
 */
-WY.node;
-var GY = Q(WY), KY = {
+JY.node;
+var YY = Q(JY), XY = {
 	name: "copy",
 	size: 24,
 	node: [["rect", {
@@ -47527,8 +47572,8 @@ var GY = Q(WY), KY = {
 * This source code is licensed under the ISC license.
 * See the LICENSE file in the root directory of this source tree.
 */
-KY.node;
-var qY = Q(KY), JY = {
+XY.node;
+var ZY = Q(XY), QY = {
 	name: "credit-card",
 	size: 24,
 	node: [
@@ -47559,8 +47604,8 @@ var qY = Q(KY), JY = {
 * This source code is licensed under the ISC license.
 * See the LICENSE file in the root directory of this source tree.
 */
-JY.node;
-var YY = Q(JY), XY = {
+QY.node;
+var $Y = Q(QY), eX = {
 	name: "download",
 	size: 24,
 	node: [
@@ -47584,8 +47629,8 @@ var YY = Q(JY), XY = {
 * This source code is licensed under the ISC license.
 * See the LICENSE file in the root directory of this source tree.
 */
-XY.node;
-var ZY = Q(XY), QY = {
+eX.node;
+var tX = Q(eX), nX = {
 	name: "ellipsis",
 	size: 24,
 	node: [
@@ -47616,8 +47661,8 @@ var ZY = Q(XY), QY = {
 * This source code is licensed under the ISC license.
 * See the LICENSE file in the root directory of this source tree.
 */
-QY.node;
-var $Y = Q(QY), eX = {
+nX.node;
+var rX = Q(nX), iX = {
 	name: "eye-off",
 	size: 24,
 	node: [
@@ -47645,8 +47690,8 @@ var $Y = Q(QY), eX = {
 * This source code is licensed under the ISC license.
 * See the LICENSE file in the root directory of this source tree.
 */
-eX.node;
-var tX = Q(eX), nX = {
+iX.node;
+var aX = Q(iX), oX = {
 	name: "eye",
 	size: 24,
 	node: [["path", {
@@ -47665,8 +47710,8 @@ var tX = Q(eX), nX = {
 * This source code is licensed under the ISC license.
 * See the LICENSE file in the root directory of this source tree.
 */
-nX.node;
-var rX = Q(nX), iX = {
+oX.node;
+var sX = Q(oX), cX = {
 	name: "face-slightly-smiling",
 	size: 24,
 	node: [
@@ -47697,8 +47742,8 @@ var rX = Q(nX), iX = {
 * This source code is licensed under the ISC license.
 * See the LICENSE file in the root directory of this source tree.
 */
-iX.node;
-var aX = Q(iX), oX = {
+cX.node;
+var lX = Q(cX), uX = {
 	name: "folder",
 	size: 24,
 	node: [["path", {
@@ -47712,8 +47757,8 @@ var aX = Q(iX), oX = {
 * This source code is licensed under the ISC license.
 * See the LICENSE file in the root directory of this source tree.
 */
-oX.node;
-var sX = Q(oX), cX = {
+uX.node;
+var dX = Q(uX), fX = {
 	name: "image",
 	size: 24,
 	node: [
@@ -47744,8 +47789,8 @@ var sX = Q(oX), cX = {
 * This source code is licensed under the ISC license.
 * See the LICENSE file in the root directory of this source tree.
 */
-cX.node;
-var lX = Q(cX), uX = {
+fX.node;
+var pX = Q(fX), mX = {
 	name: "letter-b",
 	size: 24,
 	node: [["path", {
@@ -47760,8 +47805,8 @@ var lX = Q(cX), uX = {
 * This source code is licensed under the ISC license.
 * See the LICENSE file in the root directory of this source tree.
 */
-uX.node;
-var dX = Q(uX), fX = {
+mX.node;
+var hX = Q(mX), gX = {
 	name: "link-2",
 	size: 24,
 	node: [
@@ -47788,8 +47833,8 @@ var dX = Q(uX), fX = {
 * This source code is licensed under the ISC license.
 * See the LICENSE file in the root directory of this source tree.
 */
-fX.node;
-var pX = Q(fX), mX = {
+gX.node;
+var _X = Q(gX), vX = {
 	name: "lock-open",
 	size: 24,
 	node: [["rect", {
@@ -47812,8 +47857,8 @@ var pX = Q(fX), mX = {
 * This source code is licensed under the ISC license.
 * See the LICENSE file in the root directory of this source tree.
 */
-mX.node;
-var hX = Q(mX), gX = {
+vX.node;
+var yX = Q(vX), bX = {
 	name: "lock",
 	size: 24,
 	node: [["rect", {
@@ -47835,8 +47880,8 @@ var hX = Q(mX), gX = {
 * This source code is licensed under the ISC license.
 * See the LICENSE file in the root directory of this source tree.
 */
-gX.node;
-var _X = Q(gX), vX = {
+bX.node;
+var xX = Q(bX), SX = {
 	name: "log-out",
 	size: 24,
 	node: [
@@ -47860,8 +47905,8 @@ var _X = Q(gX), vX = {
 * This source code is licensed under the ISC license.
 * See the LICENSE file in the root directory of this source tree.
 */
-vX.node;
-var yX = Q(vX), bX = {
+SX.node;
+var CX = Q(SX), wX = {
 	name: "message-circle",
 	size: 24,
 	node: [["path", {
@@ -47875,8 +47920,8 @@ var yX = Q(vX), bX = {
 * This source code is licensed under the ISC license.
 * See the LICENSE file in the root directory of this source tree.
 */
-bX.node;
-var xX = Q(bX), SX = {
+wX.node;
+var TX = Q(wX), EX = {
 	name: "messages-square",
 	size: 24,
 	node: [["path", {
@@ -47893,8 +47938,8 @@ var xX = Q(bX), SX = {
 * This source code is licensed under the ISC license.
 * See the LICENSE file in the root directory of this source tree.
 */
-SX.node;
-var CX = Q(SX), wX = {
+EX.node;
+var DX = Q(EX), OX = {
 	name: "minus",
 	size: 24,
 	node: [["path", {
@@ -47908,8 +47953,8 @@ var CX = Q(SX), wX = {
 * This source code is licensed under the ISC license.
 * See the LICENSE file in the root directory of this source tree.
 */
-wX.node;
-var TX = Q(wX), EX = {
+OX.node;
+var kX = Q(OX), AX = {
 	name: "mouse-pointer-2",
 	size: 24,
 	node: [["path", {
@@ -47923,8 +47968,8 @@ var TX = Q(wX), EX = {
 * This source code is licensed under the ISC license.
 * See the LICENSE file in the root directory of this source tree.
 */
-EX.node;
-var DX = Q(EX), OX = {
+AX.node;
+var jX = Q(AX), MX = {
 	name: "move-up-right",
 	size: 24,
 	node: [["path", {
@@ -47941,8 +47986,8 @@ var DX = Q(EX), OX = {
 * This source code is licensed under the ISC license.
 * See the LICENSE file in the root directory of this source tree.
 */
-OX.node;
-var kX = Q(OX), AX = {
+MX.node;
+var NX = Q(MX), PX = {
 	name: "panel-bottom",
 	size: 24,
 	node: [["rect", {
@@ -47963,8 +48008,8 @@ var kX = Q(OX), AX = {
 * This source code is licensed under the ISC license.
 * See the LICENSE file in the root directory of this source tree.
 */
-AX.node;
-var jX = Q(AX), MX = {
+PX.node;
+var FX = Q(PX), IX = {
 	name: "panel-top",
 	size: 24,
 	node: [["rect", {
@@ -47985,8 +48030,8 @@ var jX = Q(AX), MX = {
 * This source code is licensed under the ISC license.
 * See the LICENSE file in the root directory of this source tree.
 */
-MX.node;
-var NX = Q(MX), PX = {
+IX.node;
+var LX = Q(IX), RX = {
 	name: "pen-line",
 	size: 24,
 	node: [["path", {
@@ -48004,8 +48049,8 @@ var NX = Q(MX), PX = {
 * This source code is licensed under the ISC license.
 * See the LICENSE file in the root directory of this source tree.
 */
-PX.node;
-var FX = Q(PX), IX = {
+RX.node;
+var zX = Q(RX), BX = {
 	name: "pen-tool",
 	size: 24,
 	node: [
@@ -48035,8 +48080,8 @@ var FX = Q(PX), IX = {
 * This source code is licensed under the ISC license.
 * See the LICENSE file in the root directory of this source tree.
 */
-IX.node;
-var LX = Q(IX), RX = {
+BX.node;
+var VX = Q(BX), HX = {
 	name: "pencil",
 	size: 24,
 	node: [["path", {
@@ -48053,8 +48098,8 @@ var LX = Q(IX), RX = {
 * This source code is licensed under the ISC license.
 * See the LICENSE file in the root directory of this source tree.
 */
-RX.node;
-var zX = Q(RX), BX = {
+HX.node;
+var UX = Q(HX), WX = {
 	name: "plus",
 	size: 24,
 	node: [["path", {
@@ -48071,8 +48116,8 @@ var zX = Q(RX), BX = {
 * This source code is licensed under the ISC license.
 * See the LICENSE file in the root directory of this source tree.
 */
-BX.node;
-var VX = Q(BX), HX = {
+WX.node;
+var GX = Q(WX), KX = {
 	name: "puzzle",
 	size: 24,
 	node: [["path", {
@@ -48086,8 +48131,8 @@ var VX = Q(BX), HX = {
 * This source code is licensed under the ISC license.
 * See the LICENSE file in the root directory of this source tree.
 */
-HX.node;
-var UX = Q(HX), WX = {
+KX.node;
+var qX = Q(KX), JX = {
 	name: "rectangle-horizontal",
 	size: 24,
 	node: [["rect", {
@@ -48105,8 +48150,8 @@ var UX = Q(HX), WX = {
 * This source code is licensed under the ISC license.
 * See the LICENSE file in the root directory of this source tree.
 */
-WX.node;
-var GX = Q(WX), KX = {
+JX.node;
+var YX = Q(JX), XX = {
 	name: "redo-2",
 	size: 24,
 	node: [["path", {
@@ -48123,8 +48168,8 @@ var GX = Q(WX), KX = {
 * This source code is licensed under the ISC license.
 * See the LICENSE file in the root directory of this source tree.
 */
-KX.node;
-var qX = Q(KX), JX = {
+XX.node;
+var ZX = Q(XX), QX = {
 	name: "rotate-ccw-clock",
 	size: 24,
 	node: [
@@ -48149,8 +48194,8 @@ var qX = Q(KX), JX = {
 * This source code is licensed under the ISC license.
 * See the LICENSE file in the root directory of this source tree.
 */
-JX.node;
-var YX = Q(JX), XX = {
+QX.node;
+var $X = Q(QX), eZ = {
 	name: "rotate-ccw",
 	size: 24,
 	node: [["path", {
@@ -48167,8 +48212,8 @@ var YX = Q(JX), XX = {
 * This source code is licensed under the ISC license.
 * See the LICENSE file in the root directory of this source tree.
 */
-XX.node;
-var ZX = Q(XX), QX = {
+eZ.node;
+var tZ = Q(eZ), nZ = {
 	name: "rows-3",
 	size: 24,
 	node: [
@@ -48197,8 +48242,8 @@ var ZX = Q(XX), QX = {
 * This source code is licensed under the ISC license.
 * See the LICENSE file in the root directory of this source tree.
 */
-QX.node;
-var $X = Q(QX), eZ = {
+nZ.node;
+var rZ = Q(nZ), iZ = {
 	name: "search",
 	size: 24,
 	node: [["path", {
@@ -48217,8 +48262,8 @@ var $X = Q(QX), eZ = {
 * This source code is licensed under the ISC license.
 * See the LICENSE file in the root directory of this source tree.
 */
-eZ.node;
-var tZ = Q(eZ), nZ = {
+iZ.node;
+var aZ = Q(iZ), oZ = {
 	name: "shapes",
 	size: 24,
 	node: [
@@ -48248,8 +48293,8 @@ var tZ = Q(eZ), nZ = {
 * This source code is licensed under the ISC license.
 * See the LICENSE file in the root directory of this source tree.
 */
-nZ.node;
-var rZ = Q(nZ), iZ = {
+oZ.node;
+var sZ = Q(oZ), cZ = {
 	name: "share",
 	size: 24,
 	node: [
@@ -48273,8 +48318,8 @@ var rZ = Q(nZ), iZ = {
 * This source code is licensed under the ISC license.
 * See the LICENSE file in the root directory of this source tree.
 */
-iZ.node;
-var aZ = Q(iZ), oZ = {
+cZ.node;
+var lZ = Q(cZ), uZ = {
 	name: "sliders-horizontal",
 	size: 24,
 	node: [
@@ -48322,8 +48367,8 @@ var aZ = Q(iZ), oZ = {
 * This source code is licensed under the ISC license.
 * See the LICENSE file in the root directory of this source tree.
 */
-oZ.node;
-var sZ = Q(oZ), cZ = {
+uZ.node;
+var dZ = Q(uZ), fZ = {
 	name: "smartphone",
 	size: 24,
 	node: [["rect", {
@@ -48345,8 +48390,8 @@ var sZ = Q(oZ), cZ = {
 * This source code is licensed under the ISC license.
 * See the LICENSE file in the root directory of this source tree.
 */
-cZ.node;
-var lZ = Q(cZ), uZ = {
+fZ.node;
+var pZ = Q(fZ), mZ = {
 	name: "spline",
 	size: 24,
 	node: [
@@ -48374,8 +48419,8 @@ var lZ = Q(cZ), uZ = {
 * This source code is licensed under the ISC license.
 * See the LICENSE file in the root directory of this source tree.
 */
-uZ.node;
-var dZ = Q(uZ), fZ = {
+mZ.node;
+var hZ = Q(mZ), gZ = {
 	name: "square",
 	size: 24,
 	node: [["rect", {
@@ -48393,8 +48438,8 @@ var dZ = Q(uZ), fZ = {
 * This source code is licensed under the ISC license.
 * See the LICENSE file in the root directory of this source tree.
 */
-fZ.node;
-var pZ = Q(fZ), mZ = {
+gZ.node;
+var _Z = Q(gZ), vZ = {
 	name: "star",
 	size: 24,
 	node: [["path", {
@@ -48408,8 +48453,8 @@ var pZ = Q(fZ), mZ = {
 * This source code is licensed under the ISC license.
 * See the LICENSE file in the root directory of this source tree.
 */
-mZ.node;
-var hZ = Q(mZ), gZ = {
+vZ.node;
+var yZ = Q(vZ), bZ = {
 	name: "sticky-note",
 	size: 24,
 	node: [["path", {
@@ -48426,8 +48471,8 @@ var hZ = Q(mZ), gZ = {
 * This source code is licensed under the ISC license.
 * See the LICENSE file in the root directory of this source tree.
 */
-gZ.node;
-var _Z = Q(gZ), vZ = {
+bZ.node;
+var xZ = Q(bZ), SZ = {
 	name: "text-cursor-input",
 	size: 24,
 	node: [
@@ -48459,8 +48504,8 @@ var _Z = Q(gZ), vZ = {
 * This source code is licensed under the ISC license.
 * See the LICENSE file in the root directory of this source tree.
 */
-vZ.node;
-var yZ = Q(vZ), bZ = {
+SZ.node;
+var CZ = Q(SZ), wZ = {
 	name: "toggle-right",
 	size: 24,
 	node: [["circle", {
@@ -48483,8 +48528,8 @@ var yZ = Q(vZ), bZ = {
 * This source code is licensed under the ISC license.
 * See the LICENSE file in the root directory of this source tree.
 */
-bZ.node;
-var xZ = Q(bZ), SZ = {
+wZ.node;
+var TZ = Q(wZ), EZ = {
 	name: "trash",
 	size: 24,
 	node: [
@@ -48517,8 +48562,8 @@ var xZ = Q(bZ), SZ = {
 * This source code is licensed under the ISC license.
 * See the LICENSE file in the root directory of this source tree.
 */
-SZ.node;
-var CZ = Q(SZ), wZ = {
+EZ.node;
+var DZ = Q(EZ), OZ = {
 	name: "type",
 	size: 24,
 	node: [
@@ -48542,8 +48587,8 @@ var CZ = Q(SZ), wZ = {
 * This source code is licensed under the ISC license.
 * See the LICENSE file in the root directory of this source tree.
 */
-wZ.node;
-var TZ = Q(wZ), EZ = {
+OZ.node;
+var kZ = Q(OZ), AZ = {
 	name: "undo-2",
 	size: 24,
 	node: [["path", {
@@ -48560,8 +48605,8 @@ var TZ = Q(wZ), EZ = {
 * This source code is licensed under the ISC license.
 * See the LICENSE file in the root directory of this source tree.
 */
-EZ.node;
-var DZ = Q(EZ), OZ = {
+AZ.node;
+var jZ = Q(AZ), MZ = {
 	name: "users",
 	size: 24,
 	node: [
@@ -48591,8 +48636,8 @@ var DZ = Q(EZ), OZ = {
 * This source code is licensed under the ISC license.
 * See the LICENSE file in the root directory of this source tree.
 */
-OZ.node;
-var kZ = Q(OZ), AZ = {
+MZ.node;
+var NZ = Q(MZ), PZ = {
 	name: "x",
 	size: 24,
 	node: [["path", {
@@ -48609,54 +48654,54 @@ var kZ = Q(OZ), AZ = {
 * This source code is licensed under the ISC license.
 * See the LICENSE file in the root directory of this source tree.
 */
-AZ.node;
-var jZ = Q(AZ), MZ = 16, NZ = .94, PZ = .9, FZ = 40, IZ = .32, LZ = 2, RZ = 4, zZ = .15, BZ = .75, VZ = 1.7, HZ = 8 * Math.PI / 180, UZ = .1, WZ = 64;
-function GZ(e) {
-	let t = eQ(nQ(e, Math.min(Math.max(Math.trunc(tQ(e) / RZ), 16), 400))), n = t[0], r = t[t.length - 1];
+PZ.node;
+var FZ = Q(PZ), IZ = 16, LZ = .94, RZ = .9, zZ = 40, BZ = .32, VZ = 2, HZ = 4, UZ = .15, WZ = .75, GZ = 1.7, KZ = 8 * Math.PI / 180, qZ = .1, JZ = 64;
+function YZ(e) {
+	let t = iQ(oQ(e, Math.min(Math.max(Math.trunc(aQ(e) / HZ), 16), 400))), n = t[0], r = t[t.length - 1];
 	if (t.length <= 2 || !n || !r) return null;
 	let i = sB(t);
 	if (!i) return null;
-	let a = Math.max(i.width, i.height), o = tQ(t);
-	if (a < MZ || o <= 0) return null;
-	if (Jz(n, r) / o >= NZ) {
-		let e = $Z(n, r);
+	let a = Math.max(i.width, i.height), o = aQ(t);
+	if (a < IZ || o <= 0) return null;
+	if (Jz(n, r) / o >= LZ) {
+		let e = rQ(n, r);
 		return {
 			type: "line",
 			start: e.start,
 			end: e.end
 		};
 	}
-	return qZ(t) || (Jz(n, r) > IZ * a || Math.min(i.width, i.height) < MZ / 2 ? null : JZ(t, i, o));
+	return ZZ(t) || (Jz(n, r) > BZ * a || Math.min(i.width, i.height) < IZ / 2 ? null : QZ(t, i, o));
 }
 /** The endpoint of `segment` that a small V-shaped stroke caps, if it reads as an arrowhead. */
-function KZ(e, t) {
+function XZ(e, t) {
 	let n = e[0], r = e[e.length - 1];
 	if (e.length <= 2 || !n || !r) return null;
-	let i = Jz(t.start, t.end), a = sB(e), o = tQ(e);
+	let i = Jz(t.start, t.end), a = sB(e), o = aQ(e);
 	if (!a || i <= 0 || o < 12 || Math.max(a.width, a.height) > Math.min(i * .6, 160) || Jz(n, r) / o >= .85) return null;
-	let s = iQ(e, (e) => Xz(e, n, r));
+	let s = cQ(e, (e) => Xz(e, n, r));
 	if (!s) return null;
 	let c = Math.max(24, i * .2), l = Jz(t.end, s), u = Jz(t.start, s);
 	return Math.min(l, u) > c ? null : l <= u ? t.end : t.start;
 }
-function qZ(e) {
+function ZZ(e) {
 	let t = e[0];
 	if (!t) return null;
-	let n = rQ(e, (e) => Jz(e, t)), r = e[n];
+	let n = sQ(e, (e) => Jz(e, t)), r = e[n];
 	if (!r) return null;
-	let i = e.slice(0, n + 1), a = e.slice(n), o = Jz(t, r), s = tQ(a);
-	if (!(o >= FZ && o / Math.max(tQ(i), 1) >= PZ && s >= o * .08 && s <= o * .9 && a.every((e) => Jz(e, r) <= o * .45) && a.some((e) => Xz(e, t, r) >= o * .05))) return null;
-	let c = $Z(t, r);
+	let i = e.slice(0, n + 1), a = e.slice(n), o = Jz(t, r), s = aQ(a);
+	if (!(o >= zZ && o / Math.max(aQ(i), 1) >= RZ && s >= o * .08 && s <= o * .9 && a.every((e) => Jz(e, r) <= o * .45) && a.some((e) => Xz(e, t, r) >= o * .05))) return null;
+	let c = rQ(t, r);
 	return {
 		type: "arrow",
 		tail: c.start,
 		tip: c.end
 	};
 }
-function JZ(e, t, n) {
-	let r = nQ(e, WZ), i = YZ(r, t), a = XZ(r, t), o = a < i, s = n / (o ? 2 * (t.width + t.height) : ZZ(t));
-	if (Math.min(i, a) > zZ || s < BZ || s > VZ) return null;
-	let c = QZ(t);
+function QZ(e, t, n) {
+	let r = oQ(e, JZ), i = $Z(r, t), a = eQ(r, t), o = a < i, s = n / (o ? 2 * (t.width + t.height) : tQ(t));
+	if (Math.min(i, a) > UZ || s < WZ || s > GZ) return null;
+	let c = nQ(t);
 	return o ? {
 		type: "rectangle",
 		rect: c
@@ -48665,28 +48710,28 @@ function JZ(e, t, n) {
 		rect: c
 	};
 }
-function YZ(e, t) {
+function $Z(e, t) {
 	let n = t.width / 2, r = t.height / 2;
 	return e.reduce((e, i) => e + Math.abs(Math.hypot((i.x - Zz(t)) / n, (i.y - U(t)) / r) - 1), 0) / e.length;
 }
-function XZ(e, t) {
+function eQ(e, t) {
 	let n = Math.min(t.width, t.height) / 2;
 	return e.reduce((e, r) => {
 		let i = Math.min(r.x - t.x, V(t) - r.x, r.y - t.y, H(t) - r.y);
 		return e + Math.max(i, 0) / n;
 	}, 0) / e.length;
 }
-function ZZ(e) {
+function tQ(e) {
 	let t = e.width / 2, n = e.height / 2;
 	return Math.PI * (3 * (t + n) - Math.sqrt((3 * t + n) * (t + 3 * n)));
 }
-function QZ(e) {
+function nQ(e) {
 	let t = (e.width + e.height) / 2;
-	return Math.abs(e.width - e.height) / t > UZ ? e : $z(Qz(e), t, t);
+	return Math.abs(e.width - e.height) / t > qZ ? e : $z(Qz(e), t, t);
 }
-function $Z(e, t) {
+function rQ(e, t) {
 	let n = Math.abs(Math.atan2(t.y - e.y, t.x - e.x));
-	if (Math.min(n, Math.PI - n) <= HZ) {
+	if (Math.min(n, Math.PI - n) <= KZ) {
 		let n = (e.y + t.y) / 2;
 		return {
 			start: {
@@ -48699,7 +48744,7 @@ function $Z(e, t) {
 			}
 		};
 	}
-	if (Math.abs(n - Math.PI / 2) <= HZ) {
+	if (Math.abs(n - Math.PI / 2) <= KZ) {
 		let n = (e.x + t.x) / 2;
 		return {
 			start: {
@@ -48718,10 +48763,10 @@ function $Z(e, t) {
 	};
 }
 /** Moving average that keeps the end points, so hand jitter doesn't inflate path length. */
-function eQ(e) {
+function iQ(e) {
 	return e.length <= 4 ? [...e] : e.map((t, n) => {
 		if (n === 0 || n === e.length - 1) return t;
-		let r = e.slice(Math.max(0, n - LZ), Math.min(e.length - 1, n + LZ) + 1), i = r.reduce((e, t) => ({
+		let r = e.slice(Math.max(0, n - VZ), Math.min(e.length - 1, n + VZ) + 1), i = r.reduce((e, t) => ({
 			x: e.x + t.x,
 			y: e.y + t.y
 		}), {
@@ -48734,13 +48779,13 @@ function eQ(e) {
 		};
 	});
 }
-function tQ(e) {
+function aQ(e) {
 	let t = 0;
 	for (let n = 1; n < e.length; n++) t += Jz(e[n - 1], e[n]);
 	return t;
 }
-function nQ(e, t) {
-	let n = tQ(e), r = e[0];
+function oQ(e, t) {
+	let n = aQ(e), r = e[0];
 	if (n <= 0 || !r) return [...e];
 	let i = n / (t - 1), a = [r], o = 0;
 	for (let t = 1; t < e.length; t++) {
@@ -48759,28 +48804,28 @@ function nQ(e, t) {
 	let s = e[e.length - 1];
 	return a.length < t && s && a.push(s), a;
 }
-function rQ(e, t) {
+function sQ(e, t) {
 	let n = 0, r = -Infinity;
 	return e.forEach((e, i) => {
 		let a = t(e);
 		a > r && (n = i, r = a);
 	}), n;
 }
-function iQ(e, t) {
-	return e[rQ(e, t)];
+function cQ(e, t) {
+	return e[sQ(e, t)];
 }
 // src/store/actions.ts
-var aQ = 80, oQ = {
+var lQ = 80, uQ = {
 	x: 24,
 	y: 24
 };
-function sQ(e, t) {
-	let n = lQ(e, t);
+function dQ(e, t) {
+	let n = pQ(e, t);
 	if (n) return {
 		element: n,
 		replaces: !0
 	};
-	let r = GZ(t);
+	let r = YZ(t);
 	if (!r) return null;
 	let i = e.state.document, [a] = NH(i, [e.styledFor("pen", XH(r, e.snapPoint))]);
 	return a ? {
@@ -48792,7 +48837,7 @@ function sQ(e, t) {
 * Commits a stroke. Without a snap it stays ink. With one, the ink is committed first so a single undo
 * turns the shape back into the raw stroke.
 */
-function cQ(e, t, n = null) {
+function fQ(e, t, n = null) {
 	let r = qH(t);
 	if (!r) return;
 	let [i] = NH(e.state.document, [e.styledFor("pen", r)]);
@@ -48800,20 +48845,20 @@ function cQ(e, t, n = null) {
 	let a = VH(e.state.document, /* @__PURE__ */ new Set([i.id]));
 	e.commit(n.replaces ? BH(a, [n.element]) : zH(a, [n.element]));
 }
-function lQ(e, t) {
+function pQ(e, t) {
 	let n = e.state.document.elements, r = n[n.length - 1];
 	if (!r || r.kind.type !== "line") return null;
-	let i = YV(r), a = i && KZ(t, i);
+	let i = YV(r), a = i && XZ(t, i);
 	return !i || !a ? null : {
 		...JH(Yz(a, i.end) ? i.start : i.end, a, !0),
 		id: r.id,
 		style: r.style
 	};
 }
-function uQ(e, t, n) {
+function mQ(e, t, n) {
 	e.insert([e.styledFor("shape", KH(t, n ?? e.visibleWorldCenter))]);
 }
-function dQ(e, t) {
+function hQ(e, t) {
 	let n = e.visibleWorldCenter, r = lB({
 		x: n.x - t.width / 2,
 		y: n.y - t.height / 2
@@ -48826,7 +48871,7 @@ function dQ(e, t) {
 		});
 		if (!n) break;
 		r = {
-			x: cB(n.frame.x + n.frame.width + aQ),
+			x: cB(n.frame.x + n.frame.width + lQ),
 			y: r.y
 		};
 	}
@@ -48834,7 +48879,7 @@ function dQ(e, t) {
 	e.insert([i]), e.reveal(i.frame);
 }
 /** Components are placed as grouped wireframe parts, so their text and icons can be edited one by one. */
-function fQ(e, t, n) {
+function gQ(e, t, n) {
 	let r = bU(t);
 	if (!r) return;
 	let i = n ?? e.visibleWorldCenter;
@@ -48844,7 +48889,7 @@ function fQ(e, t, n) {
 	})));
 }
 /** With icons selected, picking an icon swaps them; otherwise it adds a new one. */
-function pQ(e, t, n) {
+function _Q(e, t, n) {
 	let r = n ? [] : e.selectedElements.filter(ZV);
 	r.length > 0 ? e.commit(BH(e.state.document, r.map((e) => ({
 		...e,
@@ -48854,15 +48899,15 @@ function pQ(e, t, n) {
 		}
 	})))) : e.insert([e.styledFor("text", $H(t, n ?? e.visibleWorldCenter))]);
 }
-function mQ(e) {
+function vQ(e) {
 	let t = e.selectedElements;
 	t.length < 2 || e.commit(BH(e.state.document, EH(t)));
 }
-function hQ(e) {
+function yQ(e) {
 	let t = e.selectedElements.filter((e) => e.groupID);
 	t.length !== 0 && e.commit(BH(e.state.document, DH(t)));
 }
-async function gQ(e, t, n) {
+async function bQ(e, t, n) {
 	try {
 		let r = await v.store(t);
 		e.insert([tU(r.id, r.width, r.height, n ?? e.visibleWorldCenter)]);
@@ -48870,7 +48915,7 @@ async function gQ(e, t, n) {
 		console.error("Image import failed", t), e.reportError(`Couldn't add that image: ${t instanceof Error ? t.message : String(t)}`);
 	}
 }
-function _Q(e, t = oQ) {
+function xQ(e, t = uQ) {
 	let n = e.state.document, r = UV(n, e.selectedElements), i = new Set(r.map((e) => e.id)), a = [...r, ...r.filter(K).flatMap((e) => AH(n, e.id)).filter((e) => !i.has(e.id))], o = TH(a), s = a.map((e) => ({
 		original: e,
 		copy: vH(e, t, o(e.groupID))
@@ -48881,37 +48926,37 @@ function _Q(e, t = oQ) {
 	f.length === 0 || e.isEditingText || e.insert(f);
 }
 /** Deleting a frame deletes what's inside it. Locked elements survive a delete. */
-function vQ(e) {
+function SQ(e) {
 	let { document: t, comments: n } = e.state, r = new Set(e.selectedElements.filter((e) => !e.locked).map((e) => e.id));
 	if (r.size === 0 || e.isEditingText) return;
 	let i = e.selectedElements.filter((e) => K(e) && !e.locked).flatMap((e) => AH(t, e.id)), a = /* @__PURE__ */ new Set([...r, ...i.map((e) => e.id)]), o = /* @__PURE__ */ new Set([...a, ...zV(t, a).map((e) => e.id)]);
 	e.setComments(jW(n, t, o)), e.set({ selection: o }), e.deleteSelection();
 }
 /** After a drag, moved elements join whichever frame they were dropped on (or none). */
-function yQ(e, t) {
+function CQ(e, t) {
 	let n = e.state.document, r = new Set(t.filter((e) => !K(e)).map((e) => e.id)), i = n.elements.filter((e) => r.has(e.id));
 	i.length > 0 && e.updateTransient(BH(n, NH(n, i)));
 }
 /** Moving a device frame carries everything sitting inside it, including whole groups. */
-function bQ(e, t) {
+function wQ(e, t) {
 	let n = e.selectedElements, r = e.state.document, i = n.filter(K).flatMap((e) => AH(r, e.id)).flatMap((e) => CH(r, e));
 	return [t, ...new Map([...n, ...i].filter((e) => e.id !== t.id).map((e) => [e.id, e])).values()];
 }
-var xQ = 24, SQ = {
+var TQ = 24, EQ = {
 	width: 400,
 	height: 300
 };
 /** A freehand frame from a dragged rectangle (or a default size for a click). It adopts loose elements it fully encloses. */
-function CQ(e, t) {
+function DQ(e, t) {
 	let n = {
 		x: e.snap(t.x),
 		y: e.snap(t.y),
 		width: e.snap(t.width),
 		height: e.snap(t.height)
-	}, r = n.width < xQ || n.height < xQ ? {
+	}, r = n.width < TQ || n.height < TQ ? {
 		x: n.x,
 		y: n.y,
-		...SQ
+		...EQ
 	} : n, i = {
 		id: G(),
 		kind: {
@@ -48930,13 +48975,13 @@ function CQ(e, t) {
 		tool: "select"
 	});
 }
-var wQ = 8;
+var OQ = 8;
 /**
 * The Shapes tool: a drag draws the shape across the dragged box (a line from where the drag started to where it
 * ended); a click drops it at its usual size.
 */
-function TQ(e, t, n) {
-	let r = e.state.shapePreset, i = e.snapPoint(t), a = e.snapPoint(n), o = Math.abs(a.x - i.x) < wQ && Math.abs(a.y - i.y) < wQ, s;
+function kQ(e, t, n) {
+	let r = e.state.shapePreset, i = e.snapPoint(t), a = e.snapPoint(n), o = Math.abs(a.x - i.x) < OQ && Math.abs(a.y - i.y) < OQ, s;
 	s = o ? KH(r, t) : r === "line" ? JH(i, a, !1) : {
 		...KH(r, t),
 		frame: {
@@ -48948,8 +48993,8 @@ function TQ(e, t, n) {
 	}, e.insert([e.styledFor("shape", s)]);
 }
 // src/store/textEditing.ts
-function EQ(e, t, n, r = "") {
-	kQ(e);
+function AQ(e, t, n, r = "") {
+	NQ(e);
 	let i = OB(TB(t), r), a = n ?? e.visibleWorldCenter, o = e.styledFor("text", QH(i, e.snapPoint({
 		x: a.x,
 		y: a.y - i.fontSize * .6
@@ -48962,7 +49007,7 @@ function EQ(e, t, n, r = "") {
 	});
 }
 /** The text a double-click edits: a text box's, a note's, a flow step's label, or a connector's label. */
-function DQ(e) {
+function jQ(e) {
 	return e.kind.type === "connector" ? {
 		string: e.kind.label,
 		fontSize: hH,
@@ -48970,23 +49015,23 @@ function DQ(e) {
 		wrapWidth: null
 	} : aH(e);
 }
-function OQ(e, t) {
-	let n = DQ(t);
-	n && (kQ(e), e.beginTransient(), e.set({
+function MQ(e, t) {
+	let n = jQ(t);
+	n && (NQ(e), e.beginTransient(), e.set({
 		editingTextID: t.id,
 		editingText: n.string,
 		selection: /* @__PURE__ */ new Set(),
 		tool: "select"
 	}));
 }
-function kQ(e) {
+function NQ(e) {
 	let { editingTextID: t, editingText: n, document: r } = e.state;
 	if (t === null) return;
 	e.set({
 		editingTextID: null,
 		editingText: ""
 	});
-	let i = LH(r, t), a = i && DQ(i);
+	let i = LH(r, t), a = i && jQ(i);
 	if (!i || !a) {
 		e.cancelTransient();
 		return;
@@ -49001,15 +49046,15 @@ function kQ(e) {
 	}])), e.set({ selection: /* @__PURE__ */ new Set([t]) }), e.endTransient()) : (o === "" && !oH(i) && !tH(i) ? e.updateTransient(VH(r, /* @__PURE__ */ new Set([t]))) : (e.updateTransient(BH(r, [dH(i, OB(a, o))])), e.set({ selection: /* @__PURE__ */ new Set([t]) })), e.endTransient());
 }
 /** The editable label of a component or the name of a device frame. */
-function AQ(e) {
+function PQ(e) {
 	if (e.kind.type === "device") return e.kind.name ?? Gz(e.kind.templateID)?.name ?? "Frame";
 	let t = iH(e);
 	return t && zz(t.kind) ? t.label : null;
 }
-function jQ(e, t) {
-	AQ(t) !== null && (kQ(e), e.set({ labelEditingID: t.id }));
+function FQ(e, t) {
+	PQ(t) !== null && (NQ(e), e.set({ labelEditingID: t.id }));
 }
-function MQ(e, t) {
+function IQ(e, t) {
 	let n = e.state.labelEditingID;
 	if (e.set({ labelEditingID: null }), n === null || t === null) return;
 	let r = LH(e.state.document, n);
@@ -49038,8 +49083,8 @@ function MQ(e, t) {
 	}]));
 }
 /** Drops an annotation note and starts typing in it. */
-function NQ(e, t) {
-	kQ(e);
+function LQ(e, t) {
+	NQ(e);
 	let n = e.styledFor("text", nU(t ?? e.visibleWorldCenter));
 	e.beginTransient(), e.updateTransient(zH(e.state.document, [n])), e.set({
 		editingTextID: n.id,
@@ -49049,7 +49094,7 @@ function NQ(e, t) {
 	});
 }
 // src/store/libraryDrop.ts
-var PQ = {
+var RQ = {
 	display: "Display",
 	title: "Title",
 	heading: "Heading",
@@ -49059,33 +49104,33 @@ var PQ = {
 	caption: "Caption",
 	footnote: "Footnote"
 };
-function FQ(e, t, n) {
+function zQ(e, t, n) {
 	if (!n) {
-		EQ(e, t, void 0, PQ[t]);
+		AQ(e, t, void 0, RQ[t]);
 		return;
 	}
-	let r = OB(TB(t), PQ[t]);
+	let r = OB(TB(t), RQ[t]);
 	e.insert([e.styledFor("text", QH(r, e.snapPoint(n)))]);
 }
 /** Places whatever was dragged out of the library panel at `at`. */
-function IQ(e, t, n) {
+function BQ(e, t, n) {
 	switch (t.kind) {
 		case "component":
-			fQ(e, t.value, n);
+			gQ(e, t.value, n);
 			return;
 		case "shape":
-			WH.some((e) => e.preset === t.value) && uQ(e, t.value, n);
+			WH.some((e) => e.preset === t.value) && mQ(e, t.value, n);
 			return;
 		case "text":
-			bB.some((e) => e.preset === t.value) && FQ(e, t.value, n);
+			bB.some((e) => e.preset === t.value) && zQ(e, t.value, n);
 			return;
 		case "icon":
-			pQ(e, t.value, n);
+			_Q(e, t.value, n);
 			return;
 	}
 }
 // src/model/layers.ts
-var LQ = 40, RQ = {
+var VQ = 40, HQ = {
 	rectangle: "Rectangle",
 	ellipse: "Ellipse",
 	line: "Line",
@@ -49101,21 +49146,21 @@ var LQ = 40, RQ = {
 	flow: "Step",
 	connector: "Connector"
 };
-function zQ(e) {
+function UQ(e) {
 	if (e.name) return e.name;
 	let t = e.kind;
 	switch (t.type) {
 		case "device": return t.name ?? Gz(t.templateID)?.name ?? "Screen";
 		case "text":
 		case "note":
-		case "flow": return t.content.string.split("\n")[0]?.trim() || RQ[t.type];
+		case "flow": return t.content.string.split("\n")[0]?.trim() || HQ[t.type];
 		case "component": return t.content.label || "Component";
 		case "symbol": return t.name.replace(/([a-z0-9])([A-Z])/g, "$1 $2").replace(/^(.)(.*)$/, (e, t, n) => t + n.toLowerCase());
 		case "connector": return t.label.trim() ? `Connector "${t.label.trim()}"` : "Connector";
-		default: return RQ[t.type];
+		default: return HQ[t.type];
 	}
 }
-function BQ(e, t) {
+function WQ(e, t) {
 	let n = t.trim();
 	return e.kind.type === "device" ? {
 		...e,
@@ -49129,9 +49174,9 @@ function BQ(e, t) {
 	};
 }
 /** Front-most first, like Figma: loose items, then each frame with its children nested. */
-function VQ(e) {
+function GQ(e) {
 	return FH(e).flatMap(({ frame: e, elements: t }) => {
-		let n = HQ(t.filter((e) => e.kind.type !== "connector"));
+		let n = KQ(t.filter((e) => e.kind.type !== "connector"));
 		return e ? [{
 			id: e.id,
 			element: e,
@@ -49141,7 +49186,7 @@ function VQ(e) {
 	}).reverse();
 }
 /** Bundles group members into one row, at the position of the group's front-most member. */
-function HQ(e) {
+function KQ(e) {
 	let t = [], n = /* @__PURE__ */ new Set();
 	for (let r of [...e].reverse()) {
 		if (!r.groupID) {
@@ -49171,7 +49216,7 @@ function HQ(e) {
 	return t;
 }
 /** Every visible element under `p`, front-most first; children only count inside their frame. */
-function UQ(e, t, n) {
+function qQ(e, t, n) {
 	let r = [];
 	for (let { frame: i, elements: a } of [...FH(e)].reverse()) i?.hidden || ((!i || rB(i.frame, t)) && r.push(...[...a].reverse().filter((e) => !e.hidden && bH(e, t, n))), i && bH(i, t, n) && r.push(i));
 	return r;
@@ -49180,22 +49225,22 @@ function UQ(e, t, n) {
 * Moves `ids` next to `target` in z-order, or into the target frame. Items moved into a frame are centred in it
 * when they sat outside; items moved out of a frame are placed beside it, since position decides membership.
 */
-function WQ(e, t, n, r) {
+function JQ(e, t, n, r) {
 	let i = e.elements.filter((e) => t.has(e.id));
 	if (i.length === 0 || t.has(n.id)) return e;
 	let a = i.some(K);
 	if (a && (i.some((e) => !K(e)) || !K(n) || r === "inside")) return e;
-	if (!a && K(n) && r !== "inside") return WQ(e, t, n, "inside");
-	let o = r === "inside" ? n : GQ(e, n), s = a ? i : KQ(e, i, o), c = e.elements.filter((e) => !t.has(e.id)), l = c.findIndex((e) => e.id === n.id), u = r === "inside" ? c.length : r === "above" ? l + 1 : l;
+	if (!a && K(n) && r !== "inside") return JQ(e, t, n, "inside");
+	let o = r === "inside" ? n : YQ(e, n), s = a ? i : XQ(e, i, o), c = e.elements.filter((e) => !t.has(e.id)), l = c.findIndex((e) => e.id === n.id), u = r === "inside" ? c.length : r === "above" ? l + 1 : l;
 	return { elements: [
 		...c.slice(0, u),
 		...s,
 		...c.slice(u)
 	] };
 }
-var GQ = (e, t) => t.parentID ? e.elements.find((e) => e.id === t.parentID && K(e)) ?? null : null;
+var YQ = (e, t) => t.parentID ? e.elements.find((e) => e.id === t.parentID && K(e)) ?? null : null;
 /** One shared offset keeps groups intact. */
-function KQ(e, t, n) {
+function XQ(e, t, n) {
 	let r = n?.id ?? null, i = xH(t);
 	if (!i || t.every((e) => (e.parentID ?? null) === r)) return [...t];
 	let a = Qz(i), o = {
@@ -49207,9 +49252,9 @@ function KQ(e, t, n) {
 		y: U(n.frame) - a.y
 	};
 	else if (!n) {
-		let n = t.map((t) => GQ(e, t)).find((e) => e && rB(e.frame, a));
+		let n = t.map((t) => YQ(e, t)).find((e) => e && rB(e.frame, a));
 		n && (o = {
-			x: V(n.frame) + LQ - i.x,
+			x: V(n.frame) + VQ - i.x,
 			y: 0
 		});
 	}
@@ -49218,26 +49263,26 @@ function KQ(e, t, n) {
 		parentID: r
 	}, o));
 }
-var qQ = (e, t, n) => BH(e, t.map((e) => ({
+var ZQ = (e, t, n) => BH(e, t.map((e) => ({
 	...e,
 	hidden: n
-}))), JQ = {
+}))), QQ = {
 	shift: !1,
 	alt: !1,
 	meta: !1
-}, YQ = (e) => Math.abs(e.x) >= Math.abs(e.y) ? {
+}, $Q = (e) => Math.abs(e.x) >= Math.abs(e.y) ? {
 	x: e.x,
 	y: 0
 } : {
 	x: 0,
 	y: e.y
-}, XQ = (e) => e === "topLeft" || e === "bottomLeft" || e === "left" ? -1 : e === "top" || e === "bottom" ? 0 : 1, ZQ = (e) => e === "topLeft" || e === "topRight" || e === "top" ? -1 : e === "left" || e === "right" ? 0 : 1;
+}, e$ = (e) => e === "topLeft" || e === "bottomLeft" || e === "left" ? -1 : e === "top" || e === "bottom" ? 0 : 1, t$ = (e) => e === "topLeft" || e === "topRight" || e === "top" ? -1 : e === "left" || e === "right" ? 0 : 1;
 /**
 * Shift keeps the aspect ratio: the larger relative change wins. Edge handles scale the other axis
 * evenly around the centre. Alt mirrors the change on the opposite side, so the box grows from its centre.
 */
-function QQ(e, t, n, r) {
-	let i = XQ(t), a = ZQ(t), o = r.alt ? 2 : 1, s = e.width + i * n.x * o, c = e.height + a * n.y * o;
+function n$(e, t, n, r) {
+	let i = e$(t), a = t$(t), o = r.alt ? 2 : 1, s = e.width + i * n.x * o, c = e.height + a * n.y * o;
 	if (r.shift && e.width > 0 && e.height > 0) {
 		let t = s / e.width, n = c / e.height, r = i === 0 ? n : a === 0 || Math.abs(t - 1) >= Math.abs(n - 1) ? t : n;
 		s = e.width * r, c = e.height * r;
@@ -49250,25 +49295,25 @@ function QQ(e, t, n, r) {
 		height: Math.abs(c)
 	};
 }
-var $Q = (e) => e.shift || e.alt, e$ = (e) => e.locked === !0, t$ = (e) => e.every(e$);
-function n$(e) {
+var r$ = (e) => e.shift || e.alt, i$ = (e) => e.locked === !0, a$ = (e) => e.every(i$);
+function o$(e) {
 	let [t, ...n] = e;
 	return t ? n.reduce((e, t) => oB(e, t.frame), t.frame) : null;
 }
 /** Reorders the document's element list; devices still render beneath everything else. */
-function r$(e, t, n) {
+function s$(e, t, n) {
 	let r = e.elements.filter((e) => t.has(e.id));
 	if (r.length === 0) return e;
 	let i = e.elements.filter((e) => !t.has(e.id));
 	switch (n) {
 		case "front": return { elements: [...i, ...r] };
 		case "back": return { elements: [...r, ...i] };
-		case "forward": return { elements: i$(e.elements, t, 1) };
-		case "backward": return { elements: i$(e.elements, t, -1) };
+		case "forward": return { elements: c$(e.elements, t, 1) };
+		case "backward": return { elements: c$(e.elements, t, -1) };
 	}
 }
 /** Swaps each selected element past its nearest unselected neighbour in one direction. */
-function i$(e, t, n) {
+function c$(e, t, n) {
 	let r = [...e], i = r.map((e, t) => t), a = n === 1 ? i.reverse() : i;
 	for (let e of a) {
 		let i = r[e], a = r[e + n];
@@ -49276,34 +49321,34 @@ function i$(e, t, n) {
 	}
 	return r;
 }
-function a$(e, t, n) {
+function l$(e, t, n) {
 	return BH(e, t.map((e) => ({
 		...e,
 		locked: n
 	})));
 }
 /** Two or more units align to their combined bounds; a single unit aligns to the device it sits in. */
-function o$(e, t, n) {
-	let r = t.map(n$), i = s$(e, t, r);
-	return i ? u$(e, t.map((e, t) => {
+function u$(e, t, n) {
+	let r = t.map(o$), i = d$(e, t, r);
+	return i ? m$(e, t.map((e, t) => {
 		let a = r[t];
 		return {
 			unit: e,
-			delta: a ? c$(a, i, n) : {
+			delta: a ? f$(a, i, n) : {
 				x: 0,
 				y: 0
 			}
 		};
 	})) : e;
 }
-function s$(e, t, n) {
+function d$(e, t, n) {
 	let r = n.filter((e) => e !== null), [i, ...a] = r;
 	if (!i) return null;
 	if (r.length > 1) return a.reduce(oB, i);
 	let o = new Set(t.flat().map((e) => e.id));
 	return e.elements.find((e) => K(e) && !o.has(e.id) && rB(e.frame, Qz(i)))?.frame ?? null;
 }
-function c$(e, t, n) {
+function f$(e, t, n) {
 	switch (n) {
 		case "left": return {
 			x: t.x - e.x,
@@ -49332,14 +49377,14 @@ function c$(e, t, n) {
 	}
 }
 /** Equal gaps between three or more units; the outermost two stay put. */
-function l$(e, t, n) {
+function p$(e, t, n) {
 	let r = n === "horizontal", i = (e) => r ? e.x : e.y, a = (e) => r ? e.width : e.height, o = t.map((e) => ({
 		unit: e,
-		bounds: n$(e)
+		bounds: o$(e)
 	})).filter((e) => e.bounds !== null).sort((e, t) => i(e.bounds) - i(t.bounds)), s = o[0], c = o[o.length - 1];
 	if (o.length < 3 || !s || !c) return e;
 	let l = (i(c.bounds) + a(c.bounds) - i(s.bounds) - o.reduce((e, t) => e + a(t.bounds), 0)) / (o.length - 1), u = i(s.bounds);
-	return u$(e, o.map(({ unit: e, bounds: t }) => {
+	return m$(e, o.map(({ unit: e, bounds: t }) => {
 		let n = u - i(t);
 		return u += a(t) + l, {
 			unit: e,
@@ -49354,10 +49399,10 @@ function l$(e, t, n) {
 	}));
 }
 /** Locked units stay put. A moved device carries the elements sitting inside it. */
-function u$(e, t) {
+function m$(e, t) {
 	let n = new Set(t.flatMap(({ unit: e }) => e.map((e) => e.id))), r = /* @__PURE__ */ new Map();
 	for (let { unit: i, delta: a } of t) {
-		if (t$(i) || a.x === 0 && a.y === 0) continue;
+		if (a$(i) || a.x === 0 && a.y === 0) continue;
 		let t = i.filter(K).flatMap((t) => AH(e, t.id)).filter((e) => !n.has(e.id));
 		for (let e of [...i, ...t]) r.has(e.id) || r.set(e.id, _H(e, a));
 	}
@@ -49365,21 +49410,21 @@ function u$(e, t) {
 }
 // src/store/commentActions.ts
 /** Messages carry the signed-in account; the sync server overwrites these fields anyway so nobody can post as someone else. */
-function d$(e) {
-	let { name: t, email: n } = qJ();
+function h$(e) {
+	let { name: t, email: n } = ZJ();
 	return {
 		...MW(t, e.trim()),
 		authorEmail: n
 	};
 }
-function f$(e, t) {
+function g$(e, t) {
 	e.set({
 		draftComment: t,
 		activeCommentID: null,
 		selection: /* @__PURE__ */ new Set()
 	});
 }
-function p$(e, t) {
+function _$(e, t) {
 	let n = e.state.draftComment;
 	if (!n || t.trim() === "") return;
 	let r = HH(e.state.document, n, 0), i = {
@@ -49400,35 +49445,35 @@ function p$(e, t) {
 			}
 		},
 		resolved: !1,
-		messages: [d$(t)]
+		messages: [h$(t)]
 	};
 	e.setComments([...e.state.comments, i]), e.set({
 		draftComment: null,
 		activeCommentID: i.id
 	});
 }
-var m$ = (e, t, n) => e.setComments(e.state.comments.flatMap((e) => {
+var v$ = (e, t, n) => e.setComments(e.state.comments.flatMap((e) => {
 	if (e.id !== t) return [e];
 	let r = n(e);
 	return r ? [r] : [];
 }));
-function h$(e, t, n) {
-	n.trim() !== "" && m$(e, t, (e) => ({
+function y$(e, t, n) {
+	n.trim() !== "" && v$(e, t, (e) => ({
 		...e,
-		messages: [...e.messages, d$(n)]
+		messages: [...e.messages, h$(n)]
 	}));
 }
-function g$(e, t, n) {
-	m$(e, t, (e) => ({
+function b$(e, t, n) {
+	v$(e, t, (e) => ({
 		...e,
 		resolved: n
 	})), n && !e.state.showsResolved && e.set({ activeCommentID: null });
 }
-function _$(e, t) {
-	m$(e, t, () => null), e.set({ activeCommentID: null });
+function x$(e, t) {
+	v$(e, t, () => null), e.set({ activeCommentID: null });
 }
-function v$(e, t, n) {
-	m$(e, t, (e) => {
+function S$(e, t, n) {
+	v$(e, t, (e) => {
 		let t = e.messages.filter((e) => e.id !== n);
 		return t.length === 0 ? null : {
 			...e,
@@ -49436,21 +49481,21 @@ function v$(e, t, n) {
 		};
 	});
 }
-function y$(e, t, n = !1) {
+function C$(e, t, n = !1) {
 	let r = e.state.comments.find((e) => e.id === t);
 	r && (e.set({
 		activeCommentID: t,
 		draftComment: null
 	}), n && e.centerOn(AW(r.anchor, e.state.document)));
 }
-var b$ = (e) => e.set({
+var w$ = (e) => e.set({
 	activeCommentID: null,
 	draftComment: null
-}), x$ = (e, t) => e.state.access === "edit" || t !== void 0 && t.authorEmail === qJ().email;
-function S$(e, t, n) {
+}), T$ = (e, t) => e.state.access === "edit" || t !== void 0 && t.authorEmail === ZJ().email;
+function E$(e, t, n) {
 	if (e.state.access !== "edit") return;
-	let { name: r, email: i } = qJ();
-	m$(e, t, (e) => ({
+	let { name: r, email: i } = ZJ();
+	v$(e, t, (e) => ({
 		...e,
 		approvedBy: n ? {
 			name: r,
@@ -49460,24 +49505,24 @@ function S$(e, t, n) {
 	}));
 }
 // src/model/spacing.ts
-var C$ = .5, w$ = (e, t) => t === "horizontal" ? e.x : e.y, T$ = (e, t) => t === "horizontal" ? V(e) : H(e), E$ = (e, t) => t === "horizontal" ? e.y : e.x, D$ = (e, t) => t === "horizontal" ? H(e) : V(e), O$ = (e, t, n) => E$(e, n) < D$(t, n) && E$(t, n) < D$(e, n);
+var D$ = .5, O$ = (e, t) => t === "horizontal" ? e.x : e.y, k$ = (e, t) => t === "horizontal" ? V(e) : H(e), A$ = (e, t) => t === "horizontal" ? e.y : e.x, j$ = (e, t) => t === "horizontal" ? H(e) : V(e), M$ = (e, t, n) => A$(e, n) < j$(t, n) && A$(t, n) < j$(e, n);
 /** Nearest siblings on each side of `r` along `axis` that overlap it across the axis. */
-function k$(e, t, n) {
+function N$(e, t, n) {
 	let r = null, i = null;
-	for (let a of t) O$(e, a, n) && (T$(a, n) <= w$(e, n) + C$ && (!r || T$(a, n) > T$(r, n)) && (r = a), w$(a, n) >= T$(e, n) - C$ && (!i || w$(a, n) < w$(i, n)) && (i = a));
+	for (let a of t) M$(e, a, n) && (k$(a, n) <= O$(e, n) + D$ && (!r || k$(a, n) > k$(r, n)) && (r = a), O$(a, n) >= k$(e, n) - D$ && (!i || O$(a, n) < O$(i, n)) && (i = a));
 	return {
 		before: r,
 		after: i
 	};
 }
 /** Offset along `axis` that puts `r` exactly midway between its two neighbours, if within `threshold`. */
-function A$(e, t, n, r) {
-	let { before: i, after: a } = k$(e, t, n);
+function P$(e, t, n, r) {
+	let { before: i, after: a } = N$(e, t, n);
 	if (!i || !a) return null;
-	let o = T$(e, n) - w$(e, n), s = (T$(i, n) + w$(a, n) - o) / 2 - w$(e, n);
+	let o = k$(e, n) - O$(e, n), s = (k$(i, n) + O$(a, n) - o) / 2 - O$(e, n);
 	return Math.abs(s) <= r ? s : null;
 }
-var j$ = (e, t, n, r, i) => ({
+var F$ = (e, t, n, r, i) => ({
 	axis: e,
 	position: r,
 	start: t,
@@ -49489,22 +49534,22 @@ var j$ = (e, t, n, r, i) => ({
 * Figma-style distance readouts: to the nearest sibling on each side, or to the screen's inside edge
 * when there is none. Gaps that match on both sides are marked as equal spacing.
 */
-function M$(e, t, n) {
+function I$(e, t, n) {
 	return ["horizontal", "vertical"].flatMap((r) => {
-		let { before: i, after: a } = k$(e, n, r), o = (E$(e, r) + D$(e, r)) / 2, s = i ? T$(i, r) : t ? w$(t, r) : null, c = a ? w$(a, r) : t ? T$(t, r) : null, l = s === null ? null : w$(e, r) - s, u = c === null ? null : c - T$(e, r), d = i !== null && a !== null && l !== null && u !== null && Math.abs(l - u) < C$ ? "equal" : "gap", f = [];
-		return s !== null && l !== null && l > C$ && f.push(j$(r, s, w$(e, r), o, d)), c !== null && u !== null && u > C$ && f.push(j$(r, T$(e, r), c, o, d)), f;
+		let { before: i, after: a } = N$(e, n, r), o = (A$(e, r) + j$(e, r)) / 2, s = i ? k$(i, r) : t ? O$(t, r) : null, c = a ? O$(a, r) : t ? k$(t, r) : null, l = s === null ? null : O$(e, r) - s, u = c === null ? null : c - k$(e, r), d = i !== null && a !== null && l !== null && u !== null && Math.abs(l - u) < D$ ? "equal" : "gap", f = [];
+		return s !== null && l !== null && l > D$ && f.push(F$(r, s, O$(e, r), o, d)), c !== null && u !== null && u > D$ && f.push(F$(r, k$(e, r), c, o, d)), f;
 	});
 }
 // src/model/smartGuides.ts
-var N$ = .01, P$ = 1, F$ = (e, t) => e === null || t === null ? e ?? t : Math.abs(t) <= Math.abs(e) + P$ ? t : e, I$ = (e) => [
+var L$ = .01, R$ = 1, z$ = (e, t) => e === null || t === null ? e ?? t : Math.abs(t) <= Math.abs(e) + R$ ? t : e, B$ = (e) => [
 	e.x,
 	Zz(e),
 	V(e)
-], L$ = (e) => [
+], V$ = (e) => [
 	e.y,
 	U(e),
 	H(e)
-], R$ = class {
+], H$ = class {
 	threshold;
 	targets;
 	/** The screen the moving rect sits in, measured from its inside edges. */
@@ -49519,28 +49564,28 @@ var N$ = .01, P$ = 1, F$ = (e, t) => e === null || t === null ? e ?? t : Math.ab
 	/** Offset that aligns any edge or centre of `r` with a target, per axis; null where nothing is in range. */
 	moveCorrection(e) {
 		return {
-			x: F$(this.correction(I$(e), this.targets.flatMap(I$)), A$(e, this.siblings, "horizontal", this.threshold)),
-			y: F$(this.correction(L$(e), this.targets.flatMap(L$)), A$(e, this.siblings, "vertical", this.threshold))
+			x: z$(this.correction(B$(e), this.targets.flatMap(B$)), P$(e, this.siblings, "horizontal", this.threshold)),
+			y: z$(this.correction(V$(e), this.targets.flatMap(V$)), P$(e, this.siblings, "vertical", this.threshold))
 		};
 	}
 	/** Distances to the nearest neighbours or screen edges, with equal gaps marked. */
 	spacing(e) {
-		return M$(e, this.parent, this.siblings);
+		return I$(e, this.parent, this.siblings);
 	}
 	snapX(e) {
-		let t = this.correction([e], this.targets.flatMap(I$));
+		let t = this.correction([e], this.targets.flatMap(B$));
 		return t === null ? null : e + t;
 	}
 	snapY(e) {
-		let t = this.correction([e], this.targets.flatMap(L$));
+		let t = this.correction([e], this.targets.flatMap(V$));
 		return t === null ? null : e + t;
 	}
-	guides(e, t = I$(e), n = L$(e)) {
-		let r = t.map((t) => this.line("vertical", t, e, I$, (e) => [e.y, H(e)])), i = n.map((t) => this.line("horizontal", t, e, L$, (e) => [e.x, V(e)]));
+	guides(e, t = B$(e), n = V$(e)) {
+		let r = t.map((t) => this.line("vertical", t, e, B$, (e) => [e.y, H(e)])), i = n.map((t) => this.line("horizontal", t, e, V$, (e) => [e.x, V(e)]));
 		return [...r, ...i].filter((e) => e !== null);
 	}
 	line(e, t, n, r, i) {
-		let a = this.targets.filter((e) => r(e).some((e) => Math.abs(e - t) < N$));
+		let a = this.targets.filter((e) => r(e).some((e) => Math.abs(e - t) < L$));
 		if (a.length === 0) return null;
 		let o = [n, ...a].map(i);
 		return {
@@ -49558,15 +49603,15 @@ var N$ = .01, P$ = 1, F$ = (e, t) => e === null || t === null ? e ?? t : Math.ab
 		}
 		return n !== null && Math.abs(n) <= this.threshold ? n : null;
 	}
-}, z$ = 6;
+}, U$ = 6;
 /** Aligns the moving selection with nearby edges and centres, falling back to the grid per axis. */
-function B$(e, t, n) {
+function W$(e, t, n) {
 	let [r] = n, i = xH(n);
 	if (!r || !i) return {
 		delta: t,
 		guides: []
 	};
-	let a = W$(e, H$(n), tB(i, t)), o = a.moveCorrection(tB(i, t)), s = U$(e, H$(n), tB(i, t)), c = {
+	let a = J$(e, K$(n), tB(i, t)), o = a.moveCorrection(tB(i, t)), s = q$(e, K$(n), tB(i, t)), c = {
 		x: o.x === null ? s.x(r.frame.x + t.x) - r.frame.x : t.x + o.x,
 		y: o.y === null ? s.y(r.frame.y + t.y) - r.frame.y : t.y + o.y
 	}, l = tB(i, c);
@@ -49579,8 +49624,8 @@ function B$(e, t, n) {
 * Snaps only the dragged edges, so the opposite edges stay put. The returned delta is already snapped:
 * resize with an identity snap. `resizedBounds` turns the delta into the new bounds for the guide lines.
 */
-function V$(e, t, n, r, i, a) {
-	let o = mB(r, n), s = r !== "top" && r !== "bottom", c = r !== "left" && r !== "right", l = W$(e, t, n), u = o.x + i.x, d = o.y + i.y, f = U$(e, t, n), p = l.snapX(u) ?? f.x(u), m = l.snapY(d) ?? f.y(d), h = {
+function G$(e, t, n, r, i, a) {
+	let o = mB(r, n), s = r !== "top" && r !== "bottom", c = r !== "left" && r !== "right", l = J$(e, t, n), u = o.x + i.x, d = o.y + i.y, f = q$(e, t, n), p = l.snapX(u) ?? f.x(u), m = l.snapY(d) ?? f.y(d), h = {
 		x: s ? p - o.x : i.x,
 		y: c ? m - o.y : i.y
 	};
@@ -49589,9 +49634,9 @@ function V$(e, t, n, r, i, a) {
 		guides: l.guides(a(h), s ? [p] : [], c ? [m] : [])
 	};
 }
-var H$ = (e) => new Set(e.map((e) => e.id));
+var K$ = (e) => new Set(e.map((e) => e.id));
 /** Inside a screen the grid starts at the screen's top-left corner, like Figma's layout grids. */
-function U$(e, t, n) {
+function q$(e, t, n) {
 	let r = e.state.document.elements.find((e) => K(e) && !t.has(e.id) && rB(e.frame, Qz(n))), i = r ? {
 		x: r.frame.x,
 		y: r.frame.y
@@ -49604,22 +49649,22 @@ function U$(e, t, n) {
 		y: (t) => i.y + e.snap(t - i.y)
 	};
 }
-function W$(e, t, n) {
+function J$(e, t, n) {
 	let { camera: r, viewport: i, document: a } = e.state, o = tG(r, {
 		x: 0,
 		y: 0
 	});
-	return new R$(a, t, n, i.width === 0 ? null : {
+	return new H$(a, t, n, i.width === 0 ? null : {
 		...o,
 		width: i.width / r.scale,
 		height: i.height / r.scale
-	}, z$ / r.scale);
+	}, U$ / r.scale);
 }
 // src/canvas/flowTools.ts
 /** Connection dots, dragging out connectors, re-attaching their ends and placing flowchart shapes. */
-var G$ = 16, K$ = 5, q$ = 11, J$ = 10, Y$ = 26, X$ = 6, Z$ = 72;
+var Y$ = 16, X$ = 5, Z$ = 11, Q$ = 10, $$ = 26, e1 = 6, t1 = 72;
 /** The element whose side dots are showing: the hovered flow step, or the one selected step. */
-function Q$(e) {
+function n1(e) {
 	let { tool: t, editingTextID: n, connectDraft: r, hoverID: i, document: a, selection: o, guides: s, access: c } = e.state;
 	if (c !== "edit" || n || r || s.length > 0 || t !== "select" && t !== "connector") return null;
 	let l = i ? a.elements.find((e) => e.id === i) : void 0, u = (e) => !!e && !e.locked && (t === "connector" ? HV(e) : tH(e) || K(e));
@@ -49630,46 +49675,46 @@ function Q$(e) {
 	}
 	return null;
 }
-var $$ = (e, t, n) => {
+var r1 = (e, t, n) => {
 	let r = $W(e, n), i = $B[t];
 	return {
-		x: r.x + i.x * G$,
-		y: r.y + i.y * G$
+		x: r.x + i.x * Y$,
+		y: r.y + i.y * Y$
 	};
 };
-function e1(e, t) {
-	let n = Q$(e);
+function i1(e, t) {
+	let n = n1(e);
 	if (!n) return null;
-	let { camera: r } = e.state, i = VV(n).find(({ side: e, point: n }) => Jz($$(r, e, n), t) <= q$);
+	let { camera: r } = e.state, i = VV(n).find(({ side: e, point: n }) => Jz(r1(r, e, n), t) <= Z$);
 	return i ? {
 		element: n,
 		side: i.side
 	} : null;
 }
 /** The selected connector's end under the pointer. */
-function t1(e, t) {
+function a1(e, t) {
 	let n = e.selectedElements, r = n.length === 1 ? n[0] : void 0;
 	if (!r || r.kind.type !== "connector" || r.locked || e.state.access !== "edit") return null;
 	let i = r.kind.path, { camera: a } = e.state;
-	return i.length < 2 ? null : Jz($W(a, i[i.length - 1]), t) <= J$ ? {
+	return i.length < 2 ? null : Jz($W(a, i[i.length - 1]), t) <= Q$ ? {
 		connector: r,
 		end: "to"
-	} : Jz($W(a, i[0]), t) <= J$ ? {
+	} : Jz($W(a, i[0]), t) <= Q$ ? {
 		connector: r,
 		end: "from"
 	} : null;
 }
 /** What a connector end dropped at `world` attaches to, ignoring `exclude`. */
-function n1(e, t, n, r) {
-	let { camera: i, document: a } = e.state, o = HH({ elements: a.elements.filter((e) => !r.has(e.id) && HV(e)) }, t, X$ / i.scale);
+function o1(e, t, n, r) {
+	let { camera: i, document: a } = e.state, o = HH({ elements: a.elements.filter((e) => !r.has(e.id) && HV(e)) }, t, e1 / i.scale);
 	if (!o || !HV(o)) return null;
-	let s = VV(o).find(({ point: e }) => Jz($W(i, e), n) <= Y$);
+	let s = VV(o).find(({ point: e }) => Jz($W(i, e), n) <= $$);
 	return {
 		id: o.id,
 		side: s?.side ?? null
 	};
 }
-function r1(e, t, n, r) {
+function s1(e, t, n, r) {
 	let i = new Map(e.state.document.elements.map((e) => [e.id, e])), a = iU(t, n), o = W(t) ? r : {
 		x: t.x,
 		y: t.y
@@ -49682,14 +49727,14 @@ function r1(e, t, n, r) {
 		} : a.kind
 	});
 }
-var i1 = (e, t) => e ? e.side ? {
+var c1 = (e, t) => e ? e.side ? {
 	id: e.id,
 	side: e.side
 } : { id: e.id } : {
 	x: t.x,
 	y: t.y
 };
-function a1(e, t, n) {
+function l1(e, t, n) {
 	let r = tG(e.state.camera, n);
 	e.set({
 		connectDraft: {
@@ -49697,7 +49742,7 @@ function a1(e, t, n) {
 			to: r,
 			targetID: null,
 			targetSide: null,
-			path: r1(e, t, {
+			path: s1(e, t, {
 				x: r.x,
 				y: r.y
 			}, r)
@@ -49705,16 +49750,16 @@ function a1(e, t, n) {
 		hoverID: null
 	});
 }
-function o1(e, t) {
+function u1(e, t) {
 	let n = e.state.connectDraft;
 	if (!n) return;
-	let r = tG(e.state.camera, t), i = n1(e, r, t, new Set(W(n.from) ? [n.from.id] : []));
+	let r = tG(e.state.camera, t), i = o1(e, r, t, new Set(W(n.from) ? [n.from.id] : []));
 	e.set({ connectDraft: {
 		...n,
 		to: r,
 		targetID: i?.id ?? null,
 		targetSide: i?.side ?? null,
-		path: r1(e, n.from, i1(i, r), r)
+		path: s1(e, n.from, c1(i, r), r)
 	} });
 }
 /**
@@ -49722,48 +49767,48 @@ function o1(e, t) {
 * new step there (and starts its label); with the Connector tool the end stays loose. A click on a dot adds the next
 * step beside it.
 */
-function s1(e, t) {
+function d1(e, t) {
 	let n = e.state.connectDraft;
 	if (e.set({ connectDraft: null }), !n) return;
 	let r = W(n.from) ? e.state.document.elements.find((e) => e.id === n.from.id) : void 0;
-	if (t.tapped) r && t.side && t.makesSteps && d1(e, r, t.side);
+	if (t.tapped) r && t.side && t.makesSteps && h1(e, r, t.side);
 	else if (n.targetID) {
 		let t = n.targetSide ? {
 			id: n.targetID,
 			side: n.targetSide
 		} : { id: n.targetID };
-		l1(e, n.from, t);
+		p1(e, n.from, t);
 	} else if (r && t.makesSteps) {
 		let t = r.kind.type === "flow" ? nV(r.kind.shape) : "process";
-		u1(e, {
+		m1(e, {
 			...rU(t, n.to),
 			style: r.kind.type === "flow" ? r.style : rU(t, n.to).style
 		}, n.from);
-	} else Jz(c1(n), n.to) > 2 && l1(e, n.from, {
+	} else Jz(f1(n), n.to) > 2 && p1(e, n.from, {
 		x: n.to.x,
 		y: n.to.y
 	});
 }
-var c1 = (e) => e.path[0] ?? e.to;
-function l1(e, t, n) {
+var f1 = (e) => e.path[0] ?? e.to;
+function p1(e, t, n) {
 	let r = e.styledFor("connector", iU(t, n)), i = e.state.document;
 	e.commit(zH(i, NH(i, [r]))), e.set({
 		selection: /* @__PURE__ */ new Set([r.id]),
 		tool: "select"
 	});
 }
-function u1(e, t, n) {
+function m1(e, t, n) {
 	let r = e.state.document, i = e.styledFor("connector", iU(n, { id: t.id })), [a] = NH(r, [t]);
 	a && (e.commit(zH(r, [i, a])), e.set({
 		selection: /* @__PURE__ */ new Set([a.id]),
 		tool: "select"
-	}), OQ(e, a));
+	}), MQ(e, a));
 }
 /** The next step, a gap away on `side`, joined to `source`. Steps already there push it further along. */
-function d1(e, t, n, r) {
+function h1(e, t, n, r) {
 	let i = r ?? (t.kind.type === "flow" ? nV(t.kind.shape) : "process"), a = RB(i), o = $B[n], s = t.frame, c = {
-		x: o.x === 0 ? Zz(s) : o.x > 0 ? V(s) + Z$ + a.width / 2 : s.x - Z$ - a.width / 2,
-		y: o.y === 0 ? U(s) : o.y > 0 ? H(s) + Z$ + a.height / 2 : s.y - Z$ - a.height / 2
+		x: o.x === 0 ? Zz(s) : o.x > 0 ? V(s) + t1 + a.width / 2 : s.x - t1 - a.width / 2,
+		y: o.y === 0 ? U(s) : o.y > 0 ? H(s) + t1 + a.height / 2 : s.y - t1 - a.height / 2
 	}, l = () => {
 		let e = rU(i, c);
 		return {
@@ -49776,24 +49821,24 @@ function d1(e, t, n, r) {
 			}
 		};
 	}, u = l(), d = e.state.document.elements.filter((e) => e.kind.type !== "connector" && e.id !== t.id);
-	for (let e = 0; e < 12 && d.some((e) => aB(f1(e.frame, 12), u.frame)); e++) c = o.x === 0 ? {
+	for (let e = 0; e < 12 && d.some((e) => aB(g1(e.frame, 12), u.frame)); e++) c = o.x === 0 ? {
 		x: c.x + a.width + 40,
 		y: c.y
 	} : {
 		x: c.x,
 		y: c.y + a.height + 40
 	}, u = l();
-	u1(e, u, { id: t.id });
+	m1(e, u, { id: t.id });
 }
-var f1 = (e, t) => ({
+var g1 = (e, t) => ({
 	x: e.x - t,
 	y: e.y - t,
 	width: e.width + t * 2,
 	height: e.height + t * 2
 });
-function p1(e, t, n, r) {
+function _1(e, t, n, r) {
 	if (t.kind.type !== "connector") return;
-	let i = t.kind, a = tG(e.state.camera, r), o = n === "from" ? i.to : i.from, s = n1(e, a, r, /* @__PURE__ */ new Set([t.id, ...W(o) ? [o.id] : []])), c = i1(s, a), l = n === "from" ? {
+	let i = t.kind, a = tG(e.state.camera, r), o = n === "from" ? i.to : i.from, s = o1(e, a, r, /* @__PURE__ */ new Set([t.id, ...W(o) ? [o.id] : []])), c = c1(s, a), l = n === "from" ? {
 		...i,
 		from: c
 	} : {
@@ -49814,10 +49859,10 @@ function p1(e, t, n, r) {
 		path: []
 	} : null });
 }
-var m1 = 24;
+var v1 = 24;
 /** The Flowchart tool: a click places the shape at its usual size; a drag sets the size. Its label opens for typing. */
-function h1(e, t) {
-	let n = e.state.flowShape, r = t.width < m1 && t.height < m1, i = r ? {
+function y1(e, t) {
+	let n = e.state.flowShape, r = t.width < v1 && t.height < v1, i = r ? {
 		x: t.x,
 		y: t.y
 	} : {
@@ -49828,17 +49873,17 @@ function h1(e, t) {
 		frame: {
 			x: e.snap(t.x),
 			y: e.snap(t.y),
-			width: Math.max(e.snap(t.width), m1),
-			height: Math.max(e.snap(t.height), m1)
+			width: Math.max(e.snap(t.width), v1),
+			height: Math.max(e.snap(t.height), v1)
 		}
 	}, s = e.state.document, [c] = NH(s, [o]);
 	c && (e.commit(zH(s, [c])), e.set({
 		selection: /* @__PURE__ */ new Set([c.id]),
 		tool: "select"
-	}), OQ(e, c));
+	}), MQ(e, c));
 }
-function g1(e, t) {
-	let { camera: n, connectDraft: r, document: i } = t.state, a = lK();
+function b1(e, t) {
+	let { camera: n, connectDraft: r, document: i } = t.state, a = fK();
 	if (e.save(), r) {
 		let t = r.targetID ? i.elements.find((e) => e.id === r.targetID) : void 0;
 		if (t) {
@@ -49854,10 +49899,10 @@ function g1(e, t) {
 			e.strokeStyle = a, e.lineWidth = 2, e.setLineDash([5, 4]), e.beginPath(), e.moveTo(t[0].x, t[0].y), t.slice(1).forEach((t) => e.lineTo(t.x, t.y)), e.stroke(), e.setLineDash([]);
 		}
 	}
-	let o = Q$(t);
+	let o = n1(t);
 	if (o) for (let { side: t, point: r } of VV(o)) {
-		let i = $$(n, t, r);
-		e.beginPath(), e.arc(i.x, i.y, K$, 0, Math.PI * 2), e.fillStyle = "#fff", e.fill(), e.lineWidth = 1.5, e.strokeStyle = a, e.stroke();
+		let i = r1(n, t, r);
+		e.beginPath(), e.arc(i.x, i.y, X$, 0, Math.PI * 2), e.fillStyle = "#fff", e.fill(), e.lineWidth = 1.5, e.strokeStyle = a, e.stroke();
 	}
 	let s = t.state.hoverID ? i.elements.find((e) => e.id === t.state.hoverID) : void 0;
 	if (s?.kind.type === "connector" && !t.state.selection.has(s.id)) {
@@ -49867,28 +49912,28 @@ function g1(e, t) {
 	for (let r of t.selectedElements) {
 		if (r.kind.type !== "connector") continue;
 		let i = r.kind.path.map((e) => $W(n, e));
-		if (!(i.length < 2) && (e.strokeStyle = uK(.55), e.lineWidth = Math.max(r.style.strokeWidth * n.scale, 1) + 3, e.beginPath(), r.kind.route === "curved" && i.length === 4 ? (e.moveTo(i[0].x, i[0].y), e.bezierCurveTo(i[1].x, i[1].y, i[2].x, i[2].y, i[3].x, i[3].y)) : (e.moveTo(i[0].x, i[0].y), i.slice(1).forEach((t) => e.lineTo(t.x, t.y))), e.stroke(), t.selectedElements.length === 1)) for (let t of [i[0], i[i.length - 1]]) e.beginPath(), e.arc(t.x, t.y, 5, 0, Math.PI * 2), e.fillStyle = "#fff", e.fill(), e.lineWidth = 1.5, e.strokeStyle = a, e.stroke();
+		if (!(i.length < 2) && (e.strokeStyle = pK(.55), e.lineWidth = Math.max(r.style.strokeWidth * n.scale, 1) + 3, e.beginPath(), r.kind.route === "curved" && i.length === 4 ? (e.moveTo(i[0].x, i[0].y), e.bezierCurveTo(i[1].x, i[1].y, i[2].x, i[2].y, i[3].x, i[3].y)) : (e.moveTo(i[0].x, i[0].y), i.slice(1).forEach((t) => e.lineTo(t.x, t.y))), e.stroke(), t.selectedElements.length === 1)) for (let t of [i[0], i[i.length - 1]]) e.beginPath(), e.arc(t.x, t.y, 5, 0, Math.PI * 2), e.fillStyle = "#fff", e.fill(), e.lineWidth = 1.5, e.strokeStyle = a, e.stroke();
 	}
 	e.restore();
 }
 // src/canvas/interaction.ts
-var _1 = 10, v1 = 1.5, y1 = 8, b1 = 4, x1 = 450, S1 = 48, C1 = class {
+var x1 = 10, S1 = 1.5, C1 = 8, w1 = 4, T1 = 450, E1 = 48, D1 = class {
 	store;
 	mode = { type: "idle" };
 	holdTimer = null;
 	holdAnchor = null;
 	held = !1;
 	tap = null;
-	modifiers = JQ;
+	modifiers = QQ;
 	lastScreen = null;
 	constructor(e) {
 		this.store = e;
 	}
 	/** Pencil and pointer drags on empty canvas draw a selection rectangle; finger drags pan. */
-	begin(e, t, n = !1, r = JQ) {
+	begin(e, t, n = !1, r = QQ) {
 		this.modifiers = r, this.lastScreen = e;
 		let { state: i } = this.store, a = t === "pen";
-		a && !i.pencilDetected && this.store.set({ pencilDetected: !0 }), a && this.isNearEditedText(e) ? this.mode = { type: "idle" } : (kQ(this.store), this.tap = null, n ? this.mode = {
+		a && !i.pencilDetected && this.store.set({ pencilDetected: !0 }), a && this.isNearEditedText(e) ? this.mode = { type: "idle" } : (NQ(this.store), this.tap = null, n ? this.mode = {
 			type: "panning",
 			last: e
 		} : a && (i.tool === "select" || i.tool === "draw") || i.tool === "draw" && (t === "mouse" || !this.store.state.pencilDetected) ? this.mode = this.beginDrawing(e) : i.tool === "frame" ? this.mode = {
@@ -49897,13 +49942,13 @@ var _1 = 10, v1 = 1.5, y1 = 8, b1 = 4, x1 = 450, S1 = 48, C1 = class {
 		} : i.tool === "flow" || i.tool === "shape" ? this.mode = {
 			type: "placing",
 			start: tG(i.camera, e)
-		} : i.tool === "connector" ? this.mode = this.beginConnectorTool(e) : i.tool === "text" && a ? (EQ(this.store, "body", tG(i.camera, e)), this.store.set({ tool: "text" }), this.mode = { type: "idle" }) : i.tool === "text" || i.tool === "comment" || i.tool === "note" ? (this.tap = {
+		} : i.tool === "connector" ? this.mode = this.beginConnectorTool(e) : i.tool === "text" && a ? (AQ(this.store, "body", tG(i.camera, e)), this.store.set({ tool: "text" }), this.mode = { type: "idle" }) : i.tool === "text" || i.tool === "comment" || i.tool === "note" ? (this.tap = {
 			start: e,
 			wasOnlySelection: !0
 		}, this.mode = {
 			type: "panning",
 			last: e
-		}) : ((i.activeCommentID || i.draftComment) && b$(this.store), this.mode = this.beginSelecting(e, t !== "touch")));
+		}) : ((i.activeCommentID || i.draftComment) && w$(this.store), this.mode = this.beginSelecting(e, t !== "touch")));
 	}
 	/** Pressing or releasing Shift, ⌥ or ⌘ mid-drag re-applies the drag at the same pointer position. */
 	setModifiers(e) {
@@ -49911,15 +49956,15 @@ var _1 = 10, v1 = 1.5, y1 = 8, b1 = 4, x1 = 450, S1 = 48, C1 = class {
 		this.modifiers = e, t && this.lastScreen && this.mode.type !== "idle" && this.move(this.lastScreen);
 	}
 	move(e) {
-		this.lastScreen = e, this.tap && Jz(this.tap.start, e) > y1 && (this.tap = null);
+		this.lastScreen = e, this.tap && Jz(this.tap.start, e) > C1 && (this.tap = null);
 		let { camera: t } = this.store.state, n = tG(t, e), r = this.mode;
 		switch (r.type) {
 			case "idle": return;
 			case "connecting":
-				o1(this.store, e);
+				u1(this.store, e);
 				return;
 			case "reconnecting":
-				p1(this.store, r.original, r.end, e);
+				_1(this.store, r.original, r.end, e);
 				return;
 			case "placing":
 				this.store.set({ draftSnap: this.placingPreview(r.start, n) });
@@ -49940,29 +49985,29 @@ var _1 = 10, v1 = 1.5, y1 = 8, b1 = 4, x1 = 450, S1 = 48, C1 = class {
 					}, this.move(e);
 					return;
 				}
-				let t = this.modifiers.shift ? YQ(qz(n, r.start)) : qz(n, r.start), { delta: i, guides: a } = this.modifiers.meta ? {
+				let t = this.modifiers.shift ? $Q(qz(n, r.start)) : qz(n, r.start), { delta: i, guides: a } = this.modifiers.meta ? {
 					delta: t,
 					guides: []
-				} : B$(this.store, t, r.originals);
+				} : W$(this.store, t, r.originals);
 				this.store.set({ guides: a }), this.store.updateTransient(BH(this.store.state.document, r.originals.map((e) => _H(e, i))));
 				return;
 			}
 			case "resizing": {
-				let { original: e, handle: t } = r, i = (n) => yH(e, t, n, (e) => e), { delta: a, guides: o } = this.guidedResizeDelta(/* @__PURE__ */ new Set([e.id]), e.frame, t, qz(n, r.start), (e) => i(e).frame), s = $Q(this.modifiers) && !aH(e) && !nH(e) ? {
+				let { original: e, handle: t } = r, i = (n) => yH(e, t, n, (e) => e), { delta: a, guides: o } = this.guidedResizeDelta(/* @__PURE__ */ new Set([e.id]), e.frame, t, qz(n, r.start), (e) => i(e).frame), s = r$(this.modifiers) && !aH(e) && !nH(e) ? {
 					...e,
-					frame: QQ(e.frame, t, a, this.modifiers)
+					frame: n$(e.frame, t, a, this.modifiers)
 				} : i(a);
 				this.store.set({ guides: o }), this.store.updateTransient(BH(this.store.state.document, [s]));
 				return;
 			}
 			case "resizingGroup": {
-				let { members: e, bounds: t, handle: i } = r, a = new Set(e.map((e) => e.id)), { delta: o, guides: s } = this.guidedResizeDelta(a, t, i, qz(n, r.start), (e) => hB(i, t, e, (e) => e).rect), c = $Q(this.modifiers) ? w1(e, t, QQ(t, i, o, this.modifiers)) : OH(e, t, i, o, (e) => e);
+				let { members: e, bounds: t, handle: i } = r, a = new Set(e.map((e) => e.id)), { delta: o, guides: s } = this.guidedResizeDelta(a, t, i, qz(n, r.start), (e) => hB(i, t, e, (e) => e).rect), c = r$(this.modifiers) ? O1(e, t, n$(t, i, o, this.modifiers)) : OH(e, t, i, o, (e) => e);
 				this.store.set({ guides: s }), this.store.updateTransient(BH(this.store.state.document, c));
 				return;
 			}
 			case "drawing": {
 				let i = r.points[r.points.length - 1];
-				if (this.trackHold(e), i && Jz(i, n) < v1 / t.scale) return;
+				if (this.trackHold(e), i && Jz(i, n) < S1 / t.scale) return;
 				let a = [...r.points, n];
 				this.mode = {
 					type: "drawing",
@@ -49974,7 +50019,7 @@ var _1 = 10, v1 = 1.5, y1 = 8, b1 = 4, x1 = 450, S1 = 48, C1 = class {
 				this.store.set({ marquee: eB(r.start, n) });
 				return;
 			case "marquee": {
-				let e = eB(r.start, n), t = this.store.state.document.elements.filter((t) => !e$(t) && !t.hidden && iB(e, t.frame)).map((e) => e.id), i = /* @__PURE__ */ new Set([...r.base, ...t]);
+				let e = eB(r.start, n), t = this.store.state.document.elements.filter((t) => !i$(t) && !t.hidden && iB(e, t.frame)).map((e) => e.id), i = /* @__PURE__ */ new Set([...r.base, ...t]);
 				this.store.set({
 					marquee: e,
 					selection: i
@@ -49987,15 +50032,15 @@ var _1 = 10, v1 = 1.5, y1 = 8, b1 = 4, x1 = 450, S1 = 48, C1 = class {
 		let e = this.mode, t = this.tap;
 		switch (this.mode = { type: "idle" }, this.tap = null, this.store.state.guides.length > 0 && this.store.set({ guides: [] }), e.type) {
 			case "moving":
-				yQ(this.store, e.originals.filter((e) => this.store.state.selection.has(e.id))), this.store.endTransient();
+				CQ(this.store, e.originals.filter((e) => this.store.state.selection.has(e.id))), this.store.endTransient();
 				break;
 			case "resizing":
 			case "resizingGroup":
 				this.store.endTransient();
 				break;
 			case "connecting": {
-				let t = !this.lastScreen || Jz(e.start, this.lastScreen) <= y1;
-				s1(this.store, {
+				let t = !this.lastScreen || Jz(e.start, this.lastScreen) <= C1;
+				d1(this.store, {
 					tapped: t,
 					side: e.side,
 					makesSteps: e.makesSteps
@@ -50016,15 +50061,15 @@ var _1 = 10, v1 = 1.5, y1 = 8, b1 = 4, x1 = 450, S1 = 48, C1 = class {
 					width: 0,
 					height: 0
 				} : n;
-				this.store.state.tool === "shape" ? TQ(this.store, e.start, this.lastScreen ? tG(this.store.state.camera, this.lastScreen) : e.start) : h1(this.store, r);
+				this.store.state.tool === "shape" ? kQ(this.store, e.start, this.lastScreen ? tG(this.store.state.camera, this.lastScreen) : e.start) : y1(this.store, r);
 				break;
 			}
 			case "drawing": {
-				let t = this.held ? sQ(this.store, e.points) : null;
+				let t = this.held ? dQ(this.store, e.points) : null;
 				this.stopHold(), this.store.set({
 					draftStroke: [],
 					draftSnap: null
-				}), cQ(this.store, e.points, t);
+				}), fQ(this.store, e.points, t);
 				break;
 			}
 			case "marquee":
@@ -50036,7 +50081,7 @@ var _1 = 10, v1 = 1.5, y1 = 8, b1 = 4, x1 = 450, S1 = 48, C1 = class {
 					width: 0,
 					height: 0
 				};
-				this.store.set({ marquee: null }), CQ(this.store, t);
+				this.store.set({ marquee: null }), DQ(this.store, t);
 				break;
 			}
 		}
@@ -50059,7 +50104,7 @@ var _1 = 10, v1 = 1.5, y1 = 8, b1 = 4, x1 = 450, S1 = 48, C1 = class {
 			return;
 		}
 		let n = this.hit(e);
-		n && !e$(n) && (K(n) ? jQ(this.store, n) : DQ(n) ? OQ(this.store, n) : iH(n) ? jQ(this.store, n) : ZV(n) ? this.pickIcon(n) : n.groupID && this.store.set({ selection: /* @__PURE__ */ new Set([n.id]) }));
+		n && !i$(n) && (K(n) ? FQ(this.store, n) : jQ(n) ? MQ(this.store, n) : iH(n) ? FQ(this.store, n) : ZV(n) ? this.pickIcon(n) : n.groupID && this.store.set({ selection: /* @__PURE__ */ new Set([n.id]) }));
 	}
 	/** A device template only stretches taller: its corners act as the top or bottom edge, its sides don't grab. */
 	handleFor(e, t) {
@@ -50083,8 +50128,8 @@ var _1 = 10, v1 = 1.5, y1 = 8, b1 = 4, x1 = 450, S1 = 48, C1 = class {
 		if (!i) return !1;
 		let a = eG(r, i.frame);
 		return rB({
-			x: a.x - S1,
-			y: a.y - S1,
+			x: a.x - E1,
+			y: a.y - E1,
 			width: Math.max(a.width, 320) + 96,
 			height: a.height + 96
 		}, e);
@@ -50108,16 +50153,16 @@ var _1 = 10, v1 = 1.5, y1 = 8, b1 = 4, x1 = 450, S1 = 48, C1 = class {
 	/** A frame's name label above it counts as part of the frame. */
 	hit(e) {
 		let { camera: t, document: n } = this.store.state;
-		return HH(n, tG(t, e), _1 / t.scale) ?? this.deviceLabelAt(e);
+		return HH(n, tG(t, e), x1 / t.scale) ?? this.deviceLabelAt(e);
 	}
 	handleTap(e) {
 		let t = tG(this.store.state.camera, e.start), { tool: n } = this.store.state;
 		if (n === "comment") {
-			f$(this.store, t);
+			g$(this.store, t);
 			return;
 		}
 		if (n === "note") {
-			NQ(this.store, t);
+			LQ(this.store, t);
 			return;
 		}
 		if (e.pickBelow) {
@@ -50128,19 +50173,19 @@ var _1 = 10, v1 = 1.5, y1 = 8, b1 = 4, x1 = 450, S1 = 48, C1 = class {
 			this.store.set({ selection: /* @__PURE__ */ new Set([e.drillInto]) });
 			return;
 		}
-		let r = this.hit(e.start), i = r && !e$(r) ? r : void 0, a = i && iH(i);
-		i && ZV(i) && e.wasOnlySelection ? this.pickIcon(i) : i && aH(i) && e.wasOnlySelection ? OQ(this.store, i) : i && a && zz(a.kind) && e.wasOnlySelection ? jQ(this.store, i) : n === "text" && EQ(this.store, "body", t);
+		let r = this.hit(e.start), i = r && !i$(r) ? r : void 0, a = i && iH(i);
+		i && ZV(i) && e.wasOnlySelection ? this.pickIcon(i) : i && aH(i) && e.wasOnlySelection ? MQ(this.store, i) : i && a && zz(a.kind) && e.wasOnlySelection ? FQ(this.store, i) : n === "text" && AQ(this.store, "body", t);
 	}
 	/**
 	* Holding still at the end of a stroke snaps it into a shape (previewed until lift); moving on cancels.
 	* Pointer events stop while the nib rests, so a timer notices the pause.
 	*/
 	trackHold(e) {
-		this.holdAnchor && Jz(this.holdAnchor, e) <= b1 || (this.holdAnchor = e, this.held && (this.held = !1, this.store.set({ draftSnap: null })), this.holdTimer && clearTimeout(this.holdTimer), this.holdTimer = setTimeout(() => this.onHold(), x1));
+		this.holdAnchor && Jz(this.holdAnchor, e) <= w1 || (this.holdAnchor = e, this.held && (this.held = !1, this.store.set({ draftSnap: null })), this.holdTimer && clearTimeout(this.holdTimer), this.holdTimer = setTimeout(() => this.onHold(), T1));
 	}
 	onHold() {
 		if (this.holdTimer = null, this.mode.type !== "drawing") return;
-		let e = sQ(this.store, this.mode.points);
+		let e = dQ(this.store, this.mode.points);
 		e && (this.held = !0, this.store.set({ draftSnap: e.element }));
 	}
 	stopHold() {
@@ -50155,20 +50200,20 @@ var _1 = 10, v1 = 1.5, y1 = 8, b1 = 4, x1 = 450, S1 = 48, C1 = class {
 		};
 	}
 	beginSelecting(e, t) {
-		let { camera: n, selection: r, document: i } = this.store.state, a = tG(n, e), o = t1(this.store, e);
+		let { camera: n, selection: r, document: i } = this.store.state, a = tG(n, e), o = a1(this.store, e);
 		if (o) return this.store.beginTransient(), {
 			type: "reconnecting",
 			original: o.connector,
 			end: o.end
 		};
-		let s = e1(this.store, e);
-		if (s) return a1(this.store, { id: s.element.id }, e), {
+		let s = i1(this.store, e);
+		if (s) return l1(this.store, { id: s.element.id }, e), {
 			type: "connecting",
 			start: e,
 			side: s.side,
 			makesSteps: !0
 		};
-		let c = this.store.resizeTarget, l = c && this.handleFor(c, $G(eG(n, c.bounds), e));
+		let c = this.store.resizeTarget, l = c && this.handleFor(c, nK(eG(n, c.bounds), e));
 		if (c && l) return this.store.beginTransient(), c.type === "element" ? {
 			type: "resizing",
 			start: a,
@@ -50194,7 +50239,7 @@ var _1 = 10, v1 = 1.5, y1 = 8, b1 = 4, x1 = 450, S1 = 48, C1 = class {
 			};
 		}
 		let m = CH(i, p);
-		if (m.every(e$)) return this.store.set({ selection: new Set(m.map((e) => e.id)) }), t ? {
+		if (m.every(i$)) return this.store.set({ selection: new Set(m.map((e) => e.id)) }), t ? {
 			type: "marquee",
 			start: a,
 			base: /* @__PURE__ */ new Set()
@@ -50212,7 +50257,7 @@ var _1 = 10, v1 = 1.5, y1 = 8, b1 = 4, x1 = 450, S1 = 48, C1 = class {
 		}, r.has(p.id) || this.store.set({ selection: new Set(m.map((e) => e.id)) }), this.store.beginTransient(), {
 			type: "moving",
 			start: a,
-			originals: bQ(this.store, p).filter((e) => e === p || !e$(e)),
+			originals: wQ(this.store, p).filter((e) => e === p || !i$(e)),
 			duplicate: d
 		};
 	}
@@ -50234,8 +50279,8 @@ var _1 = 10, v1 = 1.5, y1 = 8, b1 = 4, x1 = 450, S1 = 48, C1 = class {
 	}
 	/** The Connector tool: from a side dot or a shape (attached), or from empty canvas (a loose end). */
 	beginConnectorTool(e) {
-		let t = e1(this.store, e), n = t ? t.element : this.hit(e), r = tG(this.store.state.camera, e);
-		return a1(this.store, n && HV(n) ? { id: n.id } : {
+		let t = i1(this.store, e), n = t ? t.element : this.hit(e), r = tG(this.store.state.camera, e);
+		return l1(this.store, n && HV(n) ? { id: n.id } : {
 			x: r.x,
 			y: r.y
 		}, e), {
@@ -50251,7 +50296,7 @@ var _1 = 10, v1 = 1.5, y1 = 8, b1 = 4, x1 = 450, S1 = 48, C1 = class {
 		return this.store.set({ selection: o }), a ? { type: "idle" } : (this.store.beginTransient(), {
 			type: "moving",
 			start: n,
-			originals: bQ(this.store, t).filter((e) => !e$(e)),
+			originals: wQ(this.store, t).filter((e) => !i$(e)),
 			duplicate: !1
 		});
 	}
@@ -50271,10 +50316,10 @@ var _1 = 10, v1 = 1.5, y1 = 8, b1 = 4, x1 = 450, S1 = 48, C1 = class {
 		return this.modifiers.meta ? {
 			delta: r,
 			guides: []
-		} : V$(this.store, e, t, n, r, i);
+		} : G$(this.store, e, t, n, r, i);
 	}
 	pickBelow(e, t) {
-		let { camera: n, document: r } = this.store.state, i = UQ(r, tG(n, e), _1 / n.scale).filter((e) => !e$(e)), a = i[(i.findIndex((e) => t.has(e.id)) + 1) % i.length];
+		let { camera: n, document: r } = this.store.state, i = qQ(r, tG(n, e), x1 / n.scale).filter((e) => !i$(e)), a = i[(i.findIndex((e) => t.has(e.id)) + 1) % i.length];
 		a && this.store.set({ selection: /* @__PURE__ */ new Set([a.id]) });
 	}
 	/** Mouse hover: outlines the item under the pointer and returns the cursor to show. */
@@ -50282,25 +50327,25 @@ var _1 = 10, v1 = 1.5, y1 = 8, b1 = 4, x1 = 450, S1 = 48, C1 = class {
 		this.modifiers = t;
 		let { tool: n, camera: r, hoverID: i } = this.store.state;
 		if (n === "connector" && this.mode.type === "idle") {
-			if (e1(this.store, e)) return "crosshair";
+			if (i1(this.store, e)) return "crosshair";
 			let t = this.hit(e), n = t && HV(t) ? t.id : null;
 			return n !== i && this.store.set({ hoverID: n }), "crosshair";
 		}
 		if (n === "flow") return "crosshair";
 		if (n !== "select" || this.mode.type !== "idle") return i !== null && this.store.set({ hoverID: null }), "";
-		if (e1(this.store, e)) return "crosshair";
-		if (t1(this.store, e)) return "move";
-		let a = this.store.resizeTarget, o = a && this.handleFor(a, $G(eG(r, a.bounds), e));
-		if (o) return i !== null && this.store.set({ hoverID: null }), tK(o);
+		if (i1(this.store, e)) return "crosshair";
+		if (a1(this.store, e)) return "move";
+		let a = this.store.resizeTarget, o = a && this.handleFor(a, nK(eG(r, a.bounds), e));
+		if (o) return i !== null && this.store.set({ hoverID: null }), iK(o);
 		let s = this.hit(e), c = s && !s.hidden ? s.id : null;
-		return c !== i && this.store.set({ hoverID: c }), s && this.store.state.selection.has(s.id) && !e$(s) ? "move" : "";
+		return c !== i && this.store.set({ hoverID: c }), s && this.store.state.selection.has(s.id) && !i$(s) ? "move" : "";
 	}
 	clearHover() {
 		this.store.state.hoverID !== null && this.store.set({ hoverID: null });
 	}
 };
 /** Scales every member from the old bounds into `next`, as a free resize would, keeping text and icon sizes. */
-function w1(e, t, n) {
+function O1(e, t, n) {
 	return OH(e, t, "bottomRight", {
 		x: n.width - t.width,
 		y: n.height - t.height
@@ -50310,11 +50355,11 @@ function w1(e, t, n) {
 	}));
 }
 // src/canvas/pointerInput.ts
-var T1 = .01, E1 = (e) => ({
+var k1 = .01, A1 = (e) => ({
 	shift: e.shiftKey,
 	alt: e.altKey,
 	meta: e.metaKey
-}), D1 = (e) => e.pointerType === "pen" ? "pen" : e.pointerType === "touch" ? "touch" : "mouse", O1 = class {
+}), j1 = (e) => e.pointerType === "pen" ? "pen" : e.pointerType === "touch" ? "touch" : "mouse", M1 = class {
 	element;
 	controller;
 	touches = /* @__PURE__ */ new Map();
@@ -50364,8 +50409,8 @@ var T1 = .01, E1 = (e) => ({
 	}
 	onDown = (e) => {
 		if (e.pointerType === "mouse" && e.button !== 0 && e.button !== 1) return;
-		e.preventDefault();
-		let t = D1(e);
+		e.preventDefault(), document.activeElement !== this.element && this.element.focus({ preventScroll: !0 });
+		let t = j1(e);
 		if (t === "touch") {
 			if (this.isPenActive()) return;
 			if (this.touches.set(e.pointerId, this.local(e)), this.touches.size === 2) {
@@ -50381,10 +50426,10 @@ var T1 = .01, E1 = (e) => ({
 		}
 		this.activePointer = e.pointerId, this.activeIsPen = t === "pen";
 		let n = t === "mouse" && (e.button === 1 || this.spaceHeld);
-		this.element.style.cursor = "", this.controller.begin(this.local(e), t, n, E1(e));
+		this.element.style.cursor = "", this.controller.begin(this.local(e), t, n, A1(e));
 	};
 	onModifierKey = (e) => {
-		(e.key === "Shift" || e.key === "Alt" || e.key === "Meta") && this.controller.setModifiers(E1(e));
+		(e.key === "Shift" || e.key === "Alt" || e.key === "Meta") && this.controller.setModifiers(A1(e));
 	};
 	onLeave = (e) => {
 		e.pointerType === "mouse" && this.activePointer === null && (this.controller.clearHover(), this.element.style.cursor = "");
@@ -50398,11 +50443,11 @@ var T1 = .01, E1 = (e) => ({
 			return;
 		}
 		if (this.activePointer === null && e.pointerType === "mouse") {
-			this.element.style.cursor = this.controller.hover(this.local(e), E1(e));
+			this.element.style.cursor = this.controller.hover(this.local(e), A1(e));
 			return;
 		}
 		if (e.pointerId !== this.activePointer) return;
-		this.controller.setModifiers(E1(e));
+		this.controller.setModifiers(A1(e));
 		let t = typeof e.getCoalescedEvents == "function" ? e.getCoalescedEvents() : [];
 		for (let n of t.length > 0 ? t : [e]) this.controller.move(this.local(n));
 	};
@@ -50436,7 +50481,7 @@ var T1 = .01, E1 = (e) => ({
 	onWheel = (e) => {
 		e.preventDefault();
 		let t = e.deltaMode === WheelEvent.DOM_DELTA_LINE ? 16 : 1;
-		e.ctrlKey || e.metaKey ? this.controller.zoom(Math.exp(-e.deltaY * t * T1), this.local(e)) : this.controller.pan({
+		e.ctrlKey || e.metaKey ? this.controller.zoom(Math.exp(-e.deltaY * t * k1), this.local(e)) : this.controller.pan({
 			x: -e.deltaX * t,
 			y: -e.deltaY * t
 		});
@@ -50450,7 +50495,7 @@ var T1 = .01, E1 = (e) => ({
 		let t = e;
 		this.controller.zoom(t.scale / this.gestureScale, this.local(t)), this.gestureScale = t.scale;
 	};
-}, k1 = /* @__PURE__ */ t(((e) => {
+}, N1 = /* @__PURE__ */ t(((e) => {
 	/**
 	* @license React
 	* react-jsx-runtime.production.js
@@ -50475,9 +50520,9 @@ var T1 = .01, E1 = (e) => ({
 	}
 	e.Fragment = n, e.jsx = r, e.jsxs = r;
 })), $ = (/* @__PURE__ */ t(((e, t) => {
-	t.exports = k1();
+	t.exports = N1();
 })))();
-function A1({ store: e, onInput: t }) {
+function P1({ store: e, onInput: t }) {
 	let n = (0, d.useRef)(null);
 	return (0, d.useEffect)(() => {
 		let r = n.current, i = r?.getContext("2d");
@@ -50487,7 +50532,7 @@ function A1({ store: e, onInput: t }) {
 			let t = window.devicePixelRatio || 1;
 			i.setTransform(t, 0, 0, t, 0, 0);
 			let { state: n } = e;
-			OK(i, r.width / t, r.height / t, {
+			jK(i, r.width / t, r.height / t, {
 				document: n.document,
 				camera: n.camera,
 				selected: e.selectedElements,
@@ -50499,8 +50544,8 @@ function A1({ store: e, onInput: t }) {
 				hiddenID: n.editingTextID,
 				showsGrid: !0,
 				guides: n.guides,
-				hovered: j1(e),
-				overlay: (t) => g1(t, e)
+				hovered: F1(e),
+				overlay: (t) => b1(t, e)
 			});
 		}, s = () => {
 			a === 0 && (a = requestAnimationFrame(o));
@@ -50513,7 +50558,7 @@ function A1({ store: e, onInput: t }) {
 			}), s();
 		});
 		c.observe(r);
-		let l = new C1(e), u = new O1(r, l), d = u.attach();
+		let l = new D1(e), u = new M1(r, l), d = u.attach();
 		t(u);
 		let f = (e) => {
 			e.preventDefault(), e.dataTransfer && (e.dataTransfer.dropEffect = "copy");
@@ -50523,8 +50568,8 @@ function A1({ store: e, onInput: t }) {
 				x: t.clientX - n.left,
 				y: t.clientY - n.top
 			}), a = Hz(t.dataTransfer?.getData("application/x-draftboard-item") ?? "");
-			if (a) IQ(e, a, i);
-			else for (let n of Array.from(t.dataTransfer?.files ?? [])) n.type.startsWith("image/") && gQ(e, n, i);
+			if (a) BQ(e, a, i);
+			else for (let n of Array.from(t.dataTransfer?.files ?? [])) n.type.startsWith("image/") && bQ(e, n, i);
 		};
 		r.addEventListener("dragover", f), r.addEventListener("drop", p);
 		let m = e.subscribe(s), h = v.subscribe(s);
@@ -50533,19 +50578,20 @@ function A1({ store: e, onInput: t }) {
 		};
 	}, [e, t]), /* @__PURE__ */ (0, $.jsx)("canvas", {
 		ref: n,
-		className: "canvas"
+		className: "canvas",
+		tabIndex: -1
 	});
 }
 /** The hovered item's whole group, unless it's already selected. */
-function j1(e) {
+function F1(e) {
 	let { hoverID: t, document: n, selection: r } = e.state, i = t ? n.elements.find((e) => e.id === t) : void 0;
 	return !i || r.has(i.id) || i.kind.type === "connector" ? null : xH(CH(n, i));
 }
 // src/store/useCanvasState.ts
-var M1 = (e) => (0, d.useSyncExternalStore)(e.subscribe, e.getSnapshot);
+var I1 = (e) => (0, d.useSyncExternalStore)(e.subscribe, e.getSnapshot);
 // src/ui/Composer.tsx
 /** The author is the signed-in account, so there's no name to ask for. */
-function N1({ placeholder: e, onSubmit: t, onCancel: n }) {
+function L1({ placeholder: e, onSubmit: t, onCancel: n }) {
 	let [r, i] = (0, d.useState)(""), a = r.trim() !== "", o = () => {
 		a && (t(r), i(""));
 	};
@@ -50570,15 +50616,15 @@ function N1({ placeholder: e, onSubmit: t, onCancel: n }) {
 				className: "send",
 				disabled: !a,
 				"aria-label": "Send",
-				children: /* @__PURE__ */ (0, $.jsx)(DY, {})
+				children: /* @__PURE__ */ (0, $.jsx)(jY, {})
 			})]
 		})
 	});
 }
 // src/ui/CommentsLayer.tsx
-var P1 = 300;
-function F1({ store: e }) {
-	let t = M1(e), n = t.comments.filter((e) => !e.resolved || t.showsResolved || e.id === t.activeCommentID), r = t.comments.find((e) => e.id === t.activeCommentID), i = (e) => $W(t.camera, AW(e.anchor, t.document));
+var R1 = 300;
+function z1({ store: e }) {
+	let t = I1(e), n = t.comments.filter((e) => !e.resolved || t.showsResolved || e.id === t.activeCommentID), r = t.comments.find((e) => e.id === t.activeCommentID), i = (e) => $W(t.camera, AW(e.anchor, t.document));
 	return /* @__PURE__ */ (0, $.jsxs)("div", {
 		className: "comments-layer",
 		children: [
@@ -50592,27 +50638,27 @@ function F1({ store: e }) {
 					},
 					"aria-label": `Comment ${r + 1} by ${n.messages[0]?.author ?? ""}`,
 					onPointerDown: (e) => e.stopPropagation(),
-					onClick: () => y$(e, n.id),
-					children: z1(n.messages[0]?.author ?? "?")
+					onClick: () => C$(e, n.id),
+					children: U1(n.messages[0]?.author ?? "?")
 				}, n.id);
 			}),
-			t.draftComment && /* @__PURE__ */ (0, $.jsx)(L1, {
+			t.draftComment && /* @__PURE__ */ (0, $.jsx)(V1, {
 				at: $W(t.camera, t.draftComment),
 				viewportWidth: t.viewport.width,
-				children: /* @__PURE__ */ (0, $.jsx)(N1, {
+				children: /* @__PURE__ */ (0, $.jsx)(L1, {
 					placeholder: "Add a comment",
-					onSubmit: (t) => p$(e, t),
-					onCancel: () => b$(e)
+					onSubmit: (t) => _$(e, t),
+					onCancel: () => w$(e)
 				})
 			}),
 			t.draftComment && /* @__PURE__ */ (0, $.jsx)("span", {
 				className: "pin draft",
-				style: R1($W(t.camera, t.draftComment))
+				style: H1($W(t.camera, t.draftComment))
 			}),
-			r && /* @__PURE__ */ (0, $.jsx)(L1, {
+			r && /* @__PURE__ */ (0, $.jsx)(V1, {
 				at: i(r),
 				viewportWidth: t.viewport.width,
-				children: /* @__PURE__ */ (0, $.jsx)(I1, {
+				children: /* @__PURE__ */ (0, $.jsx)(B1, {
 					store: e,
 					thread: r
 				})
@@ -50620,7 +50666,7 @@ function F1({ store: e }) {
 		]
 	});
 }
-function I1({ store: e, thread: t }) {
+function B1({ store: e, thread: t }) {
 	return /* @__PURE__ */ (0, $.jsxs)("div", {
 		className: "thread",
 		children: [
@@ -50631,11 +50677,11 @@ function I1({ store: e, thread: t }) {
 						className: "approved-label",
 						title: `Approved by ${t.approvedBy.name}`,
 						children: [
-							/* @__PURE__ */ (0, $.jsx)(kY, {}),
+							/* @__PURE__ */ (0, $.jsx)(NY, {}),
 							" ",
 							t.approvedBy.name,
 							" · ",
-							B1(t.approvedBy.at)
+							W1(t.approvedBy.at)
 						]
 					}),
 					e.state.access === "edit" && /* @__PURE__ */ (0, $.jsx)("button", {
@@ -50643,31 +50689,31 @@ function I1({ store: e, thread: t }) {
 						title: t.approvedBy ? "Remove Approval" : "Approve",
 						"aria-label": t.approvedBy ? "Remove Approval" : "Approve",
 						"aria-pressed": !!t.approvedBy,
-						onClick: () => S$(e, t.id, !t.approvedBy),
-						children: /* @__PURE__ */ (0, $.jsx)(kY, {})
+						onClick: () => E$(e, t.id, !t.approvedBy),
+						children: /* @__PURE__ */ (0, $.jsx)(NY, {})
 					}),
 					/* @__PURE__ */ (0, $.jsx)("button", {
 						className: "plain-button",
 						title: t.resolved ? "Reopen" : "Resolve",
 						"aria-label": t.resolved ? "Reopen" : "Resolve",
-						onClick: () => g$(e, t.id, !t.resolved),
-						children: t.resolved ? /* @__PURE__ */ (0, $.jsx)(ZX, {}) : /* @__PURE__ */ (0, $.jsx)(jY, {})
+						onClick: () => b$(e, t.id, !t.resolved),
+						children: t.resolved ? /* @__PURE__ */ (0, $.jsx)(tZ, {}) : /* @__PURE__ */ (0, $.jsx)(FY, {})
 					}),
-					x$(e, t.messages[0]) && /* @__PURE__ */ (0, $.jsx)("button", {
+					T$(e, t.messages[0]) && /* @__PURE__ */ (0, $.jsx)("button", {
 						className: "plain-button",
 						title: "Delete thread",
 						"aria-label": "Delete thread",
 						onClick: () => {
-							window.confirm("Delete this comment thread and all its replies?") && _$(e, t.id);
+							window.confirm("Delete this comment thread and all its replies?") && x$(e, t.id);
 						},
-						children: /* @__PURE__ */ (0, $.jsx)(CZ, {})
+						children: /* @__PURE__ */ (0, $.jsx)(DZ, {})
 					}),
 					/* @__PURE__ */ (0, $.jsx)("button", {
 						className: "plain-button",
 						title: "Close",
 						"aria-label": "Close",
-						onClick: () => b$(e),
-						children: /* @__PURE__ */ (0, $.jsx)(jZ, {})
+						onClick: () => w$(e),
+						children: /* @__PURE__ */ (0, $.jsx)(FZ, {})
 					})
 				]
 			}),
@@ -50678,63 +50724,63 @@ function I1({ store: e, thread: t }) {
 					children: [
 						/* @__PURE__ */ (0, $.jsx)("span", {
 							className: "avatar",
-							children: z1(n.author)
+							children: U1(n.author)
 						}),
 						/* @__PURE__ */ (0, $.jsx)("strong", { children: n.author }),
 						/* @__PURE__ */ (0, $.jsx)("time", {
 							dateTime: n.createdAt,
-							children: B1(n.createdAt)
+							children: W1(n.createdAt)
 						}),
-						x$(e, n) && /* @__PURE__ */ (0, $.jsx)("button", {
+						T$(e, n) && /* @__PURE__ */ (0, $.jsx)("button", {
 							className: "plain-button small",
 							"aria-label": "Delete comment",
 							onClick: () => {
-								window.confirm("Delete this comment?") && v$(e, t.id, n.id);
+								window.confirm("Delete this comment?") && S$(e, t.id, n.id);
 							},
-							children: /* @__PURE__ */ (0, $.jsx)(jZ, {})
+							children: /* @__PURE__ */ (0, $.jsx)(FZ, {})
 						})
 					]
 				}), /* @__PURE__ */ (0, $.jsx)("p", { children: n.body })]
 			}, n.id)),
-			!t.resolved && /* @__PURE__ */ (0, $.jsx)(N1, {
+			!t.resolved && /* @__PURE__ */ (0, $.jsx)(L1, {
 				placeholder: "Reply",
-				onSubmit: (n) => h$(e, t.id, n),
-				onCancel: () => b$(e)
+				onSubmit: (n) => y$(e, t.id, n),
+				onCancel: () => w$(e)
 			}, t.id)
 		]
 	});
 }
-function L1({ at: e, viewportWidth: t, children: n }) {
-	let r = Math.max(12, Math.min(e.x + 40, t - P1 - 12));
+function V1({ at: e, viewportWidth: t, children: n }) {
+	let r = Math.max(12, Math.min(e.x + 40, t - R1 - 12));
 	return /* @__PURE__ */ (0, $.jsx)("div", {
 		className: "comment-popover",
 		style: {
 			left: r,
 			top: Math.max(e.y - 30, 72),
-			width: P1
+			width: R1
 		},
 		onPointerDown: (e) => e.stopPropagation(),
 		children: n
 	});
 }
-var R1 = (e) => ({
+var H1 = (e) => ({
 	left: e.x,
 	top: e.y
 });
-function z1(e) {
+function U1(e) {
 	let t = e.trim().split(/\s+/).filter(Boolean);
 	return (t.length > 1 ? `${t[0][0]}${t[1][0]}` : (t[0] ?? "?").slice(0, 1)).toUpperCase();
 }
-function B1(e) {
+function W1(e) {
 	let t = (Date.now() - new Date(e).getTime()) / 1e3;
 	if (t < 60) return "now";
 	let n = new Intl.RelativeTimeFormat(void 0, { numeric: "auto" });
 	return t < 3600 ? n.format(-Math.round(t / 60), "minute") : t < 86400 ? n.format(-Math.round(t / 3600), "hour") : n.format(-Math.round(t / 86400), "day");
 }
 // src/store/arrangeActions.ts
-var V1 = 24, H1 = "application/x-draftboard+json";
+var G1 = 24, K1 = "application/x-draftboard+json";
 /** Selected elements bundled by group, so a group aligns and distributes as one. */
-function U1(e) {
+function q1(e) {
 	let t = /* @__PURE__ */ new Map();
 	for (let n of e.selectedElements) {
 		let e = n.groupID ?? n.id;
@@ -50742,55 +50788,55 @@ function U1(e) {
 	}
 	return [...t.values()];
 }
-var W1 = (e) => e.state.selection.size > 0 && !e.isEditingText;
-function G1(e, t) {
-	W1(e) && e.commit(r$(e.state.document, e.state.selection, t));
+var J1 = (e) => e.state.selection.size > 0 && !e.isEditingText;
+function Y1(e, t) {
+	J1(e) && e.commit(s$(e.state.document, e.state.selection, t));
 }
-function K1(e, t) {
-	W1(e) && e.commit(o$(e.state.document, U1(e), t));
+function X1(e, t) {
+	J1(e) && e.commit(u$(e.state.document, q1(e), t));
 }
-function q1(e, t) {
-	W1(e) && e.commit(l$(e.state.document, U1(e), t));
+function Z1(e, t) {
+	J1(e) && e.commit(p$(e.state.document, q1(e), t));
 }
-var J1 = (e) => {
+var Q1 = (e) => {
 	let t = e.selectedElements;
-	return t.length > 0 && t.every(e$);
+	return t.length > 0 && t.every(i$);
 };
 /** Locks the selection, or unlocks it when everything selected is already locked. */
-function Y1(e) {
-	W1(e) && e.commit(a$(e.state.document, e.selectedElements, !J1(e)));
+function $1(e) {
+	J1(e) && e.commit(l$(e.state.document, e.selectedElements, !Q1(e)));
 }
-function X1(e) {
-	e.isEditingText || e.set({ selection: new Set(e.state.document.elements.filter((e) => !e$(e) && !e.hidden).map((e) => e.id)) });
+function e0(e) {
+	e.isEditingText || e.set({ selection: new Set(e.state.document.elements.filter((e) => !i$(e) && !e.hidden).map((e) => e.id)) });
 }
 /** One undo step per press. Devices carry their contents; locked elements stay put. */
-function Z1(e, t) {
-	if (!W1(e)) return;
-	let { document: n } = e.state, r = e.selectedElements.filter((e) => !e$(e)), i = new Set(r.map((e) => e.id)), a = r.filter(K).flatMap((e) => AH(n, e.id)).filter((e) => !i.has(e.id)), o = new Map([...r, ...a].map((e) => [e.id, _H(e, t)]));
+function t0(e, t) {
+	if (!J1(e)) return;
+	let { document: n } = e.state, r = e.selectedElements.filter((e) => !i$(e)), i = new Set(r.map((e) => e.id)), a = r.filter(K).flatMap((e) => AH(n, e.id)).filter((e) => !i.has(e.id)), o = new Map([...r, ...a].map((e) => [e.id, _H(e, t)]));
 	o.size > 0 && e.commit(BH(n, NH(n, [...o.values()])));
 }
-var Q1 = null;
-function $1(e) {
-	if (!W1(e)) return null;
+var n0 = null;
+function r0(e) {
+	if (!J1(e)) return null;
 	let t = JSON.stringify(UV(e.state.document, e.selectedElements));
-	return Q1 = {
+	return n0 = {
 		json: t,
 		pastes: 0
 	}, t;
 }
-function e0(e) {
-	let t = $1(e);
-	return t && vQ(e), t;
+function i0(e) {
+	let t = r0(e);
+	return t && SQ(e), t;
 }
 /** Repeated pastes cascade 24 pt down-right; copies get fresh IDs and keep their grouping. */
-function t0(e, t) {
-	let n = t ?? Q1?.json, r = n && !e.isEditingText ? n0(n) : null;
+function a0(e, t) {
+	let n = t ?? n0?.json, r = n && !e.isEditingText ? o0(n) : null;
 	if (!n || !r || r.length === 0) return !1;
-	Q1 = {
+	n0 = {
 		json: n,
-		pastes: Q1?.json === n ? Q1.pastes + 1 : 1
+		pastes: n0?.json === n ? n0.pastes + 1 : 1
 	};
-	let i = V1 * Q1.pastes, a = TH(r), o = new Map(r.map((e) => [e.id, G()])), s = r.map((e) => BV({
+	let i = G1 * n0.pastes, a = TH(r), o = new Map(r.map((e) => [e.id, G()])), s = r.map((e) => BV({
 		..._H(e, {
 			x: i,
 			y: i
@@ -50804,7 +50850,7 @@ function t0(e, t) {
 		tool: "select"
 	}), !0;
 }
-function n0(e) {
+function o0(e) {
 	try {
 		let t = JSON.parse(e);
 		return Array.isArray(t) && t.every((e) => typeof e == "object" && !!e && "id" in e && "kind" in e && "frame" in e) ? t : null;
@@ -50812,24 +50858,24 @@ function n0(e) {
 		return console.error("Clipboard data was not a Draftboard selection", e), null;
 	}
 }
-var r0 = {
+var s0 = {
 	x: 24,
 	y: 24
-}, i0 = null, a0 = (e, t) => e.size === t.size && [...e].every((e) => t.has(e));
+}, c0 = null, l0 = (e, t) => e.size === t.size && [...e].every((e) => t.has(e));
 /**
 * ⌘D like Figma: duplicate, move the copy, and the next ⌘D repeats that same step from the copy,
 * so a row or column builds up with even spacing.
 */
-function o0(e) {
+function u0(e) {
 	let t = e.selectedElements[0];
 	if (!t || e.isEditingText) return;
-	let n = i0 && a0(i0.ids, e.state.selection) ? i0 : null, r = n ? {
+	let n = c0 && l0(c0.ids, e.state.selection) ? c0 : null, r = n ? {
 		x: n.offset.x + t.frame.x - n.origin.x,
 		y: n.offset.y + t.frame.y - n.origin.y
-	} : r0;
-	_Q(e, r);
+	} : s0;
+	xQ(e, r);
 	let i = e.selectedElements[0];
-	i0 = i ? {
+	c0 = i ? {
 		ids: e.state.selection,
 		origin: {
 			x: i.frame.x,
@@ -50839,10 +50885,10 @@ function o0(e) {
 	} : null;
 }
 // src/ui/ContextMenu.tsx
-var s0 = 550, c0 = 8, l0 = 10, u0 = 240, d0 = 8;
+var d0 = 550, f0 = 8, p0 = 10, m0 = 240, h0 = 8;
 /** Right-click, or a long press with a finger or the Pencil, on the canvas. */
-function f0({ store: e }) {
-	let t = M1(e), [n, r] = (0, d.useState)(null), i = (0, d.useRef)(null), [a, o] = (0, d.useState)(0);
+function g0({ store: e }) {
+	let t = I1(e), [n, r] = (0, d.useState)(null), i = (0, d.useRef)(null), [a, o] = (0, d.useState)(0);
 	if ((0, d.useEffect)(() => {
 		let t = document.querySelector("canvas.canvas");
 		if (!t) return;
@@ -50852,7 +50898,7 @@ function f0({ store: e }) {
 			let i = t.getBoundingClientRect(), { camera: a, document: o, selection: s } = e.state, c = HH(o, tG(a, {
 				x: n.x - i.left,
 				y: n.y - i.top
-			}), l0 / a.scale);
+			}), p0 / a.scale);
 			c ? s.has(c.id) || e.set({ selection: new Set(CH(o, c).map((e) => e.id)) }) : e.set({ selection: /* @__PURE__ */ new Set() }), r(n);
 		}, o = (t) => {
 			e.isEditingText || e.state.tool !== "select" || (t.preventDefault(), i(), a({
@@ -50873,10 +50919,10 @@ function f0({ store: e }) {
 						pointerId: s,
 						pointerType: r.pointerType
 					})), a(o);
-				}, s0)
+				}, d0)
 			};
 		}, c = (e) => {
-			n && e.pointerId === n.id && Math.hypot(e.clientX - n.start.x, e.clientY - n.start.y) > c0 && i();
+			n && e.pointerId === n.id && Math.hypot(e.clientX - n.start.x, e.clientY - n.start.y) > f0 && i();
 		}, l = (e) => {
 			n && e.pointerId === n.id && i();
 		};
@@ -50894,7 +50940,7 @@ function f0({ store: e }) {
 	}, [n]), (0, d.useEffect)(() => {
 		n && i.current && o(i.current.offsetHeight);
 	}, [n, t.selection]), !n) return null;
-	let s = p0(e), c = Math.max(d0, Math.min(n.x, window.innerWidth - u0 - d0)), l = Math.max(d0, Math.min(n.y, window.innerHeight - a - d0)), u = (e) => () => {
+	let s = _0(e), c = Math.max(h0, Math.min(n.x, window.innerWidth - m0 - h0)), l = Math.max(h0, Math.min(n.y, window.innerHeight - a - h0)), u = (e) => () => {
 		e(), r(null);
 	};
 	return /* @__PURE__ */ (0, $.jsx)("div", {
@@ -50903,7 +50949,7 @@ function f0({ store: e }) {
 		style: {
 			left: c,
 			top: l,
-			width: u0
+			width: m0
 		},
 		role: "menu",
 		onContextMenu: (e) => e.preventDefault(),
@@ -50918,129 +50964,129 @@ function f0({ store: e }) {
 		}, t))
 	});
 }
-function p0(e) {
+function _0(e) {
 	if (e.selectedElements.length === 0) return [[{
 		label: "Paste",
 		shortcut: "⌘V",
-		run: () => t0(e)
+		run: () => a0(e)
 	}, {
 		label: "Select All",
 		shortcut: "⌘A",
-		run: () => X1(e)
+		run: () => e0(e)
 	}]];
-	let t = U1(e), n = J1(e), r = wH(e.state.document, e.state.selection) !== null;
+	let t = q1(e), n = Q1(e), r = wH(e.state.document, e.state.selection) !== null;
 	return [
 		[
 			{
 				label: "Copy",
 				shortcut: "⌘C",
-				run: () => $1(e)
+				run: () => r0(e)
 			},
 			{
 				label: "Cut",
 				shortcut: "⌘X",
-				run: () => e0(e)
+				run: () => i0(e)
 			},
 			{
 				label: "Paste",
 				shortcut: "⌘V",
-				run: () => t0(e)
+				run: () => a0(e)
 			},
 			{
 				label: "Duplicate",
 				shortcut: "⌘D",
-				run: () => o0(e)
+				run: () => u0(e)
 			},
 			{
 				label: "Delete",
 				shortcut: "⌫",
-				run: () => vQ(e)
+				run: () => SQ(e)
 			}
 		],
 		[
 			...t.length > 1 ? [{
 				label: "Group",
 				shortcut: "⌘G",
-				run: () => mQ(e)
+				run: () => vQ(e)
 			}] : [],
 			...r ? [{
 				label: "Ungroup",
 				shortcut: "⇧⌘G",
-				run: () => hQ(e)
+				run: () => yQ(e)
 			}] : [],
 			{
 				label: n ? "Unlock" : "Lock",
 				shortcut: "⇧⌘L",
-				run: () => Y1(e)
+				run: () => $1(e)
 			}
 		],
 		[
 			{
 				label: "Bring to Front",
 				shortcut: "]",
-				run: () => G1(e, "front")
+				run: () => Y1(e, "front")
 			},
 			{
 				label: "Bring Forward",
 				shortcut: "⌘]",
-				run: () => G1(e, "forward")
+				run: () => Y1(e, "forward")
 			},
 			{
 				label: "Send Backward",
 				shortcut: "⌘[",
-				run: () => G1(e, "backward")
+				run: () => Y1(e, "backward")
 			},
 			{
 				label: "Send to Back",
 				shortcut: "[",
-				run: () => G1(e, "back")
+				run: () => Y1(e, "back")
 			}
 		],
 		t.length < 2 ? [] : [
 			{
 				label: "Align Left",
 				shortcut: "⌥A",
-				run: () => K1(e, "left")
+				run: () => X1(e, "left")
 			},
 			{
 				label: "Align Center",
 				shortcut: "⌥H",
-				run: () => K1(e, "centerX")
+				run: () => X1(e, "centerX")
 			},
 			{
 				label: "Align Right",
 				shortcut: "⌥D",
-				run: () => K1(e, "right")
+				run: () => X1(e, "right")
 			},
 			{
 				label: "Align Top",
 				shortcut: "⌥W",
-				run: () => K1(e, "top")
+				run: () => X1(e, "top")
 			},
 			{
 				label: "Align Middle",
 				shortcut: "⌥V",
-				run: () => K1(e, "centerY")
+				run: () => X1(e, "centerY")
 			},
 			{
 				label: "Align Bottom",
 				shortcut: "⌥S",
-				run: () => K1(e, "bottom")
+				run: () => X1(e, "bottom")
 			}
 		],
 		t.length < 3 ? [] : [{
 			label: "Distribute Horizontally",
 			shortcut: "⌥⇧H",
-			run: () => q1(e, "horizontal")
+			run: () => Z1(e, "horizontal")
 		}, {
 			label: "Distribute Vertically",
 			shortcut: "⌥⇧V",
-			run: () => q1(e, "vertical")
+			run: () => Z1(e, "vertical")
 		}]
 	].filter((e) => e.length > 0);
 }
 // src/ui/iconSearch.tsx
-var m0 = 400, h0 = lG.length, g0 = [
+var v0 = 400, y0 = lG.length, b0 = [
 	{
 		title: "Navigation",
 		names: [
@@ -51193,7 +51239,7 @@ var m0 = 400, h0 = lG.length, g0 = [
 			"CloudUpload"
 		]
 	}
-], _0 = {
+], x0 = {
 	hamburger: "menu",
 	burger: "menu",
 	more: "ellipsis",
@@ -51253,20 +51299,20 @@ var m0 = 400, h0 = lG.length, g0 = [
 	collapse: "minimize",
 	logout: "log out",
 	login: "log in"
-}, v0 = (e) => e.replace(/([a-z0-9])([A-Z])/g, "$1 $2").toLowerCase();
-function y0(e) {
-	let t = e.trim().toLowerCase(), n = _0[t] ?? t;
+}, S0 = (e) => e.replace(/([a-z0-9])([A-Z])/g, "$1 $2").toLowerCase();
+function C0(e) {
+	let t = e.trim().toLowerCase(), n = x0[t] ?? t;
 	if (n === "") return [...lG];
 	let r = (e) => {
-		let t = v0(e);
+		let t = S0(e);
 		return t === n ? 0 : t.startsWith(n) ? 1 : t.split(" ").includes(n) ? 2 : 3;
 	};
-	return lG.filter((e) => v0(e).includes(n) || e.toLowerCase().includes(n)).map((e) => ({
+	return lG.filter((e) => S0(e).includes(n) || e.toLowerCase().includes(n)).map((e) => ({
 		n: e,
 		r: r(e)
-	})).sort((e, t) => e.r - t.r).slice(0, m0).map(({ n: e }) => e);
+	})).sort((e, t) => e.r - t.r).slice(0, v0).map(({ n: e }) => e);
 }
-function b0({ name: e }) {
+function w0({ name: e }) {
 	return /* @__PURE__ */ (0, $.jsx)("svg", {
 		viewBox: "0 0 24 24",
 		width: "24",
@@ -51281,65 +51327,98 @@ function b0({ name: e }) {
 	});
 }
 // src/ui/LayersPanel.tsx
-var x0 = 4, S0 = 18, C0 = {
-	rectangle: /* @__PURE__ */ (0, $.jsx)(pZ, {}),
-	ellipse: /* @__PURE__ */ (0, $.jsx)(zY, {}),
-	line: /* @__PURE__ */ (0, $.jsx)(TX, {}),
-	arrow: /* @__PURE__ */ (0, $.jsx)(kX, {}),
-	ink: /* @__PURE__ */ (0, $.jsx)(FX, {}),
-	device: /* @__PURE__ */ (0, $.jsx)(lZ, {}),
-	text: /* @__PURE__ */ (0, $.jsx)(TZ, {}),
-	symbol: /* @__PURE__ */ (0, $.jsx)(aX, {}),
-	component: /* @__PURE__ */ (0, $.jsx)(pZ, {}),
-	image: /* @__PURE__ */ (0, $.jsx)(lX, {}),
-	placeholder: /* @__PURE__ */ (0, $.jsx)(lX, {}),
-	note: /* @__PURE__ */ (0, $.jsx)(_Z, {}),
-	flow: /* @__PURE__ */ (0, $.jsx)(pZ, {}),
-	connector: /* @__PURE__ */ (0, $.jsx)(dZ, {})
-}, w0 = {
-	button: /* @__PURE__ */ (0, $.jsx)(GX, {}),
-	navigationBar: /* @__PURE__ */ (0, $.jsx)(NX, {}),
-	tabBar: /* @__PURE__ */ (0, $.jsx)(jX, {}),
-	listRow: /* @__PURE__ */ (0, $.jsx)($X, {}),
-	toggle: /* @__PURE__ */ (0, $.jsx)(xZ, {}),
-	textField: /* @__PURE__ */ (0, $.jsx)(yZ, {}),
-	searchBar: /* @__PURE__ */ (0, $.jsx)(tZ, {}),
-	segmentedControl: /* @__PURE__ */ (0, $.jsx)(GY, {}),
-	slider: /* @__PURE__ */ (0, $.jsx)(sZ, {}),
-	card: /* @__PURE__ */ (0, $.jsx)(YY, {}),
-	imagePlaceholder: /* @__PURE__ */ (0, $.jsx)(lX, {})
+var T0 = 4, E0 = 18, D0 = {
+	rectangle: /* @__PURE__ */ (0, $.jsx)(_Z, {}),
+	ellipse: /* @__PURE__ */ (0, $.jsx)(UY, {}),
+	line: /* @__PURE__ */ (0, $.jsx)(kX, {}),
+	arrow: /* @__PURE__ */ (0, $.jsx)(NX, {}),
+	ink: /* @__PURE__ */ (0, $.jsx)(zX, {}),
+	device: /* @__PURE__ */ (0, $.jsx)(pZ, {}),
+	text: /* @__PURE__ */ (0, $.jsx)(kZ, {}),
+	symbol: /* @__PURE__ */ (0, $.jsx)(lX, {}),
+	component: /* @__PURE__ */ (0, $.jsx)(_Z, {}),
+	image: /* @__PURE__ */ (0, $.jsx)(pX, {}),
+	placeholder: /* @__PURE__ */ (0, $.jsx)(pX, {}),
+	note: /* @__PURE__ */ (0, $.jsx)(xZ, {}),
+	flow: /* @__PURE__ */ (0, $.jsx)(_Z, {}),
+	connector: /* @__PURE__ */ (0, $.jsx)(hZ, {})
+}, O0 = {
+	button: /* @__PURE__ */ (0, $.jsx)(YX, {}),
+	navigationBar: /* @__PURE__ */ (0, $.jsx)(LX, {}),
+	tabBar: /* @__PURE__ */ (0, $.jsx)(FX, {}),
+	listRow: /* @__PURE__ */ (0, $.jsx)(rZ, {}),
+	toggle: /* @__PURE__ */ (0, $.jsx)(TZ, {}),
+	textField: /* @__PURE__ */ (0, $.jsx)(CZ, {}),
+	searchBar: /* @__PURE__ */ (0, $.jsx)(aZ, {}),
+	segmentedControl: /* @__PURE__ */ (0, $.jsx)(YY, {}),
+	slider: /* @__PURE__ */ (0, $.jsx)(dZ, {}),
+	card: /* @__PURE__ */ (0, $.jsx)($Y, {}),
+	imagePlaceholder: /* @__PURE__ */ (0, $.jsx)(pX, {})
 };
 /** The row's symbol: an icon layer shows its own icon, a component its kind, everything else its element type. */
-function T0(e) {
+function k0(e) {
 	let t = e.kind;
-	return t.type === "symbol" ? uG(t.name) ? /* @__PURE__ */ (0, $.jsx)(b0, { name: t.name }) : /* @__PURE__ */ (0, $.jsx)(aX, {}) : t.type === "component" ? w0[t.content.kind] ?? /* @__PURE__ */ (0, $.jsx)(pZ, {}) : C0[t.type];
+	return t.type === "symbol" ? uG(t.name) ? /* @__PURE__ */ (0, $.jsx)(w0, { name: t.name }) : /* @__PURE__ */ (0, $.jsx)(lX, {}) : t.type === "component" ? O0[t.content.kind] ?? /* @__PURE__ */ (0, $.jsx)(_Z, {}) : D0[t.type];
 }
-var E0 = (e) => e.members.map((e) => e.id), D0 = (e) => e.id.startsWith("group:"), O0 = (e) => e.flatMap((e) => [e, ...O0(e.children)]), k0 = 1200;
-function A0(e) {
+var A0 = (e) => e.members.map((e) => e.id), j0 = (e) => e.id.startsWith("group:"), M0 = (e) => e.flatMap((e) => [e, ...M0(e.children)]), N0 = 1200;
+function P0(e) {
 	let t = `(max-width: ${e - 1}px)`, [n, r] = (0, d.useState)(() => window.matchMedia(t).matches);
 	return (0, d.useEffect)(() => {
 		let e = window.matchMedia(t), n = () => r(e.matches);
 		return e.addEventListener("change", n), () => e.removeEventListener("change", n);
 	}, [t]), n;
 }
-function j0({ store: e }) {
-	let t = M1(e), n = VQ(t.document), [r, i] = (0, d.useState)(/* @__PURE__ */ new Set()), [a, o] = (0, d.useState)(null), s = A0(k0), [c, l] = (0, d.useState)(!s);
+function F0({ store: e }) {
+	let t = I1(e), n = GQ(t.document), [r, i] = (0, d.useState)(/* @__PURE__ */ new Set()), [a, o] = (0, d.useState)(null), s = P0(N0), [c, l] = (0, d.useState)(!s);
 	(0, d.useEffect)(() => l(!s), [s]);
-	let [u, f] = (0, d.useState)(null), p = (0, d.useRef)(null), m = (e) => D0(e) ? r.has(`open:${e.id}`) : !r.has(e.id), h = (e) => {
-		let t = D0(e) ? `open:${e.id}` : e.id;
+	let [u, f] = (0, d.useState)(null), p = (0, d.useRef)(null), m = (e) => j0(e) ? r.has(`open:${e.id}`) : !r.has(e.id), h = (e) => {
+		let t = j0(e) ? `open:${e.id}` : e.id;
 		i(new Set(r.has(t) ? [...r].filter((e) => e !== t) : [...r, t]));
-	}, g = (0, d.useRef)(null), _ = (e) => e.flatMap((e) => [e, ...m(e) ? _(e.children) : []]), v = (r, i) => {
-		let a = E0(r), o = t.selection, s = _(n), c = s.findIndex((e) => e.id === g.current), l = s.findIndex((e) => e.id === r.id), u;
+	};
+	(0, d.useEffect)(() => {
+		let e = (e) => {
+			if (!e.altKey || e.metaKey || e.ctrlKey || e.code !== "KeyL") return;
+			let t = e.target;
+			if (t && (t.isContentEditable || ["INPUT", "TEXTAREA"].includes(t.tagName))) return;
+			e.preventDefault();
+			let r = (e) => e.flatMap((e) => [e, ...r(e.children)]);
+			i(new Set(r(n).filter((e) => e.children.length > 0 && !j0(e)).map((e) => e.id)));
+		};
+		return window.addEventListener("keydown", e), () => window.removeEventListener("keydown", e);
+	}, [n]);
+	let g = (0, d.useRef)(null);
+	(0, d.useEffect)(() => {
+		if (t.selection.size === 0) return;
+		let e = (n, r) => {
+			for (let i of n) {
+				if (i.members.some((e) => t.selection.has(e.id))) return r;
+				let n = e(i.children, [...r, i]);
+				if (n) return n;
+			}
+			return null;
+		}, a = e(n, []) ?? [], o = a.map((e) => j0(e) ? `open:${e.id}` : e.id), s = new Set(r), c = !1;
+		a.forEach((e, t) => {
+			let n = o[t];
+			(j0(e) ? !s.has(n) : s.has(n)) && (j0(e) ? s.add(n) : s.delete(n), c = !0);
+		}), c && i(s), requestAnimationFrame(() => {
+			(g.current?.querySelector(".layer-row.selected"))?.scrollIntoView({
+				block: "nearest",
+				behavior: "smooth"
+			});
+		});
+	}, [t.selection]);
+	let _ = (0, d.useRef)(null), v = (e) => e.flatMap((e) => [e, ...m(e) ? v(e.children) : []]), y = (r, i) => {
+		let a = A0(r), o = t.selection, s = v(n), c = s.findIndex((e) => e.id === _.current), l = s.findIndex((e) => e.id === r.id), u;
 		if (i === "range" && c >= 0 && l >= 0) {
-			let e = s.slice(Math.min(c, l), Math.max(c, l) + 1), t = new Set(e.filter((e) => e.children.length > 0).flatMap((e) => O0(e.children).map((e) => e.id)));
-			u = /* @__PURE__ */ new Set([...o, ...e.filter((e) => !t.has(e.id)).flatMap(E0)]);
-		} else i === "toggle" || i === "range" ? (u = new Set(a.every((e) => o.has(e)) ? [...o].filter((e) => !a.includes(e)) : [...o, ...a]), g.current = r.id) : (u = new Set(a), g.current = r.id);
+			let e = s.slice(Math.min(c, l), Math.max(c, l) + 1), t = new Set(e.filter((e) => e.children.length > 0).flatMap((e) => M0(e.children).map((e) => e.id)));
+			u = /* @__PURE__ */ new Set([...o, ...e.filter((e) => !t.has(e.id)).flatMap(A0)]);
+		} else i === "toggle" || i === "range" ? (u = new Set(a.every((e) => o.has(e)) ? [...o].filter((e) => !a.includes(e)) : [...o, ...a]), _.current = r.id) : (u = new Set(a), _.current = r.id);
 		e.set({ selection: u });
 		let d = xH(r.members);
 		d && i === "replace" && e.reveal(d);
-	}, y = (n, r) => {
-		o(null), r !== null && r.trim() !== zQ(n.element) && e.commit(BH(t.document, [BQ(n.element, r)]));
-	}, b = (e, t) => {
+	}, b = (n, r) => {
+		o(null), r !== null && r.trim() !== UQ(n.element) && e.commit(BH(t.document, [WQ(n.element, r)]));
+	}, ee = (e, t) => {
 		let n = document.elementFromPoint(e, t)?.closest("[data-layer-id]"), r = n?.dataset.layerId;
 		if (!n || !r) return null;
 		let i = n.getBoundingClientRect(), a = (t - i.top) / i.height;
@@ -51347,7 +51426,7 @@ function j0({ store: e }) {
 			rowID: r,
 			position: n.dataset.frame === "true" && a > .25 && a < .75 ? "inside" : a < .5 ? "above" : "below"
 		};
-	}, ee = (e) => (t) => {
+	}, x = (e) => (t) => {
 		t.button !== 0 || a || (p.current = {
 			row: e,
 			pointerID: t.pointerId,
@@ -51357,44 +51436,44 @@ function j0({ store: e }) {
 			},
 			active: !1
 		});
-	}, x = (e) => {
+	}, S = (e) => {
 		let t = p.current;
 		if (t && t.pointerID === e.pointerId) {
 			if (!t.active) {
-				if (Math.hypot(e.clientX - t.start.x, e.clientY - t.start.y) < x0) return;
+				if (Math.hypot(e.clientX - t.start.x, e.clientY - t.start.y) < T0) return;
 				p.current = {
 					...t,
 					active: !0
 				}, e.currentTarget.setPointerCapture(e.pointerId);
 			}
-			f(b(e.clientX, e.clientY));
+			f(ee(e.clientX, e.clientY));
 		}
-	}, S = (r) => {
+	}, te = (r) => {
 		let i = p.current;
 		if (p.current = null, !i || i.pointerID !== r.pointerId) return;
 		if (!i.active) {
-			v(i.row, r.shiftKey ? "range" : r.metaKey || r.ctrlKey ? "toggle" : "replace");
+			y(i.row, r.shiftKey ? "range" : r.metaKey || r.ctrlKey ? "toggle" : "replace");
 			return;
 		}
-		let a = u && O0(n).find((e) => e.id === u.rowID);
+		let a = u && M0(n).find((e) => e.id === u.rowID);
 		if (f(null), !a || !u) return;
 		let o = u.position === "below" ? a.members[0] : a.members[a.members.length - 1];
-		o && e.commit(WQ(t.document, new Set(E0(i.row)), o, u.position));
-	}, te = (n, r) => {
-		let i = E0(n).every((e) => t.selection.has(e)), s = n.members.every((e) => e.locked), c = n.members.every((e) => e.hidden), l = n.children.length > 0, d = l && m(n), g = u?.rowID === n.id ? ` drop-${u.position}` : "";
+		o && e.commit(JQ(t.document, new Set(A0(i.row)), o, u.position));
+	}, C = (n, r) => {
+		let i = A0(n).every((e) => t.selection.has(e)), s = n.members.every((e) => e.locked), c = n.members.every((e) => e.hidden), l = n.children.length > 0, d = l && m(n), g = u?.rowID === n.id ? ` drop-${u.position}` : "";
 		return /* @__PURE__ */ (0, $.jsxs)("li", { children: [/* @__PURE__ */ (0, $.jsxs)("div", {
 			className: `layer-row${r === 0 ? " top" : ""}${i ? " selected" : ""}${c ? " is-hidden" : ""}${g}`,
 			"data-layer-id": n.id,
-			"data-frame": n.element.kind.type === "device" && !D0(n),
-			style: { paddingLeft: 4 + r * S0 },
-			onPointerDown: ee(n),
-			onPointerMove: x,
-			onPointerUp: S,
+			"data-frame": n.element.kind.type === "device" && !j0(n),
+			style: { paddingLeft: 4 + r * E0 },
+			onPointerDown: x(n),
+			onPointerMove: S,
+			onPointerUp: te,
 			onPointerCancel: () => {
 				p.current = null, f(null);
 			},
 			onDoubleClick: () => {
-				D0(n) || o(n.id);
+				j0(n) || o(n.id);
 			},
 			children: [
 				/* @__PURE__ */ (0, $.jsx)("button", {
@@ -51403,25 +51482,25 @@ function j0({ store: e }) {
 					style: { visibility: l ? "visible" : "hidden" },
 					onPointerDown: (e) => e.stopPropagation(),
 					onClick: () => h(n),
-					children: d ? /* @__PURE__ */ (0, $.jsx)(NY, {}) : /* @__PURE__ */ (0, $.jsx)(LY, {})
+					children: d ? /* @__PURE__ */ (0, $.jsx)(LY, {}) : /* @__PURE__ */ (0, $.jsx)(VY, {})
 				}),
 				/* @__PURE__ */ (0, $.jsx)("span", {
 					className: "layer-icon",
-					children: D0(n) ? /* @__PURE__ */ (0, $.jsx)(sX, {}) : T0(n.element)
+					children: j0(n) ? /* @__PURE__ */ (0, $.jsx)(dX, {}) : k0(n.element)
 				}),
 				a === n.id ? /* @__PURE__ */ (0, $.jsx)("input", {
 					className: "layer-name-input",
 					autoFocus: !0,
-					defaultValue: D0(n) ? "Group" : zQ(n.element),
+					defaultValue: j0(n) ? "Group" : UQ(n.element),
 					onPointerDown: (e) => e.stopPropagation(),
 					onFocus: (e) => e.currentTarget.select(),
-					onBlur: (e) => y(n, e.currentTarget.value),
+					onBlur: (e) => b(n, e.currentTarget.value),
 					onKeyDown: (e) => {
-						e.key === "Enter" && e.currentTarget.blur(), e.key === "Escape" && y(n, null);
+						e.key === "Enter" && e.currentTarget.blur(), e.key === "Escape" && b(n, null);
 					}
 				}) : /* @__PURE__ */ (0, $.jsx)("span", {
 					className: "layer-name",
-					children: D0(n) ? "Group" : zQ(n.element)
+					children: j0(n) ? "Group" : UQ(n.element)
 				}),
 				/* @__PURE__ */ (0, $.jsxs)("span", {
 					className: `layer-toggles${s || c ? " pinned" : ""}`,
@@ -51429,17 +51508,17 @@ function j0({ store: e }) {
 					children: [/* @__PURE__ */ (0, $.jsx)("button", {
 						className: s ? "on" : "",
 						"aria-label": s ? "Unlock" : "Lock",
-						onClick: () => e.commit(a$(t.document, n.members, !s)),
-						children: s ? /* @__PURE__ */ (0, $.jsx)(_X, {}) : /* @__PURE__ */ (0, $.jsx)(hX, {})
+						onClick: () => e.commit(l$(t.document, n.members, !s)),
+						children: s ? /* @__PURE__ */ (0, $.jsx)(xX, {}) : /* @__PURE__ */ (0, $.jsx)(yX, {})
 					}), /* @__PURE__ */ (0, $.jsx)("button", {
 						className: c ? "on" : "",
 						"aria-label": c ? "Show" : "Hide",
-						onClick: () => e.commit(qQ(t.document, n.members, !c)),
-						children: c ? /* @__PURE__ */ (0, $.jsx)(tX, {}) : /* @__PURE__ */ (0, $.jsx)(rX, {})
+						onClick: () => e.commit(ZQ(t.document, n.members, !c)),
+						children: c ? /* @__PURE__ */ (0, $.jsx)(aX, {}) : /* @__PURE__ */ (0, $.jsx)(sX, {})
 					})]
 				})
 			]
-		}), d && /* @__PURE__ */ (0, $.jsx)("ul", { children: n.children.map((e) => te(e, r + 1)) })] }, n.id);
+		}), d && /* @__PURE__ */ (0, $.jsx)("ul", { children: n.children.map((e) => C(e, r + 1)) })] }, n.id);
 	};
 	return /* @__PURE__ */ (0, $.jsxs)("aside", {
 		className: `panel layers-panel${c ? "" : " collapsed"}`,
@@ -51447,18 +51526,19 @@ function j0({ store: e }) {
 			className: "panel-header layers-toggle",
 			onClick: () => l(!c),
 			"aria-expanded": c,
-			children: [/* @__PURE__ */ (0, $.jsx)("h2", { children: "Layers" }), c ? /* @__PURE__ */ (0, $.jsx)(NY, {}) : /* @__PURE__ */ (0, $.jsx)(LY, {})]
+			children: [/* @__PURE__ */ (0, $.jsx)("h2", { children: "Layers" }), c ? /* @__PURE__ */ (0, $.jsx)(LY, {}) : /* @__PURE__ */ (0, $.jsx)(VY, {})]
 		}), c && /* @__PURE__ */ (0, $.jsxs)($.Fragment, { children: [n.length === 0 && /* @__PURE__ */ (0, $.jsx)("p", {
 			className: "panel-hint layer-tip",
 			children: "Nothing here yet. Drag rows to reorder or move them into a screen; double-click to rename."
 		}), /* @__PURE__ */ (0, $.jsx)("ul", {
 			className: "layer-list",
-			children: n.map((e) => te(e, 0))
+			ref: g,
+			children: n.map((e) => C(e, 0))
 		})] })]
 	});
 }
 // src/ui/FlowShapeIcon.tsx
-var M0 = c(), N0 = {
+var I0 = c(), L0 = {
 	process: "M4 7.5h16a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-7a1 1 0 0 1 1-1z",
 	decision: "M12 4l8.5 8-8.5 8-8.5-8z",
 	terminal: "M8 7.5h8a4.5 4.5 0 0 1 0 9H8a4.5 4.5 0 0 1 0-9z",
@@ -51469,7 +51549,7 @@ var M0 = c(), N0 = {
 	preparation: "M7 7.5h10l4 4.5-4 4.5H7l-4-4.5z",
 	circle: "M12 5a7 7 0 1 1 0 14 7 7 0 0 1 0-14z"
 };
-function P0({ shape: e }) {
+function R0({ shape: e }) {
 	return /* @__PURE__ */ (0, $.jsx)("svg", {
 		viewBox: "0 0 24 24",
 		width: "24",
@@ -51481,11 +51561,11 @@ function P0({ shape: e }) {
 		strokeLinecap: "round",
 		"aria-hidden": !0,
 		className: "lucide",
-		children: /* @__PURE__ */ (0, $.jsx)("path", { d: N0[e] })
+		children: /* @__PURE__ */ (0, $.jsx)("path", { d: L0[e] })
 	});
 }
 /** The Connector tool's icon: a bare elbow arrow, nothing like the Flowchart button's shape. */
-function F0() {
+function z0() {
 	return /* @__PURE__ */ (0, $.jsxs)("svg", {
 		viewBox: "0 0 24 24",
 		width: "24",
@@ -51509,9 +51589,9 @@ function F0() {
 	});
 }
 // src/ui/Presence.tsx
-var I0 = 180;
+var B0 = 180;
 /** Keeps the last content mounted briefly after `show` turns false so CSS can play its exit animation. */
-function L0({ show: e, children: t }) {
+function V0({ show: e, children: t }) {
 	let n = (0, d.useRef)(t);
 	e && (n.current = t);
 	let [r, i] = (0, d.useState)(e);
@@ -51520,7 +51600,7 @@ function L0({ show: e, children: t }) {
 			i(!0);
 			return;
 		}
-		let t = window.setTimeout(() => i(!1), I0);
+		let t = window.setTimeout(() => i(!1), B0);
 		return () => window.clearTimeout(t);
 	}, [e]), !e && !r ? null : /* @__PURE__ */ (0, $.jsx)("div", {
 		className: "presence",
@@ -51529,7 +51609,7 @@ function L0({ show: e, children: t }) {
 	});
 }
 // src/ui/Menu.tsx
-function R0({ open: e, onClose: t, trigger: n, align: r = "start", children: i }) {
+function H0({ open: e, onClose: t, trigger: n, align: r = "start", children: i }) {
 	let a = (0, d.useRef)(null);
 	return (0, d.useEffect)(() => {
 		if (!e) return;
@@ -51544,7 +51624,7 @@ function R0({ open: e, onClose: t, trigger: n, align: r = "start", children: i }
 	}, [e, t]), /* @__PURE__ */ (0, $.jsxs)("div", {
 		className: "menu-anchor",
 		ref: a,
-		children: [n, /* @__PURE__ */ (0, $.jsx)(L0, {
+		children: [n, /* @__PURE__ */ (0, $.jsx)(V0, {
 			show: e,
 			children: /* @__PURE__ */ (0, $.jsx)("div", {
 				className: `menu ${r}`,
@@ -51555,7 +51635,7 @@ function R0({ open: e, onClose: t, trigger: n, align: r = "start", children: i }
 }
 // src/ui/Toolbar.tsx
 /** Icon button with a hover label (and its shortcut) instead of the slow native tooltip. */
-function z0({ title: e, shortcut: t, active: n = !1, disabled: r = !1, onClick: i, children: a }) {
+function U0({ title: e, shortcut: t, active: n = !1, disabled: r = !1, onClick: i, children: a }) {
 	return /* @__PURE__ */ (0, $.jsx)("button", {
 		className: `icon-button${n ? " active" : ""}`,
 		"aria-label": t ? `${e} (${t})` : e,
@@ -51567,47 +51647,47 @@ function z0({ title: e, shortcut: t, active: n = !1, disabled: r = !1, onClick: 
 	});
 }
 // src/ui/ShareControls.tsx
-var B0 = {
+var W0 = {
 	edit: "Can edit",
 	comment: "Can comment",
 	view: "Can view"
-}, V0 = {
+}, G0 = {
 	local: "Only on this device",
 	connecting: "Connecting…",
 	online: "Synced",
 	offline: "Offline, will sync when back",
 	denied: "No access"
-}, H0 = (e) => (0, d.useSyncExternalStore)(e.subscribe, e.getSnapshot);
-function U0({ store: e, session: t }) {
-	let n = H0(t), [r, i] = (0, d.useState)(!1), a = n.status === "online";
-	return YJ() ? /* @__PURE__ */ (0, $.jsxs)($.Fragment, { children: [
+}, K0 = (e) => (0, d.useSyncExternalStore)(e.subscribe, e.getSnapshot);
+function q0({ store: e, session: t }) {
+	let n = K0(t), [r, i] = (0, d.useState)(!1), a = n.status === "online";
+	return $J() ? /* @__PURE__ */ (0, $.jsxs)($.Fragment, { children: [
 		/* @__PURE__ */ (0, $.jsx)("div", {
 			className: `sync-status status-${n.status}`,
-			title: n.message ?? V0[n.status],
-			children: n.status === "local" ? null : a ? /* @__PURE__ */ (0, $.jsx)(UY, {}) : /* @__PURE__ */ (0, $.jsx)(VY, {})
+			title: n.message ?? G0[n.status],
+			children: n.status === "local" ? null : a ? /* @__PURE__ */ (0, $.jsx)(qY, {}) : /* @__PURE__ */ (0, $.jsx)(GY, {})
 		}),
-		/* @__PURE__ */ (0, $.jsx)(z0, {
+		/* @__PURE__ */ (0, $.jsx)(U0, {
 			title: "Share",
 			active: r,
 			onClick: () => i(!0),
-			children: /* @__PURE__ */ (0, $.jsx)(kZ, {})
+			children: /* @__PURE__ */ (0, $.jsx)(NZ, {})
 		}),
-		r && (0, M0.createPortal)(/* @__PURE__ */ (0, $.jsx)(W0, {
+		r && (0, I0.createPortal)(/* @__PURE__ */ (0, $.jsx)(J0, {
 			store: e,
 			session: t,
 			onClose: () => i(!1)
 		}), document.body)
 	] }) : null;
 }
-function W0({ store: e, session: t, onClose: n }) {
-	let r = H0(t), [i, a] = (0, d.useState)(null), o = t.cloud, s = async () => {
+function J0({ store: e, session: t, onClose: n }) {
+	let r = K0(t), [i, a] = (0, d.useState)(null), o = t.cloud, s = async () => {
 		a(null);
 		try {
 			await t.share();
 		} catch (e) {
 			console.error("Sharing failed", e), a(e instanceof Error ? e.message : "Couldn't share this board.");
 		}
-	}, c = o?.keys ? Object.entries(uY(o.id, o.keys)) : o ? [[o.role, lY(o.id, o.key)]] : [];
+	}, c = o?.keys ? Object.entries(mY(o.id, o.keys)) : o ? [[o.role, pY(o.id, o.key)]] : [];
 	return /* @__PURE__ */ (0, $.jsx)("div", {
 		className: "modal-backdrop",
 		onPointerDown: (e) => {
@@ -51634,16 +51714,16 @@ function W0({ store: e, session: t, onClose: n }) {
 				o && /* @__PURE__ */ (0, $.jsxs)($.Fragment, { children: [
 					/* @__PURE__ */ (0, $.jsx)("p", {
 						className: "panel-hint",
-						children: o.keys ? "Anyone with a link gets that access after signing in." : `You opened this from a link. ${B0[o.role]}.`
+						children: o.keys ? "Anyone with a link gets that access after signing in." : `You opened this from a link. ${W0[o.role]}.`
 					}),
-					c.map(([t, n]) => /* @__PURE__ */ (0, $.jsx)(G0, {
-						label: B0[t],
+					c.map(([t, n]) => /* @__PURE__ */ (0, $.jsx)(Y0, {
+						label: W0[t],
 						url: n,
 						onError: (t) => e.reportError(t)
 					}, t)),
 					/* @__PURE__ */ (0, $.jsx)("p", {
 						className: "panel-hint",
-						children: r.message ?? V0[r.status]
+						children: r.message ?? G0[r.status]
 					})
 				] }),
 				i && /* @__PURE__ */ (0, $.jsx)("p", {
@@ -51662,7 +51742,7 @@ function W0({ store: e, session: t, onClose: n }) {
 		})
 	});
 }
-function G0({ label: e, url: t, onError: n }) {
+function Y0({ label: e, url: t, onError: n }) {
 	let [r, i] = (0, d.useState)(!1), a = async () => {
 		try {
 			await navigator.clipboard.writeText(t), i(!0), setTimeout(() => i(!1), 1500);
@@ -51688,28 +51768,28 @@ function G0({ label: e, url: t, onError: n }) {
 				className: "secondary",
 				onClick: () => void a(),
 				"aria-label": `Copy ${e} link`,
-				children: r ? /* @__PURE__ */ (0, $.jsx)(jY, {}) : /* @__PURE__ */ (0, $.jsx)(pX, {})
+				children: r ? /* @__PURE__ */ (0, $.jsx)(FY, {}) : /* @__PURE__ */ (0, $.jsx)(_X, {})
 			})
 		]
 	});
 }
 /** Stands in for the editing toolbar when the link only allows commenting or viewing. */
-function K0({ store: e }) {
-	let t = M1(e);
+function X0({ store: e }) {
+	let t = I1(e);
 	return /* @__PURE__ */ (0, $.jsxs)("div", {
 		className: "toolbar access-bar",
 		children: [
-			/* @__PURE__ */ (0, $.jsx)(z0, {
+			/* @__PURE__ */ (0, $.jsx)(U0, {
 				title: "Select (V)",
 				active: t.tool === "select",
 				onClick: () => e.setTool("select"),
-				children: /* @__PURE__ */ (0, $.jsx)(DX, {})
+				children: /* @__PURE__ */ (0, $.jsx)(jX, {})
 			}),
-			t.access === "comment" && /* @__PURE__ */ (0, $.jsx)(z0, {
+			t.access === "comment" && /* @__PURE__ */ (0, $.jsx)(U0, {
 				title: "Comment (C)",
 				active: t.tool === "comment",
 				onClick: () => e.setTool("comment"),
-				children: /* @__PURE__ */ (0, $.jsx)(xX, {})
+				children: /* @__PURE__ */ (0, $.jsx)(TX, {})
 			}),
 			/* @__PURE__ */ (0, $.jsx)("span", {
 				className: "access-label",
@@ -51720,29 +51800,29 @@ function K0({ store: e }) {
 }
 // src/ui/CommentHistory.tsx
 /** Newest first. Entries come from the server, so they cover everyone's activity and survive deletions. */
-function q0({ store: e, session: t }) {
-	let { history: n } = H0(t), r = [...n].reverse();
+function Z0({ store: e, session: t }) {
+	let { history: n } = K0(t), r = [...n].reverse();
 	return r.length === 0 ? /* @__PURE__ */ (0, $.jsx)("p", {
 		className: "panel-hint",
 		children: "No comment activity yet."
 	}) : /* @__PURE__ */ (0, $.jsx)("ul", {
 		className: "history-list",
-		children: r.map((t) => /* @__PURE__ */ (0, $.jsx)(J0, {
+		children: r.map((t) => /* @__PURE__ */ (0, $.jsx)(Q0, {
 			store: e,
 			entry: t
 		}, t.id))
 	});
 }
-function J0({ store: e, entry: t }) {
+function Q0({ store: e, entry: t }) {
 	let n = e.state.comments.some((e) => e.id === t.threadID);
 	return /* @__PURE__ */ (0, $.jsx)("li", { children: /* @__PURE__ */ (0, $.jsxs)("button", {
 		className: "history-row",
 		disabled: !n,
-		onClick: () => y$(e, t.threadID, !0),
+		onClick: () => C$(e, t.threadID, !0),
 		title: n ? "Show this comment" : "This comment was deleted",
 		children: [/* @__PURE__ */ (0, $.jsx)("span", {
 			className: "avatar",
-			children: z1(t.actor)
+			children: U1(t.actor)
 		}), /* @__PURE__ */ (0, $.jsxs)("span", {
 			className: "history-text",
 			children: [/* @__PURE__ */ (0, $.jsxs)("span", { children: [
@@ -51752,7 +51832,7 @@ function J0({ store: e, entry: t }) {
 				" ",
 				/* @__PURE__ */ (0, $.jsx)("time", {
 					dateTime: t.at,
-					children: B1(t.at)
+					children: W1(t.at)
 				})
 			] }), t.excerpt && /* @__PURE__ */ (0, $.jsxs)("span", {
 				className: "history-excerpt",
@@ -51766,8 +51846,8 @@ function J0({ store: e, entry: t }) {
 	}) });
 }
 // src/ui/CommentsPanel.tsx
-function Y0({ store: e, session: t }) {
-	let n = M1(e), [r, i] = (0, d.useState)("threads"), a = n.comments.filter((e) => n.showsResolved || !e.resolved);
+function $0({ store: e, session: t }) {
+	let n = I1(e), [r, i] = (0, d.useState)("threads"), a = n.comments.filter((e) => n.showsResolved || !e.resolved);
 	return /* @__PURE__ */ (0, $.jsxs)("aside", {
 		className: "panel comments-panel",
 		children: [
@@ -51777,7 +51857,7 @@ function Y0({ store: e, session: t }) {
 					className: "plain-button",
 					"aria-label": "Close",
 					onClick: () => e.set({ showsComments: !1 }),
-					children: /* @__PURE__ */ (0, $.jsx)(jZ, {})
+					children: /* @__PURE__ */ (0, $.jsx)(FZ, {})
 				})]
 			}),
 			/* @__PURE__ */ (0, $.jsxs)("div", {
@@ -51797,7 +51877,7 @@ function Y0({ store: e, session: t }) {
 					children: "History"
 				})]
 			}),
-			r === "history" && /* @__PURE__ */ (0, $.jsx)(q0, {
+			r === "history" && /* @__PURE__ */ (0, $.jsx)(Z0, {
 				store: e,
 				session: t
 			}),
@@ -51820,10 +51900,10 @@ function Y0({ store: e, session: t }) {
 						let r = t.messages[0], i = t.messages.length - 1;
 						return /* @__PURE__ */ (0, $.jsx)("li", { children: /* @__PURE__ */ (0, $.jsxs)("button", {
 							className: `thread-row${t.id === n.activeCommentID ? " active" : ""}${t.resolved ? " resolved" : ""}`,
-							onClick: () => y$(e, t.id, !0),
+							onClick: () => C$(e, t.id, !0),
 							children: [/* @__PURE__ */ (0, $.jsx)("span", {
 								className: "avatar",
-								children: z1(r?.author ?? "?")
+								children: U1(r?.author ?? "?")
 							}), /* @__PURE__ */ (0, $.jsxs)("span", {
 								className: "thread-row-text",
 								children: [
@@ -51831,7 +51911,7 @@ function Y0({ store: e, session: t }) {
 										className: "message-meta",
 										children: [/* @__PURE__ */ (0, $.jsx)("strong", { children: r?.author }), r && /* @__PURE__ */ (0, $.jsx)("time", {
 											dateTime: r.createdAt,
-											children: B1(r.createdAt)
+											children: W1(r.createdAt)
 										})]
 									}),
 									/* @__PURE__ */ (0, $.jsx)("span", {
@@ -51856,7 +51936,7 @@ function Y0({ store: e, session: t }) {
 	});
 }
 // src/ui/DocumentBrowser.tsx
-function X0({ library: e, onOpen: t, linkError: n, onDismissLinkError: r }) {
+function e2({ library: e, onOpen: t, linkError: n, onDismissLinkError: r }) {
 	let [i, a] = (0, d.useState)(null), o = () => a(null);
 	(0, d.useSyncExternalStore)(e.subscribe, e.getSnapshot);
 	let [s, c] = (0, d.useState)(null), [l, u] = (0, d.useState)(null), f = (e) => {
@@ -51876,20 +51956,20 @@ function X0({ library: e, onOpen: t, linkError: n, onDismissLinkError: r }) {
 				className: "browser-header",
 				children: [/* @__PURE__ */ (0, $.jsx)("h1", { children: "Draftboard" }), /* @__PURE__ */ (0, $.jsxs)("div", {
 					className: "browser-actions",
-					children: [YJ() && /* @__PURE__ */ (0, $.jsxs)($.Fragment, { children: [/* @__PURE__ */ (0, $.jsx)("span", {
+					children: [$J() && /* @__PURE__ */ (0, $.jsxs)($.Fragment, { children: [/* @__PURE__ */ (0, $.jsx)("span", {
 						className: "account",
-						title: qJ().email,
-						children: qJ().name
+						title: ZJ().email,
+						children: ZJ().name
 					}), /* @__PURE__ */ (0, $.jsx)("a", {
 						className: "plain-button",
 						href: "/cdn-cgi/access/logout",
 						title: "Sign Out",
 						"aria-label": "Sign Out",
-						children: /* @__PURE__ */ (0, $.jsx)(yX, {})
+						children: /* @__PURE__ */ (0, $.jsx)(CX, {})
 					})] }), /* @__PURE__ */ (0, $.jsxs)("button", {
 						className: "primary",
 						onClick: () => t(e.create().id),
-						children: [/* @__PURE__ */ (0, $.jsx)(VX, {}), " New Board"]
+						children: [/* @__PURE__ */ (0, $.jsx)(GX, {}), " New Board"]
 					})]
 				})]
 			}),
@@ -51938,7 +52018,7 @@ function X0({ library: e, onOpen: t, linkError: n, onDismissLinkError: r }) {
 						className: "doc-open",
 						onClick: () => t(n.id),
 						"aria-label": `Open ${n.name}`,
-						children: /* @__PURE__ */ (0, $.jsx)(e2, {
+						children: /* @__PURE__ */ (0, $.jsx)(i2, {
 							library: e,
 							id: n.id,
 							modified: n.modified
@@ -51947,14 +52027,14 @@ function X0({ library: e, onOpen: t, linkError: n, onDismissLinkError: r }) {
 						className: "doc-meta",
 						children: [/* @__PURE__ */ (0, $.jsxs)("div", { children: [/* @__PURE__ */ (0, $.jsxs)("div", {
 							className: "doc-name",
-							children: [n.name, n.cloud && YJ() && /* @__PURE__ */ (0, $.jsx)(UY, {
+							children: [n.name, n.cloud && $J() && /* @__PURE__ */ (0, $.jsx)(qY, {
 								className: "doc-cloud",
 								"aria-label": "Synced"
 							})]
 						}), /* @__PURE__ */ (0, $.jsx)("div", {
 							className: "doc-date",
-							children: B1(n.modified)
-						})] }), /* @__PURE__ */ (0, $.jsxs)(R0, {
+							children: W1(n.modified)
+						})] }), /* @__PURE__ */ (0, $.jsxs)(H0, {
 							open: i === n.id,
 							onClose: o,
 							align: "end",
@@ -51962,7 +52042,7 @@ function X0({ library: e, onOpen: t, linkError: n, onDismissLinkError: r }) {
 								className: "plain-button",
 								"aria-label": `More actions for ${n.name}`,
 								onClick: () => a(i === n.id ? null : n.id),
-								children: /* @__PURE__ */ (0, $.jsx)($Y, {})
+								children: /* @__PURE__ */ (0, $.jsx)(rX, {})
 							}),
 							children: [
 								/* @__PURE__ */ (0, $.jsxs)("button", {
@@ -51970,21 +52050,21 @@ function X0({ library: e, onOpen: t, linkError: n, onDismissLinkError: r }) {
 									onClick: () => {
 										o(), c(n);
 									},
-									children: [/* @__PURE__ */ (0, $.jsx)(zX, {}), " Rename"]
+									children: [/* @__PURE__ */ (0, $.jsx)(UX, {}), " Rename"]
 								}),
 								/* @__PURE__ */ (0, $.jsxs)("button", {
 									className: "menu-item",
 									onClick: () => {
 										o(), e.duplicate(n.id);
 									},
-									children: [/* @__PURE__ */ (0, $.jsx)(qY, {}), " Duplicate"]
+									children: [/* @__PURE__ */ (0, $.jsx)(ZY, {}), " Duplicate"]
 								}),
 								/* @__PURE__ */ (0, $.jsxs)("button", {
 									className: "menu-item destructive",
 									onClick: () => {
 										o(), g(n);
 									},
-									children: [/* @__PURE__ */ (0, $.jsx)(CZ, {}), " Delete"]
+									children: [/* @__PURE__ */ (0, $.jsx)(DZ, {}), " Delete"]
 								})
 							]
 						})]
@@ -52021,7 +52101,7 @@ function X0({ library: e, onOpen: t, linkError: n, onDismissLinkError: r }) {
 								className: "primary",
 								onClick: () => {
 									let t = m;
-									h(null), IJ(e, t.id).catch(f);
+									h(null), BJ(e, t.id).catch(f);
 								},
 								children: "Delete"
 							})]
@@ -52029,16 +52109,16 @@ function X0({ library: e, onOpen: t, linkError: n, onDismissLinkError: r }) {
 					]
 				})
 			}),
-			s && /* @__PURE__ */ (0, $.jsx)(Z0, {
+			s && /* @__PURE__ */ (0, $.jsx)(t2, {
 				doc: s,
 				onDone: (t) => {
-					t !== null && LJ(e, s.id, t).catch(f), c(null);
+					t !== null && VJ(e, s.id, t).catch(f), c(null);
 				}
 			})
 		]
 	});
 }
-function Z0({ doc: e, onDone: t }) {
+function t2({ doc: e, onDone: t }) {
 	let [n, r] = (0, d.useState)(e.name);
 	return /* @__PURE__ */ (0, $.jsx)("div", {
 		className: "modal-backdrop",
@@ -52078,8 +52158,8 @@ function Z0({ doc: e, onDone: t }) {
 		})
 	});
 }
-var Q0 = 160, $0 = 24;
-function e2({ library: e, id: t, modified: n }) {
+var n2 = 160, r2 = 24;
+function i2({ library: e, id: t, modified: n }) {
 	let r = (0, d.useRef)(null), [i, a] = (0, d.useState)(!1);
 	return (0, d.useEffect)(() => {
 		let n = r.current, i = n?.getContext("2d");
@@ -52094,12 +52174,12 @@ function e2({ library: e, id: t, modified: n }) {
 			let o = r && IH(r.document);
 			a(!o);
 			let s = n.clientWidth, c = window.devicePixelRatio || 1;
-			n.width = Math.round(s * c), n.height = Math.round(Q0 * c), i.setTransform(c, 0, 0, c, 0, 0), r && o && OK(i, s, Q0, {
+			n.width = Math.round(s * c), n.height = Math.round(n2 * c), i.setTransform(c, 0, 0, c, 0, 0), r && o && jK(i, s, n2, {
 				document: r.document,
 				camera: oG(o, {
 					width: s,
-					height: Q0
-				}, $0),
+					height: n2
+				}, r2),
 				selected: [],
 				handleRect: null,
 				draftStroke: [],
@@ -52121,7 +52201,7 @@ function e2({ library: e, id: t, modified: n }) {
 			ref: r,
 			style: {
 				width: "100%",
-				height: Q0
+				height: n2
 			}
 		}), i && /* @__PURE__ */ (0, $.jsx)("span", {
 			className: "thumb-empty",
@@ -52130,18 +52210,18 @@ function e2({ library: e, id: t, modified: n }) {
 	});
 }
 // src/store/exporter.ts
-var t2 = 24, n2 = 3, r2 = 3, i2 = .95;
+var a2 = 24, o2 = 3, s2 = 3, c2 = .95;
 /** Renders the selection (or the whole canvas) without grid or selection chrome. */
-async function a2(e, t, n, r) {
-	let i = o2(e, t);
+async function l2(e, t, n, r) {
+	let i = u2(e, t);
 	if (!i) throw Error("There's nothing on the canvas to export.");
-	let a = s2(e, i, n === "png" ? n2 : r2);
-	u2(await (n === "png" ? await c2(a, "image/png") : l2(await c2(a, "image/jpeg", i2), a.width, a.height, i)), `${d2(r)}.${n}`);
+	let a = d2(e, i, n === "png" ? o2 : s2);
+	m2(await (n === "png" ? await f2(a, "image/png") : p2(await f2(a, "image/jpeg", c2), a.width, a.height, i)), `${h2(r)}.${n}`);
 }
-function o2(e, t) {
+function u2(e, t) {
 	let [n, ...r] = t, i = n ? r.reduce((e, t) => oB(e, t.frame), n.frame) : IH(e);
 	if (!i) return null;
-	let a = t.length === 1 && n && K(n) ? 0 : t2, o = Math.floor(i.x - a), s = Math.floor(i.y - a);
+	let a = t.length === 1 && n && K(n) ? 0 : a2, o = Math.floor(i.x - a), s = Math.floor(i.y - a);
 	return {
 		x: o,
 		y: s,
@@ -52149,12 +52229,12 @@ function o2(e, t) {
 		height: Math.ceil(i.y + i.height + a) - s
 	};
 }
-function s2(e, t, n) {
+function d2(e, t, n) {
 	let r = document.createElement("canvas");
 	r.width = Math.round(t.width * n), r.height = Math.round(t.height * n);
 	let i = r.getContext("2d");
 	if (!i) throw Error("The image couldn't be rendered.");
-	return i.fillStyle = "#fff", i.fillRect(0, 0, r.width, r.height), i.scale(n, n), OK(i, t.width, t.height, {
+	return i.fillStyle = "#fff", i.fillRect(0, 0, r.width, r.height), i.scale(n, n), jK(i, t.width, t.height, {
 		document: e,
 		camera: {
 			offset: {
@@ -52173,11 +52253,11 @@ function s2(e, t, n) {
 		clear: !1
 	}), r;
 }
-function c2(e, t, n) {
+function f2(e, t, n) {
 	return new Promise((r, i) => e.toBlob((e) => e ? r(e) : i(/* @__PURE__ */ Error("The image couldn't be rendered.")), t, n));
 }
 /** A one-page PDF whose page is the region in points, filled with the rendered JPEG. */
-async function l2(e, t, n, r) {
+async function p2(e, t, n, r) {
 	let i = new Uint8Array(await e.arrayBuffer()), a = r.width, o = r.height, s = `q ${a} 0 0 ${o} 0 0 cm /Im0 Do Q`, c = [
 		"<< /Type /Catalog /Pages 2 0 R >>",
 		"<< /Type /Pages /Kids [3 0 R] /Count 1 >>",
@@ -52194,22 +52274,22 @@ async function l2(e, t, n, r) {
 	let m = f;
 	return p(`xref\n0 ${c.length + 1}\n0000000000 65535 f \n`), d.forEach((e) => p(`${String(e).padStart(10, "0")} 00000 n \n`)), p(`trailer\n<< /Size ${c.length + 1} /Root 1 0 R >>\nstartxref\n${m}\n%%EOF\n`), new Blob(u, { type: "application/pdf" });
 }
-function u2(e, t) {
+function m2(e, t) {
 	b(e, t);
 }
-function d2(e) {
+function h2(e) {
 	let t = e.replace(/[/\\:?%*|"<>]/g, "-").trim();
 	return t === "" ? "Draftboard" : t;
 }
 // src/handoff/exports.ts
 /** The selected frames as their own document (or the whole canvas when no frame is selected). */
-function f2(e) {
+function g2(e) {
 	let t = e.selection.filter(K);
 	return t.length === 0 ? e.document : { elements: t.flatMap((t) => [t, ...AH(e.document, t.id)]) };
 }
 /** Prompt-ready text: what the hand-off is, the outline, then the JSON. */
-function p2(e) {
-	let t = KW(f2(e), e, e.comments);
+function _2(e) {
+	let t = KW(g2(e), e, e.comments);
 	return [
 		`Here's a wireframe from Draftboard ("${e.name}"). Implement it in code, matching the layout, copy and flows.`,
 		"The outline is for reading; the JSON has exact positions (points, relative to each frame) and colours.",
@@ -52222,17 +52302,17 @@ function p2(e) {
 	].join("\n");
 }
 /** Vector SVG: one selected frame exactly, otherwise everything in scope. */
-async function m2(e) {
-	let t = f2(e), n = t.elements.filter(K), r = n.length === 1 && e.selection.length > 0 ? n[0] : void 0, i = r ? r.frame : tq(t);
+async function v2(e) {
+	let t = g2(e), n = t.elements.filter(K), r = n.length === 1 && e.selection.length > 0 ? n[0] : void 0, i = r ? r.frame : aq(t);
 	if (!i) throw Error("There's nothing on the canvas to export.");
-	return aq(r ? eq(t, r) : t, i, await rq(t));
+	return lq(r ? iq(t, r) : t, i, await sq(t));
 }
 /** A single HTML file anyone can open: every frame as vector art, plus the hand-off data for Claude. */
-async function h2(e) {
-	let t = f2(e), n = KW(t, e, e.comments), r = await rq(t), i = t.elements.filter(K), a = t.elements.some((e) => !K(e) && !i.some((t) => t.id === e.parentID)), o = tq(t), s = i.length === 0 || a ? o ? [`<figure><figcaption>${GK(e.name)}</figcaption>${aq(t, o, r)}</figure>`] : [] : i.map((e) => `<figure><figcaption>${GK(TW(e))}</figcaption>${aq(eq(t, e), e.frame, r)}</figure>`), c = JSON.stringify(n).replace(/</g, "\\u003c");
+async function y2(e) {
+	let t = g2(e), n = KW(t, e, e.comments), r = await sq(t), i = t.elements.filter(K), a = t.elements.some((e) => !K(e) && !i.some((t) => t.id === e.parentID)), o = aq(t), s = i.length === 0 || a ? o ? [`<figure><figcaption>${JK(e.name)}</figcaption>${lq(t, o, r)}</figure>`] : [] : i.map((e) => `<figure><figcaption>${JK(TW(e))}</figcaption>${lq(iq(t, e), e.frame, r)}</figure>`), c = JSON.stringify(n).replace(/</g, "\\u003c");
 	return `<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>${GK(e.name)}</title>
+<title>${JK(e.name)}</title>
 <style>
 body { margin: 0; padding: 32px 16px; background: #f2f2f4; font: 15px -apple-system, BlinkMacSystemFont, system-ui, sans-serif; color: #1c1c1e; }
 h1 { font-size: 22px; margin: 0 auto 24px; max-width: 1200px; }
@@ -52244,17 +52324,17 @@ details { max-width: 1200px; margin: 32px auto 0; }
 pre { white-space: pre-wrap; background: #fff; padding: 16px; border-radius: 12px; font-size: 12px; }
 </style></head>
 <body>
-<h1>${GK(e.name)}</h1>
+<h1>${JK(e.name)}</h1>
 <main>${s.join("\n")}</main>
-<details><summary>Outline (for Claude)</summary><pre>${GK(YW(n))}</pre></details>
+<details><summary>Outline (for Claude)</summary><pre>${JK(YW(n))}</pre></details>
 <script type="application/json" id="draftboard-handoff">${c}<\/script>
 </body></html>
 `;
 }
-function g2(e, t, n) {
+function b2(e, t, n) {
 	b(new Blob([e], { type: t }), n);
 }
-var _2 = (e) => e.replace(/[/\\:?%*|"<>]/g, "-").trim() || "Draftboard", v2 = 150, y2 = (e) => {
+var x2 = (e) => e.replace(/[/\\:?%*|"<>]/g, "-").trim() || "Draftboard", S2 = 150, C2 = (e) => {
 	let t = new Date(e), n = Math.round((Date.now() - t.getTime()) / 6e4);
 	return n < 1 ? "Just now" : n < 60 ? `${n} min ago` : t.toDateString() === (/* @__PURE__ */ new Date()).toDateString() ? `Today, ${t.toLocaleTimeString([], {
 		hour: "2-digit",
@@ -52265,9 +52345,9 @@ var _2 = (e) => e.replace(/[/\\:?%*|"<>]/g, "-").trim() || "Draftboard", v2 = 15
 		hour: "2-digit",
 		minute: "2-digit"
 	});
-}, b2 = (e) => e.kind === "named" ? e.name ?? "Named version" : e.kind === "restore" ? `Restored${e.name ? ` “${e.name}”` : ""}` : e.name ?? "Autosave";
+}, w2 = (e) => e.kind === "named" ? e.name ?? "Named version" : e.kind === "restore" ? `Restored${e.name ? ` “${e.name}”` : ""}` : e.name ?? "Autosave";
 /** Version history: save a named version, browse autosaves and named versions, preview one and restore it. */
-function x2({ boardID: e, store: t, onClose: n }) {
+function T2({ boardID: e, store: t, onClose: n }) {
 	let [r, i] = (0, d.useState)(null), [a, o] = (0, d.useState)(null), [s, c] = (0, d.useState)(""), [l, u] = (0, d.useState)(!1), [f, p] = (0, d.useState)(null), m = (0, d.useCallback)(() => {
 		Ae(e).then(i).catch((e) => {
 			console.error("Loading versions failed", e), o("Couldn't load the version history.");
@@ -52284,7 +52364,7 @@ function x2({ boardID: e, store: t, onClose: n }) {
 			u(!1), m();
 		}
 	}, g = () => h(async () => {
-		kQ(t);
+		NQ(t);
 		let { document: n, comments: r } = t.state;
 		await Me(e, {
 			document: n,
@@ -52299,7 +52379,7 @@ function x2({ boardID: e, store: t, onClose: n }) {
 			stored: e
 		} : n)).catch((e) => o(e instanceof Error ? e.message : "Couldn't open that version."));
 	}, v = () => f && h(async () => {
-		kQ(t), await Fe(e, t, f.version), p(null);
+		NQ(t), await Fe(e, t, f.version), p(null);
 	});
 	return /* @__PURE__ */ (0, $.jsxs)("aside", {
 		className: "panel history-panel",
@@ -52310,7 +52390,7 @@ function x2({ boardID: e, store: t, onClose: n }) {
 					className: "plain-button",
 					onClick: n,
 					"aria-label": "Close",
-					children: /* @__PURE__ */ (0, $.jsx)(jZ, { size: 16 })
+					children: /* @__PURE__ */ (0, $.jsx)(FZ, { size: 16 })
 				})]
 			}),
 			/* @__PURE__ */ (0, $.jsxs)("form", {
@@ -52352,11 +52432,11 @@ function x2({ boardID: e, store: t, onClose: n }) {
 							onClick: () => f?.version.id === e.id ? p(null) : _(e),
 							children: [/* @__PURE__ */ (0, $.jsx)("span", {
 								className: `version-name${e.kind === "named" ? " named" : ""}`,
-								children: b2(e)
+								children: w2(e)
 							}), /* @__PURE__ */ (0, $.jsxs)("span", {
 								className: "version-meta",
 								children: [
-									y2(e.at),
+									C2(e.at),
 									" · ",
 									e.elements,
 									" ",
@@ -52365,7 +52445,7 @@ function x2({ boardID: e, store: t, onClose: n }) {
 							})]
 						}), f?.version.id === e.id && /* @__PURE__ */ (0, $.jsxs)("div", {
 							className: "version-preview",
-							children: [f.stored ? /* @__PURE__ */ (0, $.jsx)(S2, { stored: f.stored }) : /* @__PURE__ */ (0, $.jsx)("p", {
+							children: [f.stored ? /* @__PURE__ */ (0, $.jsx)(E2, { stored: f.stored }) : /* @__PURE__ */ (0, $.jsx)("p", {
 								className: "panel-hint",
 								children: "Loading preview…"
 							}), /* @__PURE__ */ (0, $.jsx)("button", {
@@ -52391,17 +52471,17 @@ function x2({ boardID: e, store: t, onClose: n }) {
 		]
 	});
 }
-function S2({ stored: e }) {
+function E2({ stored: e }) {
 	let t = (0, d.useRef)(null);
 	return (0, d.useEffect)(() => {
 		let n = t.current, r = n?.getContext("2d"), i = IH(e.document);
 		if (!n || !r || !i) return;
 		let a = n.clientWidth, o = window.devicePixelRatio || 1;
-		n.width = Math.round(a * o), n.height = Math.round(v2 * o), r.setTransform(o, 0, 0, o, 0, 0), OK(r, a, v2, {
+		n.width = Math.round(a * o), n.height = Math.round(S2 * o), r.setTransform(o, 0, 0, o, 0, 0), jK(r, a, S2, {
 			document: e.document,
 			camera: oG(i, {
 				width: a,
-				height: v2
+				height: S2
 			}, 12),
 			selected: [],
 			handleRect: null,
@@ -52417,13 +52497,13 @@ function S2({ stored: e }) {
 		className: "version-canvas",
 		style: {
 			width: "100%",
-			height: v2
+			height: S2
 		}
 	});
 }
 // src/ui/ClaudeMark.tsx
 /** Claude's starburst mark, drawn as radiating rounded rays. */
-function C2({ size: e = 20, muted: t = !1 }) {
+function D2({ size: e = 20, muted: t = !1 }) {
 	return /* @__PURE__ */ (0, $.jsx)("svg", {
 		width: e,
 		height: e,
@@ -52534,27 +52614,27 @@ function C2({ size: e = 20, muted: t = !1 }) {
 	});
 }
 // src/ui/ClaudeConnection.tsx
-var w2 = {
+var O2 = {
 	list: "looked at your boards",
 	get: "read",
 	svg: "exported SVG of",
 	create: "drafted",
 	update: "updated"
-}, T2 = [{
+}, k2 = [{
 	label: "In Terminal, in the Draftboard repo",
 	command: "cd mcp && npm install && npm link"
 }, {
 	label: "Add it to Claude Code",
 	command: "claude mcp add draftboard --scope user -- draftboard-mcp"
-}], E2 = ["Implement the Checkout board", "Draft a settings screen in Draftboard"];
-function D2(e) {
+}], A2 = ["Implement the Checkout board", "Draft a settings screen in Draftboard"];
+function j2(e) {
 	let t = Math.round((Date.now() - e.at) / 6e4), n = t < 1 ? "just now" : t < 60 ? `${t} min ago` : "a while ago";
-	return `Claude ${w2[e.method] ?? e.method}${e.document ? ` “${e.document}”` : ""} ${n}`;
+	return `Claude ${O2[e.method] ?? e.method}${e.document ? ` “${e.document}”` : ""} ${n}`;
 }
 /** Whether Claude's local Draftboard MCP server is talking to this tab, with setup steps when it isn't. */
-function O2() {
-	let { status: e, lastActivity: t } = (0, d.useSyncExternalStore)(_q.subscribe, _q.getSnapshot), [n, r] = (0, d.useState)(!1), i = e === "connected";
-	return i ? /* @__PURE__ */ (0, $.jsx)(R0, {
+function M2() {
+	let { status: e, lastActivity: t } = (0, d.useSyncExternalStore)(xq.subscribe, xq.getSnapshot), [n, r] = (0, d.useState)(!1), i = e === "connected";
+	return i ? /* @__PURE__ */ (0, $.jsx)(H0, {
 		open: n,
 		onClose: () => r(!1),
 		align: "end",
@@ -52563,7 +52643,7 @@ function O2() {
 			onClick: () => r(!n),
 			"aria-label": i ? "Claude is connected" : "Connect Claude",
 			children: [
-				/* @__PURE__ */ (0, $.jsx)(C2, {
+				/* @__PURE__ */ (0, $.jsx)(D2, {
 					size: 18,
 					muted: !i
 				}),
@@ -52578,7 +52658,7 @@ function O2() {
 			className: "connection-panel",
 			children: [/* @__PURE__ */ (0, $.jsxs)("div", {
 				className: "connection-head",
-				children: [/* @__PURE__ */ (0, $.jsx)(C2, {
+				children: [/* @__PURE__ */ (0, $.jsx)(D2, {
 					size: 28,
 					muted: !i
 				}), /* @__PURE__ */ (0, $.jsxs)("div", { children: [/* @__PURE__ */ (0, $.jsx)("div", {
@@ -52592,7 +52672,7 @@ function O2() {
 				/* @__PURE__ */ (0, $.jsx)("p", { children: "Claude can read any board here and draft new ones straight onto the canvas. Undo takes a draft back." }),
 				t && /* @__PURE__ */ (0, $.jsx)("p", {
 					className: "connection-activity",
-					children: D2(t)
+					children: j2(t)
 				}),
 				/* @__PURE__ */ (0, $.jsx)("div", {
 					className: "menu-section",
@@ -52600,7 +52680,7 @@ function O2() {
 				}),
 				/* @__PURE__ */ (0, $.jsx)("div", {
 					className: "example-list",
-					children: E2.map((e) => /* @__PURE__ */ (0, $.jsxs)("span", {
+					children: A2.map((e) => /* @__PURE__ */ (0, $.jsxs)("span", {
 						className: "example",
 						children: [
 							"“",
@@ -52611,12 +52691,12 @@ function O2() {
 				})
 			] }) : /* @__PURE__ */ (0, $.jsxs)($.Fragment, { children: [/* @__PURE__ */ (0, $.jsx)("p", { children: "Claude talks to this tab through a small local server. Set it up once, then start Claude Code and keep this tab open." }), /* @__PURE__ */ (0, $.jsx)("ol", {
 				className: "setup-steps",
-				children: T2.map((e) => /* @__PURE__ */ (0, $.jsxs)("li", { children: [/* @__PURE__ */ (0, $.jsx)("span", { children: e.label }), /* @__PURE__ */ (0, $.jsx)(k2, { command: e.command })] }, e.command))
+				children: k2.map((e) => /* @__PURE__ */ (0, $.jsxs)("li", { children: [/* @__PURE__ */ (0, $.jsx)("span", { children: e.label }), /* @__PURE__ */ (0, $.jsx)(N2, { command: e.command })] }, e.command))
 			})] })]
 		})
 	}) : null;
 }
-function k2({ command: e }) {
+function N2({ command: e }) {
 	let [t, n] = (0, d.useState)(!1), r = async () => {
 		try {
 			await navigator.clipboard.writeText(e), n(!0), setTimeout(() => n(!1), 1500);
@@ -52630,17 +52710,17 @@ function k2({ command: e }) {
 			className: "plain-button small",
 			"aria-label": "Copy command",
 			onClick: () => void r(),
-			children: t ? /* @__PURE__ */ (0, $.jsx)(jY, {}) : /* @__PURE__ */ (0, $.jsx)(qY, {})
+			children: t ? /* @__PURE__ */ (0, $.jsx)(FY, {}) : /* @__PURE__ */ (0, $.jsx)(ZY, {})
 		})]
 	});
 }
 // src/ui/FileActions.tsx
-var A2 = 2500;
-function j2({ store: e, name: t }) {
-	let n = M1(e), [r, i] = (0, d.useState)(!1), [a, o] = (0, d.useState)(null), [s, c] = (0, d.useState)(!1), l = n.comments.filter((e) => !e.resolved).length, u = async (r) => {
+var P2 = 2500;
+function F2({ store: e, name: t }) {
+	let n = I1(e), [r, i] = (0, d.useState)(!1), [a, o] = (0, d.useState)(null), [s, c] = (0, d.useState)(!1), l = n.comments.filter((e) => !e.resolved).length, u = async (r) => {
 		i(!1);
 		try {
-			await a2(n.document, e.selectedElements, r, t);
+			await l2(n.document, e.selectedElements, r, t);
 		} catch (t) {
 			console.error("Export failed", t), e.reportError(`Couldn't export: ${t instanceof Error ? t.message : String(t)}`);
 		}
@@ -52654,7 +52734,7 @@ function j2({ store: e, name: t }) {
 		i(!1);
 		try {
 			let e = await n();
-			e && (o(e), setTimeout(() => o((t) => t === e ? null : t), A2));
+			e && (o(e), setTimeout(() => o((t) => t === e ? null : t), P2));
 		} catch (n) {
 			console.error(`${t} failed`, n), e.reportError(`Couldn't ${t.toLowerCase()}: ${n instanceof Error ? n.message : String(n)}`);
 		}
@@ -52662,34 +52742,34 @@ function j2({ store: e, name: t }) {
 	return /* @__PURE__ */ (0, $.jsxs)("div", {
 		className: "toolbar file-actions",
 		children: [
-			!h() && /* @__PURE__ */ (0, $.jsx)(O2, {}),
+			!h() && /* @__PURE__ */ (0, $.jsx)(M2, {}),
 			!h() && /* @__PURE__ */ (0, $.jsxs)("div", {
 				className: "badge-anchor",
-				children: [/* @__PURE__ */ (0, $.jsx)(z0, {
+				children: [/* @__PURE__ */ (0, $.jsx)(U0, {
 					title: "Comments",
 					active: n.showsComments,
 					onClick: e.toggleCommentsPanel,
-					children: /* @__PURE__ */ (0, $.jsx)(CX, {})
+					children: /* @__PURE__ */ (0, $.jsx)(DX, {})
 				}), l > 0 && /* @__PURE__ */ (0, $.jsx)("span", {
 					className: "badge",
 					children: l
 				})]
 			}),
-			h() && ke() && /* @__PURE__ */ (0, $.jsx)(z0, {
+			h() && ke() && /* @__PURE__ */ (0, $.jsx)(U0, {
 				title: "Version history",
 				active: s,
 				onClick: () => c(!s),
-				children: /* @__PURE__ */ (0, $.jsx)(YX, {})
+				children: /* @__PURE__ */ (0, $.jsx)($X, {})
 			}),
-			/* @__PURE__ */ (0, $.jsxs)(R0, {
+			/* @__PURE__ */ (0, $.jsxs)(H0, {
 				open: r,
 				onClose: () => i(!1),
 				align: "end",
-				trigger: /* @__PURE__ */ (0, $.jsx)(z0, {
+				trigger: /* @__PURE__ */ (0, $.jsx)(U0, {
 					title: "Export",
 					active: r,
 					onClick: () => i(!r),
-					children: h() ? /* @__PURE__ */ (0, $.jsx)(ZY, {}) : /* @__PURE__ */ (0, $.jsx)(aZ, {})
+					children: h() ? /* @__PURE__ */ (0, $.jsx)(tX, {}) : /* @__PURE__ */ (0, $.jsx)(lZ, {})
 				}),
 				children: [
 					/* @__PURE__ */ (0, $.jsx)("div", {
@@ -52708,7 +52788,7 @@ function j2({ store: e, name: t }) {
 					}),
 					/* @__PURE__ */ (0, $.jsx)("button", {
 						className: "menu-item",
-						onClick: () => void p("Export HTML", async () => (g2(await h2(f()), "text/html", `${_2(t)}.html`), null)),
+						onClick: () => void p("Export HTML", async () => (b2(await y2(f()), "text/html", `${x2(t)}.html`), null)),
 						children: "Export HTML"
 					}),
 					!h() && /* @__PURE__ */ (0, $.jsxs)($.Fragment, { children: [
@@ -52716,11 +52796,11 @@ function j2({ store: e, name: t }) {
 							className: "menu-section",
 							children: "Claude"
 						}),
-						xq() ? /* @__PURE__ */ (0, $.jsx)("button", {
+						Tq() ? /* @__PURE__ */ (0, $.jsx)("button", {
 							className: "menu-item",
 							onClick: () => void p("Copy link", async () => {
 								let { id: e, document: n, comments: r } = f();
-								return await navigator.clipboard.writeText(Sq(e)), o("Link copied. Getting the board ready for Claude…"), await Eq(e, t, {
+								return await navigator.clipboard.writeText(Eq(e)), o("Link copied. Getting the board ready for Claude…"), await Aq(e, t, {
 									document: n,
 									comments: r
 								}), "Link copied. Paste it into any Claude chat.";
@@ -52728,7 +52808,7 @@ function j2({ store: e, name: t }) {
 							children: "Copy link for Claude"
 						}) : /* @__PURE__ */ (0, $.jsx)("button", {
 							className: "menu-item",
-							onClick: () => void p("Copy for Claude", () => m(p2(f()), "Wireframe outline and JSON")),
+							onClick: () => void p("Copy for Claude", () => m(_2(f()), "Wireframe outline and JSON")),
 							children: "Copy for Claude"
 						}),
 						ke() && /* @__PURE__ */ (0, $.jsxs)($.Fragment, { children: [/* @__PURE__ */ (0, $.jsx)("div", {
@@ -52747,7 +52827,7 @@ function j2({ store: e, name: t }) {
 						}),
 						/* @__PURE__ */ (0, $.jsx)("button", {
 							className: "menu-item",
-							onClick: () => void p("Copy SVG", async () => m(await m2(f()), "SVG (paste into Figma)")),
+							onClick: () => void p("Copy SVG", async () => m(await v2(f()), "SVG (paste into Figma)")),
 							children: "Copy SVG for Figma"
 						})
 					] })
@@ -52758,9 +52838,9 @@ function j2({ store: e, name: t }) {
 				role: "status",
 				children: a
 			}),
-			/* @__PURE__ */ (0, $.jsx)(L0, {
+			/* @__PURE__ */ (0, $.jsx)(V0, {
 				show: s,
-				children: s && /* @__PURE__ */ (0, $.jsx)(x2, {
+				children: s && /* @__PURE__ */ (0, $.jsx)(T2, {
 					boardID: f().id,
 					store: e,
 					onClose: () => c(!1)
@@ -52770,28 +52850,28 @@ function j2({ store: e, name: t }) {
 	});
 }
 // src/ui/LabelDialog.tsx
-function M2({ store: e }) {
-	let t = M1(e), n = t.labelEditingID ? LH(t.document, t.labelEditingID) : void 0, r = n ? AQ(n) : null;
+function I2({ store: e }) {
+	let t = I1(e), n = t.labelEditingID ? LH(t.document, t.labelEditingID) : void 0, r = n ? PQ(n) : null;
 	if (!n || r === null) return null;
 	let i = n.kind.type === "device";
-	return /* @__PURE__ */ (0, $.jsx)(N2, {
+	return /* @__PURE__ */ (0, $.jsx)(L2, {
 		store: e,
 		initial: r,
 		title: i ? "Rename Screen" : "Edit Label",
 		segmented: iH(n)?.kind === "segmentedControl"
 	}, t.labelEditingID);
 }
-function N2({ store: e, initial: t, title: n, segmented: r }) {
+function L2({ store: e, initial: t, title: n, segmented: r }) {
 	let [i, a] = (0, d.useState)(t);
 	return /* @__PURE__ */ (0, $.jsx)("div", {
 		className: "modal-backdrop",
 		onPointerDown: (t) => {
-			t.target === t.currentTarget && MQ(e, null);
+			t.target === t.currentTarget && IQ(e, null);
 		},
 		children: /* @__PURE__ */ (0, $.jsxs)("form", {
 			className: "modal dialog",
 			onSubmit: (t) => {
-				t.preventDefault(), MQ(e, i);
+				t.preventDefault(), IQ(e, i);
 			},
 			children: [
 				/* @__PURE__ */ (0, $.jsx)("h2", { children: n }),
@@ -52805,7 +52885,7 @@ function N2({ store: e, initial: t, title: n, segmented: r }) {
 					value: i,
 					onChange: (e) => a(e.target.value),
 					onKeyDown: (t) => {
-						t.key === "Escape" && MQ(e, null);
+						t.key === "Escape" && IQ(e, null);
 					}
 				}),
 				/* @__PURE__ */ (0, $.jsxs)("div", {
@@ -52813,7 +52893,7 @@ function N2({ store: e, initial: t, title: n, segmented: r }) {
 					children: [/* @__PURE__ */ (0, $.jsx)("button", {
 						type: "button",
 						className: "secondary",
-						onClick: () => MQ(e, null),
+						onClick: () => IQ(e, null),
 						children: "Cancel"
 					}), /* @__PURE__ */ (0, $.jsx)("button", {
 						type: "submit",
@@ -52827,13 +52907,13 @@ function N2({ store: e, initial: t, title: n, segmented: r }) {
 }
 // src/ui/TextEditingOverlay.tsx
 /** A real <textarea> over the text box, so typing, the keyboard, dictation and Scribble all work. */
-function P2({ store: e }) {
-	let t = M1(e), n = (0, d.useRef)(null), r = t.editingTextID ? LH(t.document, t.editingTextID) : void 0, i = r && DQ(r);
+function R2({ store: e }) {
+	let t = I1(e), n = (0, d.useRef)(null), r = t.editingTextID ? LH(t.document, t.editingTextID) : void 0, i = r && jQ(r);
 	if ((0, d.useEffect)(() => {
 		n.current?.focus({ preventScroll: !0 });
 	}, [t.editingTextID]), !r || !i) return null;
 	let { scale: a } = t.camera, o = FB(OB(i, t.editingText)), s = (t) => {
-		(t.key === "Escape" || t.key === "Enter" && !t.shiftKey) && (t.preventDefault(), kQ(e));
+		(t.key === "Escape" || t.key === "Enter" && !t.shiftKey) && (t.preventDefault(), NQ(e));
 	};
 	if (r.kind.type === "flow" || r.kind.type === "connector") {
 		let c = Math.max(1, o.height / (i.fontSize * 1.2)), l = i.fontSize * 1.2 * a, u;
@@ -52875,7 +52955,7 @@ function P2({ store: e }) {
 				padding: 0
 			},
 			onChange: (t) => e.set({ editingText: t.target.value }),
-			onBlur: () => kQ(e),
+			onBlur: () => NQ(e),
 			onKeyDown: s
 		});
 	}
@@ -52903,7 +52983,7 @@ function P2({ store: e }) {
 					letterSpacing: .6 * a,
 					color: u.header
 				},
-				children: [/* @__PURE__ */ (0, $.jsx)(_Z, { style: {
+				children: [/* @__PURE__ */ (0, $.jsx)(xZ, { style: {
 					width: 12 * a,
 					height: 12 * a
 				} }), "NOTE"]
@@ -52925,9 +53005,9 @@ function P2({ store: e }) {
 					color: u.text
 				},
 				onChange: (t) => e.set({ editingText: t.target.value }),
-				onBlur: () => kQ(e),
+				onBlur: () => NQ(e),
 				onKeyDown: (t) => {
-					(t.key === "Escape" || t.key === "Enter" && (t.metaKey || t.ctrlKey)) && (t.preventDefault(), kQ(e));
+					(t.key === "Escape" || t.key === "Enter" && (t.metaKey || t.ctrlKey)) && (t.preventDefault(), NQ(e));
 				}
 			})]
 		});
@@ -52942,17 +53022,17 @@ function P2({ store: e }) {
 		style: {
 			left: c.x,
 			top: c.y,
-			width: Math.max(o.width * a + 8, u),
-			height: Math.max(o.height * a, f),
+			width: Math.max(o.width * a - 2 * a + 2, u),
+			height: Math.max(o.height * a - 2 * a, f),
 			font: EB(i, a),
 			lineHeight: `${DB(i, a)}px`,
 			color: Az(r.style.stroke),
 			padding: `${a}px`
 		},
 		onChange: (t) => e.set({ editingText: t.target.value }),
-		onBlur: () => kQ(e),
+		onBlur: () => NQ(e),
 		onKeyDown: (t) => {
-			(t.key === "Escape" || t.key === "Enter" && (t.metaKey || t.ctrlKey)) && (t.preventDefault(), kQ(e));
+			(t.key === "Escape" || t.key === "Enter" && (t.metaKey || t.ctrlKey)) && (t.preventDefault(), NQ(e));
 		}
 	});
 }
@@ -52962,7 +53042,7 @@ function P2({ store: e }) {
 * picked mode). It glides when the pick changes (`key`), and lands instantly the first time and when the
 * container resizes, so it never slides in from nowhere or lags behind a resize. Hidden when nothing matches.
 */
-function F2(e, t, n) {
+function z2(e, t, n) {
 	let [r, i] = (0, d.useState)({ opacity: 0 }), a = (0, d.useRef)(!1);
 	return (0, d.useLayoutEffect)(() => {
 		let n = e.current;
@@ -52992,9 +53072,9 @@ function F2(e, t, n) {
 	]), r;
 }
 // src/ui/ElementPreview.tsx
-var I2 = 72, L2 = .55;
+var B2 = 72, V2 = .55;
 /** Draws elements uniformly scaled to fit the tile, at the screen's pixel density. */
-function R2({ elements: e }) {
+function H2({ elements: e }) {
 	let t = (0, d.useRef)(null);
 	return (0, d.useEffect)(() => {
 		let n = t.current, r = n?.getContext("2d"), i = xH(e);
@@ -53003,15 +53083,15 @@ function R2({ elements: e }) {
 			let t = n.clientWidth;
 			if (t === 0) return;
 			let a = window.devicePixelRatio || 1;
-			n.width = Math.round(t * a), n.height = Math.round(I2 * a), r.setTransform(a, 0, 0, a, 0, 0), r.clearRect(0, 0, t, I2);
-			let o = Math.min((t - 20) / Math.max(i.width, 1), 52 / Math.max(i.height, 1), L2), s = {
+			n.width = Math.round(t * a), n.height = Math.round(B2 * a), r.setTransform(a, 0, 0, a, 0, 0), r.clearRect(0, 0, t, B2);
+			let o = Math.min((t - 20) / Math.max(i.width, 1), 52 / Math.max(i.height, 1), V2), s = {
 				scale: o,
 				offset: {
 					x: t / 2 - (i.x + i.width / 2) * o,
-					y: I2 / 2 - (i.y + i.height / 2) * o
+					y: B2 / 2 - (i.y + i.height / 2) * o
 				}
 			};
-			for (let t of e) jG(r, t, s);
+			for (let t of e) MG(r, t, s);
 		});
 		return a.observe(n), () => a.disconnect();
 	}, [e]), /* @__PURE__ */ (0, $.jsx)("canvas", {
@@ -53019,13 +53099,13 @@ function R2({ elements: e }) {
 		className: "library-preview",
 		style: {
 			width: "100%",
-			height: I2
+			height: B2
 		}
 	});
 }
 // src/ui/LibraryPanel.tsx
-var z2 = (e) => (t) => t.dataTransfer.setData(Vz, JSON.stringify(e));
-function B2({ store: e }) {
+var U2 = (e) => (t) => t.dataTransfer.setData(Vz, JSON.stringify(e));
+function W2({ store: e }) {
 	let [t, n] = (0, d.useState)(""), r = (0, d.useMemo)(() => {
 		let e = t.trim().toLowerCase();
 		return vU.map((t) => ({
@@ -53058,12 +53138,12 @@ function B2({ store: e }) {
 			children: t.items.map(({ spec: t, elements: n }) => /* @__PURE__ */ (0, $.jsxs)("button", {
 				className: "library-tile",
 				draggable: !0,
-				onDragStart: z2({
+				onDragStart: U2({
 					kind: "component",
 					value: t.id
 				}),
-				onClick: () => fQ(e, t.id),
-				children: [/* @__PURE__ */ (0, $.jsx)(R2, { elements: n }), /* @__PURE__ */ (0, $.jsx)("span", { children: t.title })]
+				onClick: () => gQ(e, t.id),
+				children: [/* @__PURE__ */ (0, $.jsx)(H2, { elements: n }), /* @__PURE__ */ (0, $.jsx)("span", { children: t.title })]
 			}, t.id))
 		})] }, t.category)),
 		r.length === 0 && /* @__PURE__ */ (0, $.jsxs)("p", {
@@ -53076,18 +53156,18 @@ function B2({ store: e }) {
 		})
 	] });
 }
-function V2({ store: e }) {
-	M1(e);
-	let [t, n] = (0, d.useState)(""), r = (0, d.useMemo)(() => y0(t), [t]), i = e.selectedElements.filter(ZV).length, a = (t) => pQ(e, t), [o, s] = (0, d.useState)(!1), c = (e) => /* @__PURE__ */ (0, $.jsx)("button", {
+function G2({ store: e }) {
+	I1(e);
+	let [t, n] = (0, d.useState)(""), r = (0, d.useMemo)(() => C0(t), [t]), i = e.selectedElements.filter(ZV).length, a = (t) => _Q(e, t), [o, s] = (0, d.useState)(!1), c = (e) => /* @__PURE__ */ (0, $.jsx)("button", {
 		className: "symbol-tile",
-		title: v0(e),
+		title: S0(e),
 		draggable: !0,
-		onDragStart: z2({
+		onDragStart: U2({
 			kind: "icon",
 			value: e
 		}),
 		onClick: () => a(e),
-		children: /* @__PURE__ */ (0, $.jsx)(b0, { name: e })
+		children: /* @__PURE__ */ (0, $.jsx)(w0, { name: e })
 	}, e);
 	return /* @__PURE__ */ (0, $.jsxs)($.Fragment, { children: [
 		/* @__PURE__ */ (0, $.jsx)("p", {
@@ -53100,7 +53180,7 @@ function V2({ store: e }) {
 			value: t,
 			onChange: (e) => n(e.target.value)
 		}),
-		t.trim() === "" && g0.map((e) => /* @__PURE__ */ (0, $.jsxs)("div", { children: [/* @__PURE__ */ (0, $.jsx)("div", {
+		t.trim() === "" && b0.map((e) => /* @__PURE__ */ (0, $.jsxs)("div", { children: [/* @__PURE__ */ (0, $.jsx)("div", {
 			className: "library-section",
 			children: e.title
 		}), /* @__PURE__ */ (0, $.jsx)("div", {
@@ -53118,7 +53198,7 @@ function V2({ store: e }) {
 					className: "symbol-tile",
 					title: "Placeholder",
 					draggable: !0,
-					onDragStart: z2({
+					onDragStart: U2({
 						kind: "icon",
 						value: ""
 					}),
@@ -53147,9 +53227,9 @@ function V2({ store: e }) {
 					onClick: () => s(!0),
 					children: [
 						"Show all ",
-						h0.toLocaleString(),
+						y0.toLocaleString(),
 						" icons ",
-						/* @__PURE__ */ (0, $.jsx)(NY, { "aria-hidden": !0 })
+						/* @__PURE__ */ (0, $.jsx)(LY, { "aria-hidden": !0 })
 					]
 				}),
 				r.length === 0 && /* @__PURE__ */ (0, $.jsxs)("p", {
@@ -53165,7 +53245,7 @@ function V2({ store: e }) {
 	] });
 }
 // src/ui/ColorPalette.tsx
-function H2({ current: e, onPick: t, title: n, palette: r = Fz }) {
+function K2({ current: e, onPick: t, title: n, palette: r = Fz }) {
 	return /* @__PURE__ */ (0, $.jsx)("div", {
 		className: "swatches",
 		children: r.map((r, i) => /* @__PURE__ */ (0, $.jsx)("button", {
@@ -53178,7 +53258,7 @@ function H2({ current: e, onPick: t, title: n, palette: r = Fz }) {
 }
 // src/store/flowActions.ts
 /** Turns the selected flow steps into another shape, keeping their labels, sizes and connections. */
-function U2(e, t) {
+function q2(e, t) {
 	let n = e.selectedElements.filter((e) => e.kind.type === "flow");
 	n.length !== 0 && e.commit(BH(e.state.document, n.map((e) => e.kind.type === "flow" ? dH({
 		...e,
@@ -53188,7 +53268,7 @@ function U2(e, t) {
 		}
 	}, e.kind.content) : e)));
 }
-function W2(e, t) {
+function J2(e, t) {
 	let n = e.selectedElements.filter((e) => e.kind.type === "connector");
 	n.length !== 0 && e.commit(BH(e.state.document, n.map((e) => e.kind.type === "connector" ? {
 		...e,
@@ -53199,7 +53279,7 @@ function W2(e, t) {
 	} : e)));
 }
 // src/ui/StyleBar.tsx
-var G2 = {
+var Y2 = {
 	pen: "Pen",
 	shape: "New shapes",
 	text: "Text",
@@ -53210,22 +53290,22 @@ var G2 = {
 * Docked under the toolbar: edits the selection, or with nothing selected, what the active tool makes next.
 * Only the controls that apply are shown.
 */
-function K2({ store: e, inCard: t = !1 }) {
-	let n = M1(e), [r, i] = (0, d.useState)(null), [a, o] = (0, d.useState)(!1), s = r4("(max-width: 1199px)"), c = t || s, l = e.displayedStyle, u = n.selection.size;
+function X2({ store: e, inCard: t = !1 }) {
+	let n = I1(e), [r, i] = (0, d.useState)(null), [a, o] = (0, d.useState)(!1), s = s4("(max-width: 1199px)"), c = t || s, l = e.displayedStyle, u = n.selection.size;
 	if (n.editingTextID) return null;
 	if (!l) return u === 0 ? null : t ? /* @__PURE__ */ (0, $.jsx)("div", {
 		className: "inspector",
 		children: /* @__PURE__ */ (0, $.jsx)("div", {
 			className: "inspector-actions",
-			children: /* @__PURE__ */ (0, $.jsx)(q2, { store: e })
+			children: /* @__PURE__ */ (0, $.jsx)(Z2, { store: e })
 		})
 	}) : /* @__PURE__ */ (0, $.jsx)("div", {
 		className: "style-bar",
 		role: "toolbar",
 		"aria-label": "Selection",
-		children: /* @__PURE__ */ (0, $.jsx)(q2, { store: e })
+		children: /* @__PURE__ */ (0, $.jsx)(Z2, { store: e })
 	});
-	let f = e.selectedElements.filter((e) => e.kind.type !== "device"), p = f.length > 0, m = p ? null : e.styleTarget, h = p ? f.some(dJ) : !1, g = p ? f.some(QV) : m === "pen" || m === "shape" || m === "flow" || m === "connector", _ = p ? f.some(XV) : m === "shape" || m === "flow", v = h ? Gq(e) : null, y = f.filter((e) => e.kind.type === "flow"), b = f.filter((e) => e.kind.type === "connector"), ee = p && y.length === f.length || m === "flow", x = b[0]?.kind.type === "connector" ? b[0].kind : null, S = () => i(null);
+	let f = e.selectedElements.filter((e) => e.kind.type !== "device"), p = f.length > 0, m = p ? null : e.styleTarget, h = p ? f.some(hJ) : !1, g = p ? f.some(QV) : m === "pen" || m === "shape" || m === "flow" || m === "connector", _ = p ? f.some(XV) : m === "shape" || m === "flow", v = h ? Yq(e) : null, y = f.filter((e) => e.kind.type === "flow"), b = f.filter((e) => e.kind.type === "connector"), ee = p && y.length === f.length || m === "flow", x = b[0]?.kind.type === "connector" ? b[0].kind : null, S = () => i(null);
 	if (t) {
 		let t = (e, t) => /* @__PURE__ */ (0, $.jsxs)("div", {
 			className: "inspector-row",
@@ -53236,21 +53316,21 @@ function K2({ store: e, inCard: t = !1 }) {
 				className: "inspector-control",
 				children: t
 			})]
-		}, e), n = h || m === "text" ? "Colour" : "Stroke", s = [t(n, /* @__PURE__ */ (0, $.jsx)($2, {
+		}, e), n = h || m === "text" ? "Colour" : "Stroke", s = [t(n, /* @__PURE__ */ (0, $.jsx)(r4, {
 			title: n,
 			current: l.stroke,
-			essentials: X2,
+			essentials: e4,
 			onPick: (t) => e.applyStyle({ stroke: t })
 		}))];
-		if (_ && s.push(t("Fill", /* @__PURE__ */ (0, $.jsx)($2, {
+		if (_ && s.push(t("Fill", /* @__PURE__ */ (0, $.jsx)(r4, {
 			title: "Fill",
 			current: l.fill,
-			essentials: ee ? Q2 : Z2,
-			palette: ee ? Y2 : void 0,
+			essentials: ee ? n4 : t4,
+			palette: ee ? $2 : void 0,
 			onPick: (t) => e.applyStyle({ fill: t })
 		}))), y.length > 0 && y[0]?.kind.type === "flow") {
 			let n = y[0].kind.shape;
-			s.push(t("Shape", /* @__PURE__ */ (0, $.jsxs)(R0, {
+			s.push(t("Shape", /* @__PURE__ */ (0, $.jsxs)(H0, {
 				open: r === "shape",
 				onClose: S,
 				trigger: /* @__PURE__ */ (0, $.jsxs)("button", {
@@ -53258,9 +53338,9 @@ function K2({ store: e, inCard: t = !1 }) {
 					"aria-label": `Shape: ${RB(n).title}`,
 					onClick: () => i(r === "shape" ? null : "shape"),
 					children: [
-						/* @__PURE__ */ (0, $.jsx)(P0, { shape: n }),
+						/* @__PURE__ */ (0, $.jsx)(R0, { shape: n }),
 						RB(n).title,
-						/* @__PURE__ */ (0, $.jsx)(NY, { className: "chevron" })
+						/* @__PURE__ */ (0, $.jsx)(LY, { className: "chevron" })
 					]
 				}),
 				children: [/* @__PURE__ */ (0, $.jsx)("div", {
@@ -53269,19 +53349,19 @@ function K2({ store: e, inCard: t = !1 }) {
 				}), IB.map((t) => /* @__PURE__ */ (0, $.jsxs)("button", {
 					className: `menu-item flow-menu-item${t.shape === n ? " checked" : ""}`,
 					onClick: () => {
-						U2(e, t.shape), S();
+						q2(e, t.shape), S();
 					},
-					children: [/* @__PURE__ */ (0, $.jsx)(P0, { shape: t.shape }), /* @__PURE__ */ (0, $.jsx)("span", { children: t.title })]
+					children: [/* @__PURE__ */ (0, $.jsx)(R0, { shape: t.shape }), /* @__PURE__ */ (0, $.jsx)("span", { children: t.title })]
 				}, t.shape))]
 			})));
 		}
-		x && s.push(t("Path", /* @__PURE__ */ (0, $.jsxs)(R0, {
+		x && s.push(t("Path", /* @__PURE__ */ (0, $.jsxs)(H0, {
 			open: r === "route",
 			onClose: S,
 			trigger: /* @__PURE__ */ (0, $.jsxs)("button", {
 				className: `menu-button${r === "route" ? " selected" : ""}`,
 				onClick: () => i(r === "route" ? null : "route"),
-				children: [rV.find((e) => e.route === x.route)?.title, /* @__PURE__ */ (0, $.jsx)(NY, { className: "chevron" })]
+				children: [rV.find((e) => e.route === x.route)?.title, /* @__PURE__ */ (0, $.jsx)(LY, { className: "chevron" })]
 			}),
 			children: [/* @__PURE__ */ (0, $.jsx)("div", {
 				className: "menu-section",
@@ -53289,51 +53369,51 @@ function K2({ store: e, inCard: t = !1 }) {
 			}), rV.map((t) => /* @__PURE__ */ (0, $.jsx)("button", {
 				className: `menu-item${t.route === x.route ? " checked" : ""}`,
 				onClick: () => {
-					W2(e, { route: t.route }), S();
+					J2(e, { route: t.route }), S();
 				},
 				children: t.title
 			}, t.route))]
 		}))), h && s.push(t("Text", /* @__PURE__ */ (0, $.jsxs)("div", {
 			className: "inline-options",
 			children: [
-				!ee && /* @__PURE__ */ (0, $.jsx)(a4, {
+				!ee && /* @__PURE__ */ (0, $.jsx)(l4, {
 					store: e,
 					preset: v,
 					open: r === "preset",
 					onToggle: () => i(r === "preset" ? null : "preset"),
 					onClose: S
 				}),
-				/* @__PURE__ */ (0, $.jsx)(o4, {
+				/* @__PURE__ */ (0, $.jsx)(u4, {
 					store: e,
 					open: r === "size",
 					onToggle: () => i(r === "size" ? null : "size"),
 					onClose: S
 				}),
 				/* @__PURE__ */ (0, $.jsx)("button", {
-					className: Kq(e) ? "selected" : "",
+					className: Xq(e) ? "selected" : "",
 					"aria-label": "Bold",
 					title: "Bold (⌘B)",
-					onClick: () => Wq(e),
-					children: /* @__PURE__ */ (0, $.jsx)(dX, {})
+					onClick: () => Jq(e),
+					children: /* @__PURE__ */ (0, $.jsx)(hX, {})
 				})
 			]
 		})));
 		let c = [];
-		return g && c.push(t("Line", /* @__PURE__ */ (0, $.jsx)(i4, {
+		return g && c.push(t("Line", /* @__PURE__ */ (0, $.jsx)(c4, {
 			store: e,
 			width: l.strokeWidth,
 			dash: l.dash ?? "solid",
 			open: r === "line",
 			onToggle: () => i(r === "line" ? null : "line"),
 			onClose: S
-		}))), x && c.push(t("Arrows", /* @__PURE__ */ (0, $.jsxs)(R0, {
+		}))), x && c.push(t("Arrows", /* @__PURE__ */ (0, $.jsxs)(H0, {
 			open: r === "heads",
 			onClose: S,
 			trigger: /* @__PURE__ */ (0, $.jsxs)("button", {
 				className: `menu-button${r === "heads" ? " selected" : ""}`,
 				"aria-label": "Arrowheads",
 				onClick: () => i(r === "heads" ? null : "heads"),
-				children: [/* @__PURE__ */ (0, $.jsx)(e4, { heads: x.heads }), /* @__PURE__ */ (0, $.jsx)(NY, { className: "chevron" })]
+				children: [/* @__PURE__ */ (0, $.jsx)(i4, { heads: x.heads }), /* @__PURE__ */ (0, $.jsx)(LY, { className: "chevron" })]
 			}),
 			children: [/* @__PURE__ */ (0, $.jsx)("div", {
 				className: "menu-section",
@@ -53341,11 +53421,11 @@ function K2({ store: e, inCard: t = !1 }) {
 			}), iV.map((t) => /* @__PURE__ */ (0, $.jsxs)("button", {
 				className: `menu-item flow-menu-item${t.heads === x.heads ? " checked" : ""}`,
 				onClick: () => {
-					W2(e, { heads: t.heads }), S();
+					J2(e, { heads: t.heads }), S();
 				},
-				children: [/* @__PURE__ */ (0, $.jsx)(e4, { heads: t.heads }), /* @__PURE__ */ (0, $.jsx)("span", { children: t.title })]
+				children: [/* @__PURE__ */ (0, $.jsx)(i4, { heads: t.heads }), /* @__PURE__ */ (0, $.jsx)("span", { children: t.title })]
 			}, t.heads))]
-		}))), (h || m === "text") && c.push(t("Font", /* @__PURE__ */ (0, $.jsx)(n4, {
+		}))), (h || m === "text") && c.push(t("Font", /* @__PURE__ */ (0, $.jsx)(o4, {
 			store: e,
 			open: r === "font",
 			onToggle: () => i(r === "font" ? null : "font"),
@@ -53357,18 +53437,19 @@ function K2({ store: e, inCard: t = !1 }) {
 			onPointerDown: (e) => e.stopPropagation(),
 			children: [
 				s,
-				c.length > 0 && /* @__PURE__ */ (0, $.jsxs)($.Fragment, { children: [/* @__PURE__ */ (0, $.jsxs)("button", {
+				c.length === 1 && c,
+				c.length > 1 && /* @__PURE__ */ (0, $.jsxs)($.Fragment, { children: [/* @__PURE__ */ (0, $.jsxs)("button", {
 					className: "inspector-more",
 					"aria-expanded": a,
 					onClick: () => o(!a),
-					children: [a ? "Less" : "More", /* @__PURE__ */ (0, $.jsx)(NY, { className: `chevron${a ? " up" : ""}` })]
+					children: ["Advanced", /* @__PURE__ */ (0, $.jsx)(LY, { className: `chevron${a ? " up" : ""}` })]
 				}), a && /* @__PURE__ */ (0, $.jsx)("div", {
 					className: "inspector-more-rows",
 					children: c
 				})] }),
 				p && /* @__PURE__ */ (0, $.jsx)("div", {
 					className: "inspector-actions",
-					children: /* @__PURE__ */ (0, $.jsx)(q2, { store: e })
+					children: /* @__PURE__ */ (0, $.jsx)(Z2, { store: e })
 				})
 			]
 		});
@@ -53377,9 +53458,9 @@ function K2({ store: e, inCard: t = !1 }) {
 	if (te.push(/* @__PURE__ */ (0, $.jsxs)($.Fragment, { children: [
 		m && /* @__PURE__ */ (0, $.jsx)("span", {
 			className: "style-bar-label",
-			children: G2[m]
+			children: Y2[m]
 		}),
-		/* @__PURE__ */ (0, $.jsx)(J2, {
+		/* @__PURE__ */ (0, $.jsx)(Q2, {
 			title: h || m === "text" ? "Colour" : "Stroke",
 			color: l.stroke,
 			open: r === "stroke",
@@ -53387,18 +53468,18 @@ function K2({ store: e, inCard: t = !1 }) {
 			onClose: S,
 			onPick: (t) => e.applyStyle({ stroke: t })
 		}),
-		_ && /* @__PURE__ */ (0, $.jsx)(J2, {
+		_ && /* @__PURE__ */ (0, $.jsx)(Q2, {
 			title: "Fill",
 			color: l.fill,
 			open: r === "fill",
 			onToggle: () => i(r === "fill" ? null : "fill"),
 			onClose: S,
 			onPick: (t) => e.applyStyle({ fill: t }),
-			palette: ee ? Y2 : void 0
+			palette: ee ? $2 : void 0
 		})
 	] })), y.length > 0 && y[0]?.kind.type === "flow") {
 		let t = y[0].kind.shape;
-		te.push(/* @__PURE__ */ (0, $.jsxs)(R0, {
+		te.push(/* @__PURE__ */ (0, $.jsxs)(H0, {
 			open: r === "shape",
 			onClose: S,
 			trigger: /* @__PURE__ */ (0, $.jsxs)("button", {
@@ -53406,7 +53487,7 @@ function K2({ store: e, inCard: t = !1 }) {
 				title: "Shape",
 				"aria-label": `Shape: ${RB(t).title}`,
 				onClick: () => i(r === "shape" ? null : "shape"),
-				children: [/* @__PURE__ */ (0, $.jsx)(P0, { shape: t }), /* @__PURE__ */ (0, $.jsx)(NY, { className: "chevron" })]
+				children: [/* @__PURE__ */ (0, $.jsx)(R0, { shape: t }), /* @__PURE__ */ (0, $.jsx)(LY, { className: "chevron" })]
 			}),
 			children: [/* @__PURE__ */ (0, $.jsx)("div", {
 				className: "menu-section",
@@ -53414,20 +53495,20 @@ function K2({ store: e, inCard: t = !1 }) {
 			}), IB.map((n) => /* @__PURE__ */ (0, $.jsxs)("button", {
 				className: `menu-item flow-menu-item${n.shape === t ? " checked" : ""}`,
 				onClick: () => {
-					U2(e, n.shape), S();
+					q2(e, n.shape), S();
 				},
-				children: [/* @__PURE__ */ (0, $.jsx)(P0, { shape: n.shape }), /* @__PURE__ */ (0, $.jsx)("span", { children: n.title })]
+				children: [/* @__PURE__ */ (0, $.jsx)(R0, { shape: n.shape }), /* @__PURE__ */ (0, $.jsx)("span", { children: n.title })]
 			}, n.shape))]
 		}));
 	}
-	return x && te.push(/* @__PURE__ */ (0, $.jsxs)($.Fragment, { children: [/* @__PURE__ */ (0, $.jsxs)(R0, {
+	return x && te.push(/* @__PURE__ */ (0, $.jsxs)($.Fragment, { children: [/* @__PURE__ */ (0, $.jsxs)(H0, {
 		open: r === "route",
 		onClose: S,
 		trigger: /* @__PURE__ */ (0, $.jsxs)("button", {
 			className: `menu-button${r === "route" ? " selected" : ""}`,
 			title: "Line style",
 			onClick: () => i(r === "route" ? null : "route"),
-			children: [rV.find((e) => e.route === x.route)?.title, /* @__PURE__ */ (0, $.jsx)(NY, { className: "chevron" })]
+			children: [rV.find((e) => e.route === x.route)?.title, /* @__PURE__ */ (0, $.jsx)(LY, { className: "chevron" })]
 		}),
 		children: [/* @__PURE__ */ (0, $.jsx)("div", {
 			className: "menu-section",
@@ -53435,18 +53516,18 @@ function K2({ store: e, inCard: t = !1 }) {
 		}), rV.map((t) => /* @__PURE__ */ (0, $.jsx)("button", {
 			className: `menu-item${t.route === x.route ? " checked" : ""}`,
 			onClick: () => {
-				W2(e, { route: t.route }), S();
+				J2(e, { route: t.route }), S();
 			},
 			children: t.title
 		}, t.route))]
-	}), /* @__PURE__ */ (0, $.jsxs)(R0, {
+	}), /* @__PURE__ */ (0, $.jsxs)(H0, {
 		open: r === "heads",
 		onClose: S,
 		trigger: /* @__PURE__ */ (0, $.jsxs)("button", {
 			className: `menu-button${r === "heads" ? " selected" : ""}`,
 			title: "Arrowheads",
 			onClick: () => i(r === "heads" ? null : "heads"),
-			children: [/* @__PURE__ */ (0, $.jsx)(e4, { heads: x.heads }), /* @__PURE__ */ (0, $.jsx)(NY, { className: "chevron" })]
+			children: [/* @__PURE__ */ (0, $.jsx)(i4, { heads: x.heads }), /* @__PURE__ */ (0, $.jsx)(LY, { className: "chevron" })]
 		}),
 		children: [/* @__PURE__ */ (0, $.jsx)("div", {
 			className: "menu-section",
@@ -53454,11 +53535,11 @@ function K2({ store: e, inCard: t = !1 }) {
 		}), iV.map((t) => /* @__PURE__ */ (0, $.jsxs)("button", {
 			className: `menu-item flow-menu-item${t.heads === x.heads ? " checked" : ""}`,
 			onClick: () => {
-				W2(e, { heads: t.heads }), S();
+				J2(e, { heads: t.heads }), S();
 			},
-			children: [/* @__PURE__ */ (0, $.jsx)(e4, { heads: t.heads }), /* @__PURE__ */ (0, $.jsx)("span", { children: t.title })]
+			children: [/* @__PURE__ */ (0, $.jsx)(i4, { heads: t.heads }), /* @__PURE__ */ (0, $.jsx)("span", { children: t.title })]
 		}, t.heads))]
-	})] })), g && c ? te.push(/* @__PURE__ */ (0, $.jsx)(i4, {
+	})] })), g && c ? te.push(/* @__PURE__ */ (0, $.jsx)(c4, {
 		store: e,
 		width: l.strokeWidth,
 		dash: l.dash ?? "solid",
@@ -53471,7 +53552,7 @@ function K2({ store: e, inCard: t = !1 }) {
 			"aria-label": `${n} stroke`,
 			className: l.strokeWidth === t ? "selected" : "",
 			onClick: () => e.applyStyle({ strokeWidth: t }),
-			children: /* @__PURE__ */ (0, $.jsx)(t4, {
+			children: /* @__PURE__ */ (0, $.jsx)(a4, {
 				width: Math.min(t, 8),
 				dash: "solid"
 			})
@@ -53482,18 +53563,18 @@ function K2({ store: e, inCard: t = !1 }) {
 			"aria-label": n,
 			className: (l.dash ?? "solid") === t ? "selected" : "",
 			onClick: () => e.applyStyle({ dash: t }),
-			children: /* @__PURE__ */ (0, $.jsx)(t4, {
+			children: /* @__PURE__ */ (0, $.jsx)(a4, {
 				width: 2.5,
 				dash: t
 			})
 		}, t))
-	] })), (h || m === "text") && te.push(/* @__PURE__ */ (0, $.jsxs)($.Fragment, { children: [/* @__PURE__ */ (0, $.jsx)(n4, {
+	] })), (h || m === "text") && te.push(/* @__PURE__ */ (0, $.jsxs)($.Fragment, { children: [/* @__PURE__ */ (0, $.jsx)(o4, {
 		store: e,
 		open: r === "font",
 		onToggle: () => i(r === "font" ? null : "font"),
 		onClose: S
 	}), h && /* @__PURE__ */ (0, $.jsxs)($.Fragment, { children: [
-		ee ? null : c ? /* @__PURE__ */ (0, $.jsx)(a4, {
+		ee ? null : c ? /* @__PURE__ */ (0, $.jsx)(l4, {
 			store: e,
 			preset: v,
 			open: r === "preset",
@@ -53501,26 +53582,26 @@ function K2({ store: e, inCard: t = !1 }) {
 			onClose: S
 		}) : bB.map((t) => /* @__PURE__ */ (0, $.jsx)("button", {
 			className: t.preset === v ? "selected" : "",
-			onClick: () => Uq(e, t.preset),
+			onClick: () => qq(e, t.preset),
 			children: t.title
 		}, t.preset)),
-		/* @__PURE__ */ (0, $.jsx)(o4, {
+		/* @__PURE__ */ (0, $.jsx)(u4, {
 			store: e,
 			open: r === "size",
 			onToggle: () => i(r === "size" ? null : "size"),
 			onClose: S
 		}),
 		/* @__PURE__ */ (0, $.jsx)("button", {
-			className: Kq(e) ? "selected" : "",
+			className: Xq(e) ? "selected" : "",
 			"aria-label": "Bold",
 			title: "Bold (⌘B)",
-			onClick: () => Wq(e),
-			children: /* @__PURE__ */ (0, $.jsx)(dX, {})
+			onClick: () => Jq(e),
+			children: /* @__PURE__ */ (0, $.jsx)(hX, {})
 		})
 	] })] })), p && (te[te.length - 1] = /* @__PURE__ */ (0, $.jsxs)($.Fragment, { children: [
 		te[te.length - 1],
 		/* @__PURE__ */ (0, $.jsx)("span", { className: "separator" }),
-		/* @__PURE__ */ (0, $.jsx)(q2, { store: e })
+		/* @__PURE__ */ (0, $.jsx)(Z2, { store: e })
 	] })), /* @__PURE__ */ (0, $.jsx)("div", {
 		className: "style-bar",
 		role: "toolbar",
@@ -53533,21 +53614,21 @@ function K2({ store: e, inCard: t = !1 }) {
 	});
 }
 /** Duplicate and delete live with the selection rather than in the main toolbar. */
-function q2({ store: e }) {
+function Z2({ store: e }) {
 	return /* @__PURE__ */ (0, $.jsxs)($.Fragment, { children: [/* @__PURE__ */ (0, $.jsx)("button", {
 		"aria-label": "Duplicate (⌘D)",
 		title: "Duplicate (⌘D)",
-		onClick: () => _Q(e),
-		children: /* @__PURE__ */ (0, $.jsx)(qY, {})
+		onClick: () => xQ(e),
+		children: /* @__PURE__ */ (0, $.jsx)(ZY, {})
 	}), /* @__PURE__ */ (0, $.jsx)("button", {
 		"aria-label": "Delete (⌫)",
 		title: "Delete (⌫)",
-		onClick: () => vQ(e),
-		children: /* @__PURE__ */ (0, $.jsx)(CZ, {})
+		onClick: () => SQ(e),
+		children: /* @__PURE__ */ (0, $.jsx)(DZ, {})
 	})] });
 }
-function J2({ title: e, color: t, open: n, onToggle: r, onClose: i, onPick: a, palette: o }) {
-	return /* @__PURE__ */ (0, $.jsxs)(R0, {
+function Q2({ title: e, color: t, open: n, onToggle: r, onClose: i, onPick: a, palette: o }) {
+	return /* @__PURE__ */ (0, $.jsxs)(H0, {
 		open: n,
 		onClose: i,
 		trigger: /* @__PURE__ */ (0, $.jsxs)("button", {
@@ -53563,7 +53644,7 @@ function J2({ title: e, color: t, open: n, onToggle: r, onClose: i, onPick: a, p
 		children: [/* @__PURE__ */ (0, $.jsx)("div", {
 			className: "menu-section",
 			children: e
-		}), /* @__PURE__ */ (0, $.jsx)(H2, {
+		}), /* @__PURE__ */ (0, $.jsx)(K2, {
 			title: e,
 			current: t,
 			palette: o,
@@ -53573,28 +53654,29 @@ function J2({ title: e, color: t, open: n, onToggle: r, onClose: i, onPick: a, p
 		})]
 	});
 }
-var Y2 = HB.map((e) => R(e.hex)), X2 = [
+var $2 = HB.map((e) => R(e.hex)), e4 = [
 	Fz[0],
 	R(16726832),
 	R(16749824),
 	R(3458905),
 	R(31487)
-], Z2 = [
+], t4 = [
 	z,
+	Fz[3],
 	R(16767444),
 	R(16774348),
 	R(14480348),
 	R(14412283)
-], Q2 = Z2;
+], n4 = t4;
 /** A short row of colours, and a dot that opens the rest of the palette. */
-function $2({ title: e, current: t, essentials: n, palette: r = Fz, onPick: i }) {
-	let [a, o] = (0, d.useState)(() => !n.some((e) => jz(e, t)));
+function r4({ title: e, current: t, essentials: n, palette: r = Fz, onPick: i }) {
+	let [a, o] = (0, d.useState)(!1), s = n.some((e) => jz(e, t)) ? n : [...n, t];
 	return /* @__PURE__ */ (0, $.jsxs)("div", {
 		className: "quick-swatches",
-		children: [/* @__PURE__ */ (0, $.jsx)(H2, {
+		children: [/* @__PURE__ */ (0, $.jsx)(K2, {
 			title: e,
 			current: t,
-			palette: a ? r : n,
+			palette: a ? r : s,
 			onPick: i
 		}), /* @__PURE__ */ (0, $.jsx)("button", {
 			className: `swatch more-swatch${a ? " open" : ""}`,
@@ -53604,7 +53686,7 @@ function $2({ title: e, current: t, essentials: n, palette: r = Fz, onPick: i })
 		})]
 	});
 }
-function e4({ heads: e }) {
+function i4({ heads: e }) {
 	return /* @__PURE__ */ (0, $.jsxs)("svg", {
 		width: "28",
 		height: "16",
@@ -53631,7 +53713,7 @@ function e4({ heads: e }) {
 		]
 	});
 }
-function t4({ width: e, dash: t }) {
+function a4({ width: e, dash: t }) {
 	return /* @__PURE__ */ (0, $.jsx)("svg", {
 		width: "28",
 		height: "16",
@@ -53649,9 +53731,9 @@ function t4({ width: e, dash: t }) {
 		})
 	});
 }
-function n4({ store: e, open: t, onToggle: n, onClose: r }) {
-	let i = Xq(e), a = vB.find((e) => e.font === i)?.title ?? "System";
-	return /* @__PURE__ */ (0, $.jsxs)(R0, {
+function o4({ store: e, open: t, onToggle: n, onClose: r }) {
+	let i = eJ(e), a = vB.find((e) => e.font === i)?.title ?? "System";
+	return /* @__PURE__ */ (0, $.jsxs)(H0, {
 		open: t,
 		onClose: r,
 		trigger: /* @__PURE__ */ (0, $.jsxs)("button", {
@@ -53660,7 +53742,7 @@ function n4({ store: e, open: t, onToggle: n, onClose: r }) {
 			"aria-label": `Font: ${a}`,
 			onClick: n,
 			style: { fontFamily: yB(i) },
-			children: [a, /* @__PURE__ */ (0, $.jsx)(NY, { className: "chevron" })]
+			children: [a, /* @__PURE__ */ (0, $.jsx)(LY, { className: "chevron" })]
 		}),
 		children: [/* @__PURE__ */ (0, $.jsx)("div", {
 			className: "menu-section",
@@ -53672,13 +53754,13 @@ function n4({ store: e, open: t, onToggle: n, onClose: r }) {
 				fontSize: 17
 			},
 			onClick: () => {
-				Yq(e, t.font), r();
+				$q(e, t.font), r();
 			},
 			children: t.title
 		}, t.font))]
 	});
 }
-function r4(e) {
+function s4(e) {
 	let [t, n] = (0, d.useState)(() => window.matchMedia(e).matches);
 	return (0, d.useEffect)(() => {
 		let t = window.matchMedia(e), r = () => n(t.matches);
@@ -53686,8 +53768,8 @@ function r4(e) {
 	}, [e]), t;
 }
 /** Stroke width and dash in one menu, for narrow windows. The button shows the current line. */
-function i4({ store: e, width: t, dash: n, open: r, onToggle: i, onClose: a }) {
-	return /* @__PURE__ */ (0, $.jsxs)(R0, {
+function c4({ store: e, width: t, dash: n, open: r, onToggle: i, onClose: a }) {
+	return /* @__PURE__ */ (0, $.jsxs)(H0, {
 		open: r,
 		onClose: a,
 		trigger: /* @__PURE__ */ (0, $.jsxs)("button", {
@@ -53695,10 +53777,10 @@ function i4({ store: e, width: t, dash: n, open: r, onToggle: i, onClose: a }) {
 			title: "Stroke",
 			"aria-label": "Stroke width and style",
 			onClick: i,
-			children: [/* @__PURE__ */ (0, $.jsx)(t4, {
+			children: [/* @__PURE__ */ (0, $.jsx)(a4, {
 				width: Math.max(1.5, Math.min(t, 8)),
 				dash: n
-			}), /* @__PURE__ */ (0, $.jsx)(NY, { className: "chevron" })]
+			}), /* @__PURE__ */ (0, $.jsx)(LY, { className: "chevron" })]
 		}),
 		children: [
 			/* @__PURE__ */ (0, $.jsx)("div", {
@@ -53712,7 +53794,7 @@ function i4({ store: e, width: t, dash: n, open: r, onToggle: i, onClose: a }) {
 					"aria-label": `${r} stroke`,
 					className: t === n ? "selected" : "",
 					onClick: () => e.applyStyle({ strokeWidth: n }),
-					children: /* @__PURE__ */ (0, $.jsx)(t4, {
+					children: /* @__PURE__ */ (0, $.jsx)(a4, {
 						width: Math.min(n, 8),
 						dash: "solid"
 					})
@@ -53729,7 +53811,7 @@ function i4({ store: e, width: t, dash: n, open: r, onToggle: i, onClose: a }) {
 					"aria-label": r,
 					className: n === t ? "selected" : "",
 					onClick: () => e.applyStyle({ dash: t }),
-					children: /* @__PURE__ */ (0, $.jsx)(t4, {
+					children: /* @__PURE__ */ (0, $.jsx)(a4, {
 						width: 2.5,
 						dash: t
 					})
@@ -53739,9 +53821,9 @@ function i4({ store: e, width: t, dash: n, open: r, onToggle: i, onClose: a }) {
 	});
 }
 /** Title, Heading, Body, Caption as one menu, for narrow windows. The button names the current style. */
-function a4({ store: e, preset: t, open: n, onToggle: r, onClose: i }) {
+function l4({ store: e, preset: t, open: n, onToggle: r, onClose: i }) {
 	let a = bB.find((e) => e.preset === t);
-	return /* @__PURE__ */ (0, $.jsxs)(R0, {
+	return /* @__PURE__ */ (0, $.jsxs)(H0, {
 		open: n,
 		onClose: i,
 		trigger: /* @__PURE__ */ (0, $.jsxs)("button", {
@@ -53749,7 +53831,7 @@ function a4({ store: e, preset: t, open: n, onToggle: r, onClose: i }) {
 			title: "Text style",
 			"aria-label": `Text style: ${a?.title ?? "Mixed"}`,
 			onClick: r,
-			children: [a?.title ?? "Mixed", /* @__PURE__ */ (0, $.jsx)(NY, { className: "chevron" })]
+			children: [a?.title ?? "Mixed", /* @__PURE__ */ (0, $.jsx)(LY, { className: "chevron" })]
 		}),
 		children: [/* @__PURE__ */ (0, $.jsx)("div", {
 			className: "menu-section",
@@ -53761,16 +53843,16 @@ function a4({ store: e, preset: t, open: n, onToggle: r, onClose: i }) {
 				fontWeight: n.isBold ? 600 : 400
 			},
 			onClick: () => {
-				Uq(e, n.preset), i();
+				qq(e, n.preset), i();
 			},
 			children: n.title
 		}, n.preset))]
 	});
 }
 /** Any exact size, for when the named styles aren't enough. */
-function o4({ store: e, open: t, onToggle: n, onClose: r }) {
-	let i = Qq(e);
-	return /* @__PURE__ */ (0, $.jsxs)(R0, {
+function u4({ store: e, open: t, onToggle: n, onClose: r }) {
+	let i = nJ(e);
+	return /* @__PURE__ */ (0, $.jsxs)(H0, {
 		open: t,
 		onClose: r,
 		trigger: /* @__PURE__ */ (0, $.jsxs)("button", {
@@ -53778,7 +53860,7 @@ function o4({ store: e, open: t, onToggle: n, onClose: r }) {
 			title: "Size",
 			"aria-label": `Size: ${i ?? "mixed"}`,
 			onClick: n,
-			children: [i ?? "–", /* @__PURE__ */ (0, $.jsx)(NY, { className: "chevron" })]
+			children: [i ?? "–", /* @__PURE__ */ (0, $.jsx)(LY, { className: "chevron" })]
 		}),
 		children: [/* @__PURE__ */ (0, $.jsx)("div", {
 			className: "menu-section",
@@ -53788,7 +53870,7 @@ function o4({ store: e, open: t, onToggle: n, onClose: r }) {
 			children: xB.map((t) => /* @__PURE__ */ (0, $.jsx)("button", {
 				className: `menu-item${t === i ? " checked" : ""}`,
 				onClick: () => {
-					Zq(e, t), r();
+					tJ(e, t), r();
 				},
 				children: t
 			}, t))
@@ -53796,11 +53878,11 @@ function o4({ store: e, open: t, onToggle: n, onClose: r }) {
 	});
 }
 // src/ui/Bento.tsx
-function s4(e, t) {
+function d4(e, t) {
 	let { tool: n, libraryTab: r } = e.state;
 	return t ? "devices" : r === "components" ? "components" : r === "icons" ? "icons" : n === "flow" || n === "shape" ? "shapes" : n === "connector" ? "connector" : n === "text" ? "text" : n === "draw" ? "draw" : "select";
 }
-function c4({ icon: e, label: t, shortcut: n, on: r, onClick: i }) {
+function f4({ icon: e, label: t, shortcut: n, on: r, onClick: i }) {
 	return /* @__PURE__ */ (0, $.jsx)("button", {
 		className: `tile${r ? " on" : ""}`,
 		onClick: i,
@@ -53814,47 +53896,47 @@ function c4({ icon: e, label: t, shortcut: n, on: r, onClick: i }) {
 * Icons only, no Select (with no tool picked you're selecting; click the picked tool again or press Esc to put it
 * down). Flowchart: Shapes, Connector, Text, Note. Wireframe adds Devices, Components, Icons, Image and Draw.
 */
-function l4({ store: e, shapesOpen: t, setShapesOpen: n }) {
-	let r = M1(e), i = (0, d.useRef)(null), a = s4(e, t), o = () => {
+function p4({ store: e, shapesOpen: t, setShapesOpen: n }) {
+	let r = I1(e), i = (0, d.useRef)(null), a = d4(e, t), o = () => {
 		n(!1), e.set({
 			tool: "select",
 			libraryTab: null
 		});
 	}, s = (e, t) => () => {
 		a === e ? o() : (o(), t());
-	}, c = r.mode === "flow", l = (0, d.useRef)(null), u = F2(l, ".tile.on", `${r.mode}:${a}`), f = /* @__PURE__ */ (0, $.jsx)(c4, {
-		icon: c ? /* @__PURE__ */ (0, $.jsx)(P0, { shape: "decision" }) : /* @__PURE__ */ (0, $.jsx)(rZ, {}),
+	}, c = r.mode === "flow", l = (0, d.useRef)(null), u = z2(l, ".tile.on", `${r.mode}:${a}`), f = /* @__PURE__ */ (0, $.jsx)(f4, {
+		icon: c ? /* @__PURE__ */ (0, $.jsx)(R0, { shape: "decision" }) : /* @__PURE__ */ (0, $.jsx)(sZ, {}),
 		label: "Shapes",
 		on: a === "shapes",
 		onClick: s("shapes", () => c ? e.setFlowTool(r.flowShape) : e.setShapeTool(r.shapePreset))
-	}, "shapes"), p = /* @__PURE__ */ (0, $.jsx)(c4, {
-		icon: /* @__PURE__ */ (0, $.jsx)(F0, {}),
+	}, "shapes"), p = /* @__PURE__ */ (0, $.jsx)(f4, {
+		icon: /* @__PURE__ */ (0, $.jsx)(z0, {}),
 		label: "Connector",
 		shortcut: "X",
 		on: a === "connector",
 		onClick: s("connector", () => e.setTool("connector"))
-	}, "connector"), m = /* @__PURE__ */ (0, $.jsx)(c4, {
-		icon: /* @__PURE__ */ (0, $.jsx)(TZ, {}),
+	}, "connector"), m = /* @__PURE__ */ (0, $.jsx)(f4, {
+		icon: /* @__PURE__ */ (0, $.jsx)(kZ, {}),
 		label: "Text",
 		shortcut: "T",
 		on: a === "text",
 		onClick: s("text", () => e.setTool("text"))
-	}, "text"), h = /* @__PURE__ */ (0, $.jsx)(c4, {
-		icon: /* @__PURE__ */ (0, $.jsx)(_Z, {}),
+	}, "text"), h = /* @__PURE__ */ (0, $.jsx)(f4, {
+		icon: /* @__PURE__ */ (0, $.jsx)(xZ, {}),
 		label: "Note",
 		shortcut: "N",
 		on: !1,
 		onClick: () => {
-			o(), NQ(e);
+			o(), LQ(e);
 		}
-	}, "note"), g = /* @__PURE__ */ (0, $.jsx)(c4, {
-		icon: /* @__PURE__ */ (0, $.jsx)(DX, {}),
+	}, "note"), g = /* @__PURE__ */ (0, $.jsx)(f4, {
+		icon: /* @__PURE__ */ (0, $.jsx)(jX, {}),
 		label: "Select",
 		shortcut: "V",
 		on: a === "select",
 		onClick: o
-	}, "select"), _ = (e) => /* @__PURE__ */ (0, $.jsx)("div", { className: "separator" }, e), v = /* @__PURE__ */ (0, $.jsx)(c4, {
-		icon: /* @__PURE__ */ (0, $.jsx)(LX, {}),
+	}, "select"), _ = (e) => /* @__PURE__ */ (0, $.jsx)("div", { className: "separator" }, e), v = /* @__PURE__ */ (0, $.jsx)(f4, {
+		icon: /* @__PURE__ */ (0, $.jsx)(VX, {}),
 		label: "Draw",
 		shortcut: "P",
 		on: a === "draw",
@@ -53870,21 +53952,21 @@ function l4({ store: e, shapesOpen: t, setShapesOpen: n }) {
 	] : [
 		g,
 		_("s1"),
-		/* @__PURE__ */ (0, $.jsx)(c4, {
-			icon: /* @__PURE__ */ (0, $.jsx)(lZ, {}),
+		/* @__PURE__ */ (0, $.jsx)(f4, {
+			icon: /* @__PURE__ */ (0, $.jsx)(pZ, {}),
 			label: "Devices",
 			on: a === "devices",
 			onClick: s("devices", () => n(!0))
 		}, "devices"),
-		/* @__PURE__ */ (0, $.jsx)(c4, {
-			icon: /* @__PURE__ */ (0, $.jsx)(UX, {}),
+		/* @__PURE__ */ (0, $.jsx)(f4, {
+			icon: /* @__PURE__ */ (0, $.jsx)(qX, {}),
 			label: "Components",
 			on: a === "components",
 			onClick: s("components", () => e.toggleLibrary("components"))
 		}, "components"),
 		f,
-		/* @__PURE__ */ (0, $.jsx)(c4, {
-			icon: /* @__PURE__ */ (0, $.jsx)(lX, {}),
+		/* @__PURE__ */ (0, $.jsx)(f4, {
+			icon: /* @__PURE__ */ (0, $.jsx)(pX, {}),
 			label: "Image",
 			on: !1,
 			onClick: () => {
@@ -53892,8 +53974,8 @@ function l4({ store: e, shapesOpen: t, setShapesOpen: n }) {
 			}
 		}, "image"),
 		m,
-		/* @__PURE__ */ (0, $.jsx)(c4, {
-			icon: /* @__PURE__ */ (0, $.jsx)(hZ, {}),
+		/* @__PURE__ */ (0, $.jsx)(f4, {
+			icon: /* @__PURE__ */ (0, $.jsx)(yZ, {}),
 			label: "Icons",
 			on: a === "icons",
 			onClick: s("icons", () => e.toggleLibrary("icons"))
@@ -53928,12 +54010,12 @@ function l4({ store: e, shapesOpen: t, setShapesOpen: n }) {
 			hidden: !0,
 			onChange: (t) => {
 				let n = t.target.files?.[0];
-				t.target.value = "", n && gQ(e, n);
+				t.target.value = "", n && bQ(e, n);
 			}
 		})]
 	});
 }
-var u4 = {
+var m4 = {
 	rectangle: /* @__PURE__ */ (0, $.jsx)("svg", {
 		viewBox: "0 0 24 24",
 		children: /* @__PURE__ */ (0, $.jsx)("rect", {
@@ -53967,26 +54049,26 @@ var u4 = {
 		children: /* @__PURE__ */ (0, $.jsx)("path", { d: "M4 18L20 6" })
 	})
 };
-function d4({ store: e }) {
-	let t = M1(e);
+function h4({ store: e }) {
+	let t = I1(e);
 	return t.mode === "flow" ? /* @__PURE__ */ (0, $.jsx)("div", {
 		className: "cells",
 		children: IB.map((n) => /* @__PURE__ */ (0, $.jsxs)("button", {
 			className: `cell${t.tool === "flow" && t.flowShape === n.shape ? " on" : ""}`,
 			onClick: () => e.setFlowTool(n.shape),
 			title: n.meaning,
-			children: [/* @__PURE__ */ (0, $.jsx)(P0, { shape: n.shape }), /* @__PURE__ */ (0, $.jsx)("small", { children: RB(n.shape).title })]
+			children: [/* @__PURE__ */ (0, $.jsx)(R0, { shape: n.shape }), /* @__PURE__ */ (0, $.jsx)("small", { children: RB(n.shape).title })]
 		}, n.shape))
 	}) : /* @__PURE__ */ (0, $.jsx)("div", {
 		className: "cells four",
 		children: WH.map((n) => /* @__PURE__ */ (0, $.jsxs)("button", {
 			className: `cell shape-cell${t.tool === "shape" && t.shapePreset === n.preset ? " on" : ""}`,
 			onClick: () => e.setShapeTool(n.preset),
-			children: [u4[n.preset], /* @__PURE__ */ (0, $.jsx)("small", { children: n.title })]
+			children: [m4[n.preset], /* @__PURE__ */ (0, $.jsx)("small", { children: n.title })]
 		}, n.preset))
 	});
 }
-function f4({ store: e }) {
+function g4({ store: e }) {
 	return /* @__PURE__ */ (0, $.jsx)("div", {
 		className: "device-list",
 		children: Wz.map(({ category: t, title: n }) => /* @__PURE__ */ (0, $.jsxs)("div", { children: [/* @__PURE__ */ (0, $.jsx)("div", {
@@ -53994,7 +54076,7 @@ function f4({ store: e }) {
 			children: n
 		}), Uz.filter((e) => e.category === t).map((t) => /* @__PURE__ */ (0, $.jsxs)("button", {
 			className: "row-button",
-			onClick: () => dQ(e, t),
+			onClick: () => hQ(e, t),
 			children: [/* @__PURE__ */ (0, $.jsx)("span", { children: t.name }), /* @__PURE__ */ (0, $.jsxs)("small", { children: [
 				t.width,
 				"×",
@@ -54003,7 +54085,7 @@ function f4({ store: e }) {
 		}, t.id))] }, t))
 	});
 }
-var p4 = {
+var _4 = {
 	shapes: "Shapes",
 	connector: "Connector",
 	text: "Text",
@@ -54014,14 +54096,14 @@ var p4 = {
 };
 /** Under the Tools card: the picked tool's options, or the selection's style. Absent when there's nothing to show. */
 /** Under the Tools card: what the picked tool places, then (in a card of its own) the style it'll use. */
-function m4({ store: e, shapesOpen: t }) {
+function v4({ store: e, shapesOpen: t }) {
 	if (e.state.editingTextID) return null;
-	let n = e.selectedElements, r = s4(e, t);
-	if (n.length > 0 && r === "select") return /* @__PURE__ */ (0, $.jsx)(g4, { store: e });
+	let n = e.selectedElements, r = d4(e, t);
+	if (n.length > 0 && r === "select") return /* @__PURE__ */ (0, $.jsx)(b4, { store: e });
 	let i = null, a = !1;
 	switch (r) {
 		case "shapes":
-			i = /* @__PURE__ */ (0, $.jsx)(d4, { store: e }), a = !0;
+			i = /* @__PURE__ */ (0, $.jsx)(h4, { store: e }), a = !0;
 			break;
 		case "connector":
 		case "text":
@@ -54029,22 +54111,22 @@ function m4({ store: e, shapesOpen: t }) {
 			a = !0;
 			break;
 		case "devices":
-			i = /* @__PURE__ */ (0, $.jsx)(f4, { store: e });
+			i = /* @__PURE__ */ (0, $.jsx)(g4, { store: e });
 			break;
 		case "components":
-			i = /* @__PURE__ */ (0, $.jsx)(B2, { store: e });
+			i = /* @__PURE__ */ (0, $.jsx)(W2, { store: e });
 			break;
 		case "icons":
-			i = /* @__PURE__ */ (0, $.jsx)(V2, { store: e });
+			i = /* @__PURE__ */ (0, $.jsx)(G2, { store: e });
 			break;
 		default: return null;
 	}
 	return /* @__PURE__ */ (0, $.jsxs)($.Fragment, { children: [i && /* @__PURE__ */ (0, $.jsxs)("section", {
 		className: `card options-card picked-${r}${r === "devices" || r === "components" || r === "icons" ? " scrolls" : ""}`,
-		"aria-label": p4[r] ?? "Options",
+		"aria-label": _4[r] ?? "Options",
 		children: [/* @__PURE__ */ (0, $.jsx)("div", {
 			className: "card-head",
-			children: p4[r]
+			children: _4[r]
 		}), i]
 	}), a && /* @__PURE__ */ (0, $.jsxs)("section", {
 		className: "card options-card style-card",
@@ -54052,7 +54134,7 @@ function m4({ store: e, shapesOpen: t }) {
 		children: [/* @__PURE__ */ (0, $.jsx)("div", {
 			className: "card-head",
 			children: "Style"
-		}), /* @__PURE__ */ (0, $.jsx)(K2, {
+		}), /* @__PURE__ */ (0, $.jsx)(X2, {
 			store: e,
 			inCard: !0
 		})]
@@ -54060,16 +54142,16 @@ function m4({ store: e, shapesOpen: t }) {
 }
 /** The selected item's style, in its own card under the Tools card, always in the same place. */
 /** Under the Tools card: eases in when there's something to show, and out again when there isn't. */
-function h4(e) {
-	M1(e.store);
-	let t = m4(e);
-	return /* @__PURE__ */ (0, $.jsx)(L0, {
+function y4(e) {
+	I1(e.store);
+	let t = v4(e);
+	return /* @__PURE__ */ (0, $.jsx)(V0, {
 		show: t !== null,
 		children: t
 	});
 }
-function g4({ store: e }) {
-	let t = M1(e), n = e.selectedElements;
+function b4({ store: e }) {
+	let t = I1(e), n = e.selectedElements;
 	if (n.length === 0 || t.editingTextID || t.tool !== "select" || t.libraryTab !== null) return null;
 	let r = n.length === 1 ? n[0] : void 0;
 	return /* @__PURE__ */ (0, $.jsxs)("section", {
@@ -54077,14 +54159,14 @@ function g4({ store: e }) {
 		"aria-label": "Selection",
 		children: [/* @__PURE__ */ (0, $.jsx)("div", {
 			className: "card-head",
-			children: r ? _4(r.kind) : `${n.length} selected`
-		}), /* @__PURE__ */ (0, $.jsx)(K2, {
+			children: r ? x4(r.kind) : `${n.length} selected`
+		}), /* @__PURE__ */ (0, $.jsx)(X2, {
 			store: e,
 			inCard: !0
 		})]
 	});
 }
-function _4(e) {
+function x4(e) {
 	let t = e;
 	return t.type === "flow" && t.shape ? RB(t.shape).title : {
 		rectangle: "Rectangle",
@@ -54103,8 +54185,8 @@ function _4(e) {
 	}[t.type] ?? "Selection";
 }
 /** Bottom centre: which tools the Tools card shows. */
-function v4({ store: e }) {
-	let { mode: t, access: n } = M1(e), r = (0, d.useRef)(null), i = F2(r, ".mode-option.on", t);
+function S4({ store: e }) {
+	let { mode: t, access: n } = I1(e), r = (0, d.useRef)(null), i = z2(r, ".mode-option.on", t);
 	if (n !== "edit") return null;
 	let a = (n, r) => /* @__PURE__ */ (0, $.jsx)("button", {
 		className: `mode-option${t === n ? " on" : ""}`,
@@ -54129,28 +54211,28 @@ function v4({ store: e }) {
 	});
 }
 /** Bottom left: undo and redo. */
-function y4({ store: e }) {
-	return M1(e), /* @__PURE__ */ (0, $.jsxs)("div", {
+function C4({ store: e }) {
+	return I1(e), /* @__PURE__ */ (0, $.jsxs)("div", {
 		className: "toolbar undo-controls",
-		children: [/* @__PURE__ */ (0, $.jsx)(z0, {
+		children: [/* @__PURE__ */ (0, $.jsx)(U0, {
 			title: "Undo",
 			shortcut: "⌘Z",
 			disabled: !e.canUndo,
 			onClick: e.undo,
-			children: /* @__PURE__ */ (0, $.jsx)(DZ, {})
-		}), /* @__PURE__ */ (0, $.jsx)(z0, {
+			children: /* @__PURE__ */ (0, $.jsx)(jZ, {})
+		}), /* @__PURE__ */ (0, $.jsx)(U0, {
 			title: "Redo",
 			shortcut: "⇧⌘Z",
 			disabled: !e.canRedo,
 			onClick: e.redo,
-			children: /* @__PURE__ */ (0, $.jsx)(qX, {})
+			children: /* @__PURE__ */ (0, $.jsx)(ZX, {})
 		})]
 	});
 }
-var b4 = 1.25;
+var w4 = 1.25;
 /** Bottom right: grid snapping and zoom. */
-function x4({ store: e }) {
-	let t = M1(e), [n, r] = (0, d.useState)(!1), i = () => r(!1), a = (t) => {
+function T4({ store: e }) {
+	let t = I1(e), [n, r] = (0, d.useState)(!1), i = () => r(!1), a = (t) => {
 		let { camera: n, viewport: r } = e.state;
 		e.set({ camera: rG(n, n.scale * t, {
 			x: r.width / 2,
@@ -54160,12 +54242,12 @@ function x4({ store: e }) {
 	return /* @__PURE__ */ (0, $.jsxs)("div", {
 		className: "toolbar zoom-controls",
 		children: [
-			/* @__PURE__ */ (0, $.jsx)(z0, {
+			/* @__PURE__ */ (0, $.jsx)(U0, {
 				title: "Zoom Out",
-				onClick: () => a(1 / b4),
-				children: /* @__PURE__ */ (0, $.jsx)(TX, {})
+				onClick: () => a(1 / w4),
+				children: /* @__PURE__ */ (0, $.jsx)(kX, {})
 			}),
-			/* @__PURE__ */ (0, $.jsxs)(R0, {
+			/* @__PURE__ */ (0, $.jsxs)(H0, {
 				open: n,
 				onClose: i,
 				align: "end",
@@ -54206,23 +54288,23 @@ function x4({ store: e }) {
 					})
 				]
 			}),
-			/* @__PURE__ */ (0, $.jsx)(z0, {
+			/* @__PURE__ */ (0, $.jsx)(U0, {
 				title: "Zoom In",
-				onClick: () => a(b4),
-				children: /* @__PURE__ */ (0, $.jsx)(VX, {})
+				onClick: () => a(w4),
+				children: /* @__PURE__ */ (0, $.jsx)(GX, {})
 			})
 		]
 	});
 }
 // src/ui/useArrangeShortcuts.ts
-var S4 = 1, C4 = 8, w4 = 50, T4 = {
+var E4 = 1, D4 = 8, O4 = 50, k4 = {
 	KeyA: "left",
 	KeyH: "centerX",
 	KeyD: "right",
 	KeyW: "top",
 	KeyV: "centerY",
 	KeyS: "bottom"
-}, E4 = {
+}, A4 = {
 	ArrowLeft: {
 		x: -1,
 		y: 0
@@ -54239,36 +54321,36 @@ var S4 = 1, C4 = 8, w4 = 50, T4 = {
 		x: 0,
 		y: 1
 	}
-}, D4 = (e) => e instanceof HTMLElement && (e.isContentEditable || [
+}, j4 = (e) => e instanceof HTMLElement && (e.isContentEditable || [
 	"INPUT",
 	"TEXTAREA",
 	"SELECT"
-].includes(e.tagName)), O4 = (e, t) => t === "right" ? e.key === "]" || e.code === "BracketRight" : e.key === "[" || e.code === "BracketLeft";
-function k4(e, t) {
-	return e.altKey || e.shiftKey ? null : O4(e, "right") ? t ? "forward" : "front" : O4(e, "left") ? t ? "backward" : "back" : null;
+].includes(e.tagName)), M4 = (e, t) => t === "right" ? e.key === "]" || e.code === "BracketRight" : e.key === "[" || e.code === "BracketLeft";
+function N4(e, t) {
+	return e.altKey || e.shiftKey ? null : M4(e, "right") ? t ? "forward" : "front" : M4(e, "left") ? t ? "backward" : "back" : null;
 }
-var A4 = 1.5;
+var P4 = 1.5;
 /** Shift+0/1/2 like Figma (100%, fit, selection); +/− and ⌘+/⌘− step the zoom instead of the browser's. */
-function j4(e, t) {
+function F4(e, t) {
 	if (e.shiftKey && !t && !e.altKey) {
 		if (e.code === "Digit0") return (e) => e.zoomToActualSize();
 		if (e.code === "Digit1") return (e) => e.zoomToFit();
 		if (e.code === "Digit2") return (e) => e.zoomToSelection();
 	}
-	return e.altKey ? null : e.key === "+" || e.key === "=" || e.code === "NumpadAdd" ? (e) => e.stepZoom(A4) : e.key === "-" || e.key === "_" || e.code === "NumpadSubtract" ? (e) => e.stepZoom(1 / A4) : null;
+	return e.altKey ? null : e.key === "+" || e.key === "=" || e.code === "NumpadAdd" ? (e) => e.stepZoom(P4) : e.key === "-" || e.key === "_" || e.code === "NumpadSubtract" ? (e) => e.stepZoom(1 / P4) : null;
 }
-function M4(e, t) {
-	let n = t.metaKey || t.ctrlKey, r = t.key.toLowerCase(), i = k4(t, n), a = E4[t.key], o = T4[t.code], s = j4(t, n);
+function I4(e, t) {
+	let n = t.metaKey || t.ctrlKey, r = t.key.toLowerCase(), i = N4(t, n), a = A4[t.key], o = k4[t.code], s = F4(t, n);
 	if (s) s(e);
-	else if (i) G1(e, i);
-	else if (n && !t.shiftKey && r === "a") X1(e);
-	else if (n && t.shiftKey && t.code === "KeyL") Y1(e);
-	else if (t.altKey && t.shiftKey && !n && t.code === "KeyH") q1(e, "horizontal");
-	else if (t.altKey && t.shiftKey && !n && t.code === "KeyV") q1(e, "vertical");
-	else if (t.altKey && !t.shiftKey && !n && o) K1(e, o);
+	else if (i) Y1(e, i);
+	else if (n && !t.shiftKey && r === "a") e0(e);
+	else if (n && t.shiftKey && t.code === "KeyL") $1(e);
+	else if (t.altKey && t.shiftKey && !n && t.code === "KeyH") Z1(e, "horizontal");
+	else if (t.altKey && t.shiftKey && !n && t.code === "KeyV") Z1(e, "vertical");
+	else if (t.altKey && !t.shiftKey && !n && o) X1(e, o);
 	else if (a && !n && !t.altKey) {
-		let n = t.shiftKey ? C4 : S4;
-		Z1(e, {
+		let n = t.shiftKey ? D4 : E4;
+		t0(e, {
 			x: a.x * n,
 			y: a.y * n
 		});
@@ -54279,28 +54361,28 @@ function M4(e, t) {
 * Arrange, align, lock, nudge and clipboard keys. ⌘C/⌘X/⌘V are left to the browser so the copy, cut and
 * paste events still fire: they carry the selection through the system clipboard, and image paste keeps working.
 */
-function N4(e) {
+function L4(e) {
 	(0, d.useEffect)(() => {
 		let t = null, n = [], r = (r) => {
-			if (D4(r.target) || e.isEditingText) return;
+			if (j4(r.target) || e.isEditingText) return;
 			let i = r.metaKey || r.ctrlKey, a = r.key.toLowerCase();
-			if (i && !r.shiftKey && (a === "c" || a === "x")) t = a === "c" ? $1(e) : e0(e);
+			if (i && !r.shiftKey && (a === "c" || a === "x")) t = a === "c" ? r0(e) : i0(e);
 			else if (i && !r.shiftKey && a === "v") {
 				let t = window.setTimeout(() => {
-					n = n.filter((e) => e !== t), t0(e);
-				}, w4);
+					n = n.filter((e) => e !== t), a0(e);
+				}, O4);
 				n = [...n, t];
-			} else M4(e, r) && r.preventDefault();
+			} else I4(e, r) && r.preventDefault();
 		}, i = (e) => {
 			let n = t;
-			t = null, n && !D4(e.target) && e.clipboardData && (e.clipboardData.setData(H1, n), e.preventDefault());
+			t = null, n && !j4(e.target) && e.clipboardData && (e.clipboardData.setData(K1, n), e.preventDefault());
 		}, a = (t) => {
 			let [r, ...i] = n;
-			if (window.clearTimeout(r), n = i, D4(t.target) || e.isEditingText) return;
+			if (window.clearTimeout(r), n = i, j4(t.target) || e.isEditingText) return;
 			let a = t.clipboardData;
 			if (Array.from(a?.files ?? []).some((e) => e.type.startsWith("image/"))) return;
-			let o = a?.getData(H1);
-			t0(e, o || void 0) && t.preventDefault();
+			let o = a?.getData(K1);
+			a0(e, o || void 0) && t.preventDefault();
 		};
 		return window.addEventListener("keydown", r), window.addEventListener("copy", i), window.addEventListener("cut", i), window.addEventListener("paste", a), () => {
 			n.forEach((e) => window.clearTimeout(e)), window.removeEventListener("keydown", r), window.removeEventListener("copy", i), window.removeEventListener("cut", i), window.removeEventListener("paste", a);
@@ -54308,42 +54390,50 @@ function N4(e) {
 	}, [e]);
 }
 // src/ui/useKeyboardShortcuts.ts
-var P4 = {
+var R4 = {
 	v: "select",
 	p: "draw",
 	t: "text",
 	c: "comment",
 	x: "connector"
-}, F4 = {
+}, z4 = {
 	r: "process",
 	d: "decision",
 	e: "terminal",
 	i: "io"
-}, I4 = (e) => e instanceof HTMLElement && (e.isContentEditable || [
+}, B4 = {
+	r: "rectangle",
+	o: "ellipse",
+	l: "line"
+}, V4 = (e) => e instanceof HTMLElement && (e.isContentEditable || [
 	"INPUT",
 	"TEXTAREA",
 	"SELECT"
 ].includes(e.tagName));
-function L4(e, t) {
+function H4(e, t) {
 	(0, d.useEffect)(() => {
 		let n = (n) => {
-			if (I4(n.target)) return;
-			let r = n.metaKey || n.ctrlKey, i = n.key.toLowerCase(), a = i === "c" && h() ? void 0 : P4[i];
+			if (V4(n.target)) return;
+			let r = n.metaKey || n.ctrlKey, i = n.key.toLowerCase(), a = i === "c" && h() ? void 0 : R4[i];
 			if (r && i === "z") n.preventDefault(), n.shiftKey ? e.redo() : e.undo();
-			else if (r && i === "d") n.preventDefault(), o0(e);
-			else if (r && i === "b") n.preventDefault(), Wq(e);
-			else if (r && i === "g") n.preventDefault(), n.shiftKey ? hQ(e) : mQ(e);
+			else if (r && i === "d") n.preventDefault(), u0(e);
+			else if (r && i === "b") n.preventDefault(), Jq(e);
+			else if (r && i === "g") n.preventDefault(), n.shiftKey ? yQ(e) : vQ(e);
 			else if (r && i === "0") n.preventDefault(), e.zoomToActualSize();
 			else if (r && i === "1") n.preventDefault(), e.zoomToFit();
 			else if (r || n.altKey) return;
-			else if (i === "n") NQ(e);
-			else if (F4[i]) e.setFlowTool(F4[i]);
+			else if (i === "n") LQ(e);
+			else if (n.shiftKey && (n.key === "!" || n.code === "Digit1")) n.preventDefault(), e.zoomToFit();
+			else if (n.shiftKey && (n.key === "@" || n.code === "Digit2")) n.preventDefault(), e.zoomToSelection();
+			else if (n.shiftKey && (n.key === ")" || n.code === "Digit0")) n.preventDefault(), e.zoomToActualSize();
+			else if (e.state.mode === "wireframe" && B4[i]) e.setShapeTool(B4[i]);
+			else if (e.state.mode === "flow" && z4[i]) e.setFlowTool(z4[i]);
 			else if ((n.key === "Tab" || n.key === "Enter") && e.selectedElements.length === 1 && e.state.access === "edit") {
 				let t = e.selectedElements[0];
-				n.key === "Tab" && t.kind.type === "flow" ? (n.preventDefault(), d1(e, t, n.shiftKey ? "right" : "bottom")) : n.key === "Enter" && (t.kind.type === "flow" || t.kind.type === "connector" || t.kind.type === "note" || t.kind.type === "text") && (n.preventDefault(), OQ(e, t));
+				n.key === "Tab" && t.kind.type === "flow" ? (n.preventDefault(), h1(e, t, n.shiftKey ? "right" : "bottom")) : n.key === "Enter" && (t.kind.type === "flow" || t.kind.type === "connector" || t.kind.type === "note" || t.kind.type === "text") && (n.preventDefault(), MQ(e, t));
 			} else if (a) e.setTool(a);
-			else if (n.key === "Delete" || n.key === "Backspace") n.preventDefault(), vQ(e);
-			else if (n.key === "Escape") b$(e), e.state.tool !== "select" || e.state.libraryTab ? e.set({
+			else if (n.key === "Delete" || n.key === "Backspace") n.preventDefault(), SQ(e);
+			else if (n.key === "Escape") w$(e), e.state.tool !== "select" || e.state.libraryTab ? e.set({
 				tool: "select",
 				libraryTab: null
 			}) : e.set({ selection: /* @__PURE__ */ new Set() });
@@ -54362,7 +54452,7 @@ function L4(e, t) {
 	}, [e, t]);
 }
 // src/ui/CanvasScreen.tsx
-function R4({ store: e, session: t, info: n, onClose: r, onRename: i }) {
+function U4({ store: e, session: t, info: n, onClose: r, onRename: i }) {
 	let a = (0, d.useRef)(null), o = (0, d.useCallback)((e) => {
 		a.current = e;
 	}, []), s = (0, d.useCallback)(() => a.current, []), [c, l] = (0, d.useState)(!1), [u, f] = (0, d.useState)(!1);
@@ -54377,12 +54467,12 @@ function R4({ store: e, session: t, info: n, onClose: r, onRename: i }) {
 			window.removeEventListener("keydown", t), window.removeEventListener("pointerdown", n, !0);
 		};
 	}, [e]);
-	let p = M1(e);
-	return L4(e, s), N4(e), (0, d.useEffect)(() => {
+	let p = I1(e);
+	return H4(e, s), L4(e), (0, d.useEffect)(() => {
 		let t = (t) => {
 			if (t.target instanceof HTMLInputElement || t.target instanceof HTMLTextAreaElement) return;
 			let n = Array.from(t.clipboardData?.files ?? []).filter((e) => e.type.startsWith("image/"));
-			n.length !== 0 && (t.preventDefault(), n.forEach((t) => void gQ(e, t)));
+			n.length !== 0 && (t.preventDefault(), n.forEach((t) => void bQ(e, t)));
 		};
 		return window.addEventListener("paste", t), () => window.removeEventListener("paste", t);
 	}, [e]), /* @__PURE__ */ (0, $.jsxs)("main", {
@@ -54391,12 +54481,12 @@ function R4({ store: e, session: t, info: n, onClose: r, onRename: i }) {
 			/* @__PURE__ */ (0, $.jsxs)("div", {
 				className: "canvas-area",
 				children: [
-					/* @__PURE__ */ (0, $.jsx)(A1, {
+					/* @__PURE__ */ (0, $.jsx)(P1, {
 						store: e,
 						onInput: o
 					}),
-					/* @__PURE__ */ (0, $.jsx)(P2, { store: e }),
-					/* @__PURE__ */ (0, $.jsx)(F1, { store: e })
+					/* @__PURE__ */ (0, $.jsx)(R2, { store: e }),
+					/* @__PURE__ */ (0, $.jsx)(z1, { store: e })
 				]
 			}),
 			/* @__PURE__ */ (0, $.jsxs)("header", {
@@ -54408,7 +54498,7 @@ function R4({ store: e, session: t, info: n, onClose: r, onRename: i }) {
 							className: "toolbar back-button",
 							onClick: r,
 							"aria-label": "Back to boards",
-							children: /* @__PURE__ */ (0, $.jsx)(FY, {})
+							children: /* @__PURE__ */ (0, $.jsx)(zY, {})
 						}), /* @__PURE__ */ (0, $.jsx)("button", {
 							className: "doc-title",
 							onClick: () => l(!0),
@@ -54417,16 +54507,16 @@ function R4({ store: e, session: t, info: n, onClose: r, onRename: i }) {
 							children: n.name
 						})]
 					}),
-					p.access !== "edit" && /* @__PURE__ */ (0, $.jsx)(K0, { store: e }),
+					p.access !== "edit" && /* @__PURE__ */ (0, $.jsx)(X0, { store: e }),
 					/* @__PURE__ */ (0, $.jsxs)("div", {
 						className: "top-right",
 						children: [/* @__PURE__ */ (0, $.jsx)("div", {
 							className: "toolbar share-actions",
-							children: /* @__PURE__ */ (0, $.jsx)(U0, {
+							children: /* @__PURE__ */ (0, $.jsx)(q0, {
 								store: e,
 								session: t
 							})
-						}), /* @__PURE__ */ (0, $.jsx)(j2, {
+						}), /* @__PURE__ */ (0, $.jsx)(F2, {
 							store: e,
 							name: n.name
 						})]
@@ -54435,14 +54525,14 @@ function R4({ store: e, session: t, info: n, onClose: r, onRename: i }) {
 			}),
 			p.access === "edit" && /* @__PURE__ */ (0, $.jsxs)($.Fragment, { children: [/* @__PURE__ */ (0, $.jsx)("aside", {
 				className: "side-stack",
-				children: /* @__PURE__ */ (0, $.jsx)(h4, {
+				children: /* @__PURE__ */ (0, $.jsx)(y4, {
 					store: e,
 					shapesOpen: u,
 					setShapesOpen: f
 				})
 			}), /* @__PURE__ */ (0, $.jsx)("div", {
 				className: "bottom-dock",
-				children: /* @__PURE__ */ (0, $.jsx)(l4, {
+				children: /* @__PURE__ */ (0, $.jsx)(p4, {
 					store: e,
 					shapesOpen: u,
 					setShapesOpen: f
@@ -54450,27 +54540,27 @@ function R4({ store: e, session: t, info: n, onClose: r, onRename: i }) {
 			})] }),
 			/* @__PURE__ */ (0, $.jsx)("div", {
 				className: "top-center",
-				children: /* @__PURE__ */ (0, $.jsx)(v4, { store: e })
+				children: /* @__PURE__ */ (0, $.jsx)(S4, { store: e })
 			}),
 			/* @__PURE__ */ (0, $.jsxs)("div", {
 				className: "bottom-row",
 				children: [
-					/* @__PURE__ */ (0, $.jsx)(y4, { store: e }),
+					/* @__PURE__ */ (0, $.jsx)(C4, { store: e }),
 					/* @__PURE__ */ (0, $.jsx)("span", {}),
-					/* @__PURE__ */ (0, $.jsx)(x4, { store: e })
+					/* @__PURE__ */ (0, $.jsx)(T4, { store: e })
 				]
 			}),
-			/* @__PURE__ */ (0, $.jsx)(L0, {
+			/* @__PURE__ */ (0, $.jsx)(V0, {
 				show: p.showsComments,
-				children: /* @__PURE__ */ (0, $.jsx)(Y0, {
+				children: /* @__PURE__ */ (0, $.jsx)($0, {
 					store: e,
 					session: t
 				})
 			}),
-			/* @__PURE__ */ (0, $.jsx)(j0, { store: e }),
-			/* @__PURE__ */ (0, $.jsx)(f0, { store: e }),
-			/* @__PURE__ */ (0, $.jsx)(M2, { store: e }),
-			c && /* @__PURE__ */ (0, $.jsx)(Z0, {
+			/* @__PURE__ */ (0, $.jsx)(F0, { store: e }),
+			/* @__PURE__ */ (0, $.jsx)(g0, { store: e }),
+			/* @__PURE__ */ (0, $.jsx)(I2, { store: e }),
+			c && /* @__PURE__ */ (0, $.jsx)(t2, {
 				doc: n,
 				onDone: (e) => {
 					e !== null && i(e), l(!1);
@@ -54488,20 +54578,20 @@ function R4({ store: e, session: t, info: n, onClose: r, onRename: i }) {
 	});
 }
 // src/App.tsx
-var z4 = {
+var W4 = {
 	document: { elements: [] },
 	comments: []
-}, B4 = () => /^#\/doc\/([\w-]+)$/.exec(window.location.hash)?.[1] ?? null;
+}, G4 = () => /^#\/doc\/([\w-]+)$/.exec(window.location.hash)?.[1] ?? null;
 /** A board artifact shows its one board and nothing else. */
-function V4() {
+function K4() {
 	let e = m();
-	e && B4() !== e.id && window.location.replace(`#/doc/${e.id}`);
+	e && G4() !== e.id && window.location.replace(`#/doc/${e.id}`);
 }
 /** Everyone signs in (Cloudflare Access) before using Draftboard; the app waits until the server confirms who they are. */
-function H4() {
+function q4() {
 	let [e, t] = (0, d.useState)({ state: "loading" });
 	return (0, d.useEffect)(() => {
-		GJ().then((e) => t({
+		YJ().then((e) => t({
 			state: "ready",
 			identity: e
 		})).catch((e) => {
@@ -54521,21 +54611,21 @@ function H4() {
 			onClick: () => window.location.reload(),
 			children: "Try Again"
 		})]
-	}) : /* @__PURE__ */ (0, $.jsx)(U4, {}, e.identity.email);
+	}) : /* @__PURE__ */ (0, $.jsx)(J4, {}, e.identity.email);
 }
-function U4() {
-	let [e] = (0, d.useState)(() => new Vq());
+function J4() {
+	let [e] = (0, d.useState)(() => new Gq());
 	(0, d.useSyncExternalStore)(e.subscribe, e.getSnapshot);
-	let [t, n] = (0, d.useState)(B4), [r, i] = (0, d.useState)(null);
+	let [t, n] = (0, d.useState)(G4), [r, i] = (0, d.useState)(null);
 	(0, d.useEffect)(() => {
 		let t = () => {
-			V4(), n(B4()), fY(e, window.location.hash).then((e) => {
+			K4(), n(G4()), gY(e, window.location.hash).then((e) => {
 				e && window.location.replace(`#/doc/${e}`);
 			}).catch((e) => {
 				console.error("Opening link failed", e), i(e instanceof Error ? e.message : "That link couldn't be opened."), window.location.replace("#");
 			});
 		};
-		return t(), JJ() && FJ(e).catch((e) => {
+		return t(), QJ() && zJ(e).catch((e) => {
 			console.error("Syncing the board list failed", e), i(e instanceof Error ? e.message : "Your boards couldn't be synced.");
 		}), window.addEventListener("hashchange", t), () => window.removeEventListener("hashchange", t);
 	}, [e]);
@@ -54545,31 +54635,31 @@ function U4() {
 		window.location.hash = "";
 	}, []), s = (0, d.useMemo)(() => {
 		if (!t || !e.info(t)) return null;
-		let n = z4, r = null;
+		let n = W4, r = null;
 		try {
-			n = e.load(t) ?? z4;
+			n = e.load(t) ?? W4;
 		} catch (n) {
 			console.error("Load failed", n), e.backup(t), r = "This canvas couldn't be opened, so a blank one was started. The old data was kept as a backup.";
 		}
-		let i = new cY(e, t, n), a = new aJ(n, i.persistence, r);
+		let i = new fY(e, t, n), a = new lJ(n, i.persistence, r);
 		return i.attach(a), m() && xe()?.canEdit === !1 && a.set({ access: "view" }), {
 			store: a,
 			session: i
 		};
 	}, [e, t]);
-	(0, d.useEffect)(() => m() ? void 0 : _q.start(e), [e]), (0, d.useEffect)(() => s && m() ? kW(s.store) : void 0, [s]), (0, d.useEffect)(() => s && t ? Ie(t, s.store) : void 0, [s, t]), (0, d.useEffect)(() => _q.setOpen(t && s ? {
+	(0, d.useEffect)(() => m() ? void 0 : xq.start(e), [e]), (0, d.useEffect)(() => s && m() ? kW(s.store) : void 0, [s]), (0, d.useEffect)(() => s && t ? Ie(t, s.store) : void 0, [s, t]), (0, d.useEffect)(() => xq.setOpen(t && s ? {
 		id: t,
 		store: s.store
 	} : null), [t, s]), (0, d.useEffect)(() => {
 		if (s) return s.session.start(), () => s.session.close();
 	}, [s]);
 	let c = t ? e.info(t) : void 0;
-	return !s || !c ? /* @__PURE__ */ (0, $.jsx)(X0, {
+	return !s || !c ? /* @__PURE__ */ (0, $.jsx)(e2, {
 		library: e,
 		onOpen: a,
 		linkError: r,
 		onDismissLinkError: () => i(null)
-	}) : /* @__PURE__ */ (0, $.jsx)(R4, {
+	}) : /* @__PURE__ */ (0, $.jsx)(U4, {
 		store: s.store,
 		session: s.session,
 		info: c,
@@ -54578,43 +54668,43 @@ function U4() {
 	}, c.id);
 }
 // public/favicon.svg?raw
-var W4 = "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\">\n  <rect width=\"64\" height=\"64\" rx=\"14\" fill=\"#2c2f33\"/>\n  <rect x=\"15\" y=\"12\" width=\"26\" height=\"40\" rx=\"5\" fill=\"none\" stroke=\"#f7f5f0\" stroke-width=\"3.5\"/>\n  <path d=\"M20 24 h16 M20 31 h10\" stroke=\"#f7f5f0\" stroke-width=\"3.5\" stroke-linecap=\"round\"/>\n  <path d=\"M24 44 c6 -6 12 4 18 -3 s10 -8 14 -2\" fill=\"none\" stroke=\"#f2c94c\" stroke-width=\"4\" stroke-linecap=\"round\"/>\n</svg>\n";
+var Y4 = "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\">\n  <rect width=\"64\" height=\"64\" rx=\"14\" fill=\"#2c2f33\"/>\n  <rect x=\"15\" y=\"12\" width=\"26\" height=\"40\" rx=\"5\" fill=\"none\" stroke=\"#f7f5f0\" stroke-width=\"3.5\"/>\n  <path d=\"M20 24 h16 M20 31 h10\" stroke=\"#f7f5f0\" stroke-width=\"3.5\" stroke-linecap=\"round\"/>\n  <path d=\"M24 44 c6 -6 12 4 18 -3 s10 -8 14 -2\" fill=\"none\" stroke=\"#f2c94c\" stroke-width=\"4\" stroke-linecap=\"round\"/>\n</svg>\n";
 // src/artifact/desktop.ts
 /** The Draftboard mark drawn at 256 px, for the installed app's Dock tile. */
-async function G4() {
+async function X4() {
 	let e = new Image();
-	e.src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(W4)}`, await e.decode();
+	e.src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(Y4)}`, await e.decode();
 	let t = document.createElement("canvas");
 	t.width = t.height = 256;
 	let n = t.getContext("2d");
 	if (!n) throw Error("No 2D canvas");
 	return n.drawImage(e, 26, 26, 204, 204), t.toDataURL("image/png");
 }
-var K4 = "draftboard.window.sized", q4 = 1100;
+var Z4 = "draftboard.window.sized", Q4 = 1100;
 /**
 * The installed app's window opens small, which puts Draftboard in its compact layout (toolbar at the bottom).
 * The first time, open it big enough for the usual layout; after that the person's own size is kept.
 */
-async function J4(e) {
-	if (e.window && localStorage.getItem(K4) === null) {
-		if (window.innerWidth >= q4) localStorage.setItem(K4, "already wide");
+async function $4(e) {
+	if (e.window && localStorage.getItem(Z4) === null) {
+		if (window.innerWidth >= Q4) localStorage.setItem(Z4, "already wide");
 		else try {
 			await e.window.place({
 				anchor: "center",
 				width: Math.min(1440, window.screen.availWidth - 80),
 				height: Math.min(920, window.screen.availHeight - 60)
-			}), localStorage.setItem(K4, (/* @__PURE__ */ new Date()).toISOString());
+			}), localStorage.setItem(Z4, (/* @__PURE__ */ new Date()).toISOString());
 		} catch (e) {
 			console.warn("Sizing the window failed; trying next launch", e);
 		}
 	}
 }
 /** In the installed Mac app: set its icon. In a browser or the artifact panel: offer to install it. */
-async function Y4() {
+async function e3() {
 	let e = await y("desktop");
 	if (!e) return;
 	if (e.app) {
-		await G4().then((t) => e.app?.dock.setIcon(t)).catch((e) => console.error("Setting the app icon failed", e)), await J4(e);
+		await X4().then((t) => e.app?.dock.setIcon(t)).catch((e) => console.error("Setting the app icon failed", e)), await $4(e);
 		return;
 	}
 	if (await e.install.state().catch(() => "unavailable") !== "available") return;
@@ -54630,11 +54720,11 @@ async function Y4() {
 	n(), window.addEventListener("hashchange", n);
 }
 // src/main.tsx
-var X4 = new URLSearchParams(window.location.search).get("look");
-X4 && (document.documentElement.dataset.look = X4);
-var Z4 = document.getElementById("root");
-if (!Z4) throw Error("Missing #root element");
-Z4.innerHTML = `<main class="sign-in-gate"><p>${h() ? "Loading the board…" : "Loading your boards…"}</p></main>`, Ce().then(() => {
-	let e = jq();
-	e && !window.location.hash && window.location.replace(`#/doc/${e}`), (0, f.createRoot)(Z4).render(/* @__PURE__ */ (0, $.jsx)(d.StrictMode, { children: /* @__PURE__ */ (0, $.jsx)(H4, {}) })), Y4();
+var t3 = new URLSearchParams(window.location.search).get("look");
+t3 && (document.documentElement.dataset.look = t3);
+var n3 = document.getElementById("root");
+if (!n3) throw Error("Missing #root element");
+n3.innerHTML = `<main class="sign-in-gate"><p>${h() ? "Loading the board…" : "Loading your boards…"}</p></main>`, Ce().then(() => {
+	let e = Fq();
+	e && !window.location.hash && window.location.replace(`#/doc/${e}`), (0, f.createRoot)(n3).render(/* @__PURE__ */ (0, $.jsx)(d.StrictMode, { children: /* @__PURE__ */ (0, $.jsx)(q4, {}) })), e3();
 });
