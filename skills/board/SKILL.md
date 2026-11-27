@@ -23,7 +23,8 @@ A board is a fixed page from this plugin, not a page you design: don't start fro
    - `engine-needed <reason>`: set the engine up (next section), then run it again.
    - `error <reason>`: tell the user the reason in one line and stop.
 2. **Publish it** with one Artifact call, a new artifact (no `url`): `file_path` the printed `index.html`; `title` the name; `icon` `"canvas"`; `description` "A Draftboard wireframe board."; `files` `{"draftboard.js": {"artifact": "<ENGINE url>", "path": "draftboard.js"}, "draftboard.css": {"artifact": "<ENGINE url>", "path": "draftboard.css"}}`; `capabilities` `{"db": {"rules": [{"path": "board", "read": "view", "write": "admin"}, {"path": "inbox", "read": "admin", "write": "admin"}]}, "user": {}, "assets": {}, "downloads": true}`. The editor is copied on the server, so there is nothing to read. If the copy is refused because the engine is gone, delete `~/.claude/draftboard/engine.json`, set the engine up again and retry.
-3. The board opens beside the chat. With no request, reply in one line that it's open, and stop. With a request, draft into it (below).
+3. **Put it on Draftboard home**, when the person has one: `bash "<this skill's folder>/../home/home.sh" url` prints `home <url>` or `none`. With a url, ArtifactData `action: "set"` on that url, `collection: "boards"`, `doc_id` the new board's artifact id (the last part of its URL), `data: {"url": <board url>, "title": <name>, "created": <now, ISO>, "updated": <now, ISO>, "hidden": false}`. With `none`, skip this.
+4. The board opens beside the chat. With no request, reply in one line that it's open, and stop. With a request, draft into it (below).
 
 ## Set up the engine (once per person, and after a plugin update)
 

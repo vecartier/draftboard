@@ -1,0 +1,343 @@
+<title>Draftboard</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<!--
+DRAFTBOARD HOME, for Claude. This artifact lists the person's Draftboard boards. It can't see other artifacts
+by itself, so Claude keeps its list with the ArtifactData tool on this artifact's URL:
+- collection "boards", doc_id = the board artifact's id (the last part of its URL), data:
+  {"url": "https://claude.ai/artifact/<id>", "title": <board name>, "created": <ISO time>, "updated": <ISO time>,
+   "thumb": {"assetId": <id>, "url": "/_blob/<id>"} (optional: a picture of the board copied into THIS artifact's assets)}
+- The page itself writes "hidden" (true/false) and "alias" (a name the person typed here); keep those when you update a row
+  (use "update", never "set", on an existing row).
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&display=swap">
+<script type="application/json" id="claude-artifacts-manifest">{"permissions": []}</script>
+<style>
+/* Layout: one sheet of graph paper; boards pinned to it as cards in an even grid, newest first. */
+:root {
+  --paper: #f3f2ec;
+  --paper-line: rgba(40, 36, 20, 0.055);
+  --card: #ffffff;
+  --sunken: #f7f6f1;
+  --ink: #1d1c1a;
+  --ink-2: #6c6a63;
+  --ink-3: #8f8c83;
+  --rule: rgba(30, 28, 20, 0.09);
+  --rule-strong: rgba(30, 28, 20, 0.16);
+  --hover: rgba(30, 28, 20, 0.05);
+  --accent: #d4622a;
+  --accent-ink: #b4502c;
+  --pick-bg: rgba(212, 98, 42, 0.11);
+  --pick-fg: #b4502c;
+  --on-accent: #ffffff;
+  --scrim: rgba(24, 22, 16, 0.22);
+  --shadow-sm: 0 1px 2px rgba(30, 28, 20, 0.05), 0 2px 8px rgba(30, 28, 20, 0.05);
+  --shadow-md: 0 1px 2px rgba(30, 28, 20, 0.05), 0 8px 24px rgba(30, 28, 20, 0.09);
+  --shadow-lg: 0 2px 6px rgba(30, 28, 20, 0.06), 0 18px 44px rgba(30, 28, 20, 0.14);
+  --font-ui: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, "Segoe UI", sans-serif;
+  --font-hand: "Caveat", "Bradley Hand", "Segoe Print", cursive;
+  --radius: 14px;
+  --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --paper: #1d1c19; --paper-line: rgba(255, 250, 230, 0.045); --card: #2a2925; --sunken: #23221f;
+  --ink: #efece4; --ink-2: #aaa69c; --ink-3: #75726a; --rule: rgba(255, 250, 230, 0.09); --rule-strong: rgba(255, 250, 230, 0.16);
+  --hover: rgba(255, 250, 230, 0.06); --accent: #e07440; --accent-ink: #f0905f; --pick-bg: rgba(224, 116, 64, 0.16); --pick-fg: #f0905f;
+  --scrim: rgba(0, 0, 0, 0.45); --shadow-sm: 0 1px 2px rgba(0,0,0,0.3); --shadow-md: 0 8px 24px rgba(0,0,0,0.35); --shadow-lg: 0 18px 44px rgba(0,0,0,0.5);
+  color-scheme: dark;
+} }
+:root[data-theme="dark"] {
+  --paper: #1d1c19; --paper-line: rgba(255, 250, 230, 0.045); --card: #2a2925; --sunken: #23221f;
+  --ink: #efece4; --ink-2: #aaa69c; --ink-3: #75726a; --rule: rgba(255, 250, 230, 0.09); --rule-strong: rgba(255, 250, 230, 0.16);
+  --hover: rgba(255, 250, 230, 0.06); --accent: #e07440; --accent-ink: #f0905f; --pick-bg: rgba(224, 116, 64, 0.16); --pick-fg: #f0905f;
+  --scrim: rgba(0, 0, 0, 0.45); --shadow-sm: 0 1px 2px rgba(0,0,0,0.3); --shadow-md: 0 8px 24px rgba(0,0,0,0.35); --shadow-lg: 0 18px 44px rgba(0,0,0,0.5);
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { min-height: 100%; }
+body {
+  margin: 0; font: 14px/1.45 var(--font-ui); color: var(--ink); -webkit-font-smoothing: antialiased;
+  background-color: var(--paper);
+  background-image: linear-gradient(var(--paper-line) 1px, transparent 1px), linear-gradient(90deg, var(--paper-line) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+svg.i { width: 16px; height: 16px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
+button, input { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.wrap { max-width: 1180px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 28px 56px; }
+
+header.top { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 26px; }
+.mark { display: flex; align-items: center; gap: 10px; margin-right: auto; min-width: 0; }
+.mark .logo { width: 34px; height: 34px; border-radius: 10px; background: var(--accent); color: var(--on-accent); display: grid; place-items: center; box-shadow: var(--shadow-sm); }
+.mark .logo svg { width: 19px; height: 19px; stroke-width: 2; }
+.mark h1 { margin: 0; font: 600 30px/1 var(--font-hand); letter-spacing: 0.2px; }
+.mark .count { color: var(--ink-2); font-variant-numeric: tabular-nums; font-size: 13px; padding-top: 4px; }
+
+.search { position: relative; flex: 0 1 260px; min-width: 0; }
+.search svg { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); color: var(--ink-3); }
+.search input { width: 100%; height: 36px; padding: 0 12px 0 34px; border: 1px solid var(--rule); border-radius: 999px; background: var(--card); box-shadow: var(--shadow-sm); outline: none; }
+.search input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--pick-bg); }
+.search input::placeholder { color: var(--ink-3); }
+
+.btn { height: 36px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--rule); background: var(--card); box-shadow: var(--shadow-sm); display: inline-flex; align-items: center; gap: 7px; font-weight: 550; white-space: nowrap; transition: background 120ms var(--ease), transform 120ms var(--ease); }
+.btn:hover { background: var(--sunken); }
+.btn:active { transform: scale(0.98); }
+.btn.primary { background: var(--accent); border-color: transparent; color: var(--on-accent); }
+.btn.primary:hover { background: var(--accent-ink); }
+.btn.quiet { background: transparent; box-shadow: none; border-color: transparent; color: var(--ink-2); }
+.btn.quiet:hover { background: var(--hover); color: var(--ink); }
+
+.note { color: var(--ink-2); font-size: 13px; margin: -10px 0 18px; display: flex; gap: 8px; align-items: center; }
+.note[hidden] { display: none; }
+
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(232px, 1fr)); gap: 22px 20px; }
+.card { position: relative; display: flex; flex-direction: column; min-width: 0; border-radius: var(--radius); background: var(--card); box-shadow: var(--shadow-sm); border: 1px solid var(--rule); text-decoration: none; color: inherit; transition: box-shadow 180ms var(--ease), transform 180ms var(--ease); }
+.card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
+.card.hidden-board { opacity: 0.62; }
+.thumb { aspect-ratio: 4 / 3; margin: 6px 6px 0; border-radius: 10px; background: var(--sunken); overflow: hidden; position: relative; display: grid; place-items: center;
+  background-image: radial-gradient(var(--rule-strong) 1px, transparent 1.2px); background-size: 14px 14px; }
+.thumb img { width: 100%; height: 100%; object-fit: contain; padding: 10px; display: block; }
+.thumb .sketch { width: 56%; height: 56%; color: var(--ink-3); opacity: 0.7; }
+.meta { display: flex; align-items: center; gap: 6px; padding: 10px 8px 11px 14px; min-width: 0; }
+.meta .txt { min-width: 0; flex: 1; }
+.meta .name { font-weight: 600; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.meta .when { color: var(--ink-2); font-size: 12px; font-variant-numeric: tabular-nums; }
+.more { width: 30px; height: 30px; border-radius: 8px; border: 0; background: transparent; color: var(--ink-3); display: grid; place-items: center; flex: none; }
+.more:hover, .more[aria-expanded="true"] { background: var(--hover); color: var(--ink); }
+
+.new-card { border: 1.5px dashed var(--rule-strong); background: transparent; box-shadow: none; align-items: center; justify-content: center; gap: 10px; min-height: 230px; color: var(--ink-2); font-weight: 550; }
+.new-card:hover { border-color: var(--accent); color: var(--accent-ink); background: var(--pick-bg); box-shadow: none; }
+.new-card .plus { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; background: var(--card); box-shadow: var(--shadow-sm); color: var(--accent); }
+.new-card .plus svg { width: 20px; height: 20px; stroke-width: 2; }
+
+.empty { grid-column: 1 / -1; text-align: center; padding: 56px 16px; color: var(--ink-2); }
+.empty .hand { font: 600 28px/1.1 var(--font-hand); color: var(--ink); margin-bottom: 6px; }
+
+.foot { margin-top: 30px; display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; }
+
+/* Menus and sheets */
+.menu { position: fixed; z-index: 30; min-width: 190px; padding: 5px; border-radius: 12px; background: var(--card); border: 1px solid var(--rule); box-shadow: var(--shadow-lg); animation: pop 140ms var(--ease); }
+.menu button { width: 100%; display: flex; align-items: center; gap: 9px; padding: 8px 10px; border: 0; background: transparent; border-radius: 8px; text-align: left; }
+.menu button:hover { background: var(--pick-bg); color: var(--pick-fg); }
+@keyframes pop { from { opacity: 0; transform: translateY(-3px) scale(0.98); } }
+.scrim { position: fixed; inset: 0; z-index: 40; background: var(--scrim); display: grid; place-items: center; padding: 16px; animation: fade 160ms var(--ease); }
+@keyframes fade { from { opacity: 0; } }
+.sheet { width: min(440px, 100%); background: var(--card); border-radius: 18px; box-shadow: var(--shadow-lg); padding: 22px; display: flex; flex-direction: column; gap: 14px; animation: pop 180ms var(--ease); }
+.sheet h2 { margin: 0; font-size: 17px; }
+.sheet p { margin: 0; color: var(--ink-2); }
+.sheet label { font-size: 12px; font-weight: 600; color: var(--ink-2); display: block; margin-bottom: 6px; }
+.sheet input[type=text], .sheet input[type=url] { width: 100%; height: 38px; padding: 0 12px; border-radius: 10px; border: 1px solid var(--rule-strong); background: var(--sunken); outline: none; }
+.sheet input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--pick-bg); }
+.cmd { display: flex; align-items: center; gap: 8px; padding: 6px 6px 6px 14px; border-radius: 12px; background: var(--sunken); border: 1px solid var(--rule); }
+.cmd code { flex: 1; font: 600 15px/1 ui-monospace, "SF Mono", Menlo, monospace; color: var(--ink); user-select: all; }
+.cmd .btn { height: 32px; }
+.sheet .row { display: flex; gap: 8px; justify-content: flex-end; flex-wrap: wrap; }
+.sheet hr { border: 0; border-top: 1px solid var(--rule); margin: 2px 0; width: 100%; }
+.err { color: #c0392b; font-size: 12px; margin-top: 6px; }
+
+.toast { position: fixed; left: 50%; bottom: calc(22px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); z-index: 50; background: var(--ink); color: var(--paper); padding: 9px 16px; border-radius: 999px; font-weight: 550; box-shadow: var(--shadow-lg); animation: pop 160ms var(--ease); }
+
+@media (max-width: 560px) {
+  .search { order: 3; flex: 1 1 100%; }
+  .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+  .new-card { min-height: 0; aspect-ratio: auto; padding: 24px 8px; }
+  .mark h1 { font-size: 27px; }
+}
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-dash" viewBox="0 0 24 24"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M12 5v14"/></symbol>
+  <symbol id="i-more" viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></symbol>
+  <symbol id="i-open" viewBox="0 0 24 24"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></symbol>
+  <symbol id="i-pencil" viewBox="0 0 24 24"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></symbol>
+  <symbol id="i-eyeoff" viewBox="0 0 24 24"><path d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49"/><path d="M14.084 14.158a3 3 0 0 1-4.242-4.242"/><path d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143"/><path d="m2 2 20 20"/></symbol>
+  <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></symbol>
+  <symbol id="i-link" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></symbol>
+  <symbol id="i-app" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M10 4v4"/><path d="M2 8h20"/><path d="M6 4v4"/></symbol>
+  <symbol id="i-sketch" viewBox="0 0 64 48"><rect x="6" y="5" width="18" height="34" rx="3"/><rect x="40" y="5" width="18" height="34" rx="3"/><path d="M24 22h16"/><path d="m36 18 4 4-4 4"/><path d="M10 12h10M10 17h7M44 12h10M44 17h6"/></symbol>
+</svg>
+
+<div class="wrap">
+  <header class="top">
+    <div class="mark">
+      <div class="logo"><svg class="i"><use href="#i-dash"/></svg></div>
+      <h1>Draftboard</h1>
+      <span class="count" id="count"></span>
+    </div>
+    <div class="search">
+      <svg class="i"><use href="#i-search"/></svg>
+      <input id="q" type="search" placeholder="Find a board" autocomplete="off" aria-label="Find a board">
+    </div>
+    <button class="btn quiet" id="install" hidden><svg class="i"><use href="#i-app"/></svg>Install as app</button>
+    <button class="btn primary" id="new"><svg class="i"><use href="#i-plus"/></svg>New board</button>
+  </header>
+
+  <div class="note" id="note" hidden></div>
+  <main class="grid" id="grid" aria-live="polite"></main>
+  <div class="foot"><button class="btn quiet" id="showHidden" hidden></button></div>
+</div>
+
+<script>
+(() => {
+  const $ = (s) => document.querySelector(s);
+  const grid = $('#grid'), note = $('#note');
+  const NEW_CMD = '/draftboard';
+  let db = null, rows = [], loaded = false, showHidden = false, query = '';
+
+  const icon = (id) => { const s = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); s.setAttribute('class', 'i'); const u = document.createElementNS('http://www.w3.org/2000/svg', 'use'); u.setAttribute('href', '#i-' + id); s.append(u); return s; };
+  const el = (tag, props = {}, ...kids) => { const e = document.createElement(tag); for (const [k, v] of Object.entries(props)) { if (k === 'class') e.className = v; else if (k === 'text') e.textContent = v; else if (k.startsWith('on')) e.addEventListener(k.slice(2), v); else e.setAttribute(k, v); } e.append(...kids.filter(Boolean)); return e; };
+  const safeUrl = (u) => typeof u === 'string' && /^https:\/\/claude\.ai\/(code\/)?artifact\/[\w-]+$/.test(u) ? u : null;
+  const safeBlob = (u) => typeof u === 'string' && /^\/_blob\/[0-9a-f]{32}$/.test(u) ? u : null;
+  const nameOf = (r) => (r.alias || r.title || 'Untitled board');
+
+  function ago(iso) {
+    const t = Date.parse(iso); if (!t) return '';
+    const s = (Date.now() - t) / 1000;
+    if (s < 60) return 'Edited just now';
+    const m = s / 60, h = m / 60, d = h / 24;
+    if (m < 60) return `Edited ${Math.round(m)} min ago`;
+    if (h < 24) return `Edited ${Math.round(h)} h ago`;
+    if (d < 2) return 'Edited yesterday';
+    if (d < 7) return `Edited ${Math.round(d)} days ago`;
+    return 'Edited ' + new Date(t).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: new Date(t).getFullYear() === new Date().getFullYear() ? undefined : 'numeric' });
+  }
+
+  function toast(text) { document.querySelectorAll('.toast').forEach((t) => t.remove()); const t = el('div', { class: 'toast', role: 'status', text }); document.body.append(t); setTimeout(() => t.remove(), 2200); }
+
+  function render() {
+    const vis = rows.filter((r) => !r.hidden);
+    const hiddenN = rows.length - vis.length;
+    $('#count').textContent = loaded && vis.length ? `${vis.length} board${vis.length === 1 ? '' : 's'}` : '';
+    const q = query.trim().toLowerCase();
+    const list = (showHidden ? rows : vis).filter((r) => !q || nameOf(r).toLowerCase().includes(q))
+      .sort((a, b) => (Date.parse(b.updated || b.created || 0) || 0) - (Date.parse(a.updated || a.created || 0) || 0));
+    grid.replaceChildren();
+    if (!q) grid.append(el('button', { class: 'card new-card', onclick: openNew, 'aria-label': 'New board' }, el('span', { class: 'plus' }, icon('plus')), el('span', { text: 'New board' })));
+    for (const r of list) grid.append(card(r));
+    if (!list.length && loaded && q) grid.append(el('div', { class: 'empty' }, el('div', { class: 'hand', text: 'Nothing called that' }), el('div', { text: 'Try another word, or clear the search.' })));
+    if (!rows.length && loaded) grid.append(el('div', { class: 'empty' }, el('div', { class: 'hand', text: 'No boards here yet' }), el('div', { text: 'Boards you make with /draftboard appear here on their own. You can also add one by its link from New board.' })));
+    const sh = $('#showHidden');
+    sh.hidden = !hiddenN;
+    sh.replaceChildren(icon(showHidden ? 'eyeoff' : 'eye'), document.createTextNode(showHidden ? 'Hide hidden boards' : `Show ${hiddenN} hidden board${hiddenN === 1 ? '' : 's'}`));
+  }
+
+  function card(r) {
+    const url = safeUrl(r.url);
+    const thumbSrc = safeBlob(r.thumb && r.thumb.url);
+    const thumb = el('div', { class: 'thumb' });
+    if (thumbSrc) { const img = el('img', { src: thumbSrc, alt: '', loading: 'lazy' }); img.onerror = () => img.replaceWith(sketch()); thumb.append(img); } else thumb.append(sketch());
+    const more = el('button', { class: 'more', 'aria-label': 'More for ' + nameOf(r), 'aria-haspopup': 'menu', 'aria-expanded': 'false' }, icon('more'));
+    more.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); openMenu(more, r); });
+    const a = el(url ? 'a' : 'div', { class: 'card' + (r.hidden ? ' hidden-board' : ''), ...(url ? { href: url, target: '_blank', rel: 'noopener' } : {}) },
+      thumb,
+      el('div', { class: 'meta' }, el('div', { class: 'txt' }, el('div', { class: 'name', text: nameOf(r), title: nameOf(r) }), el('div', { class: 'when', text: r.hidden ? 'Hidden' : ago(r.updated || r.created) })), more));
+    return a;
+  }
+  function sketch() { const s = icon('sketch'); s.setAttribute('class', 'i sketch'); s.style.strokeWidth = '1.6'; return s; }
+
+  let menuEl = null;
+  function closeMenu() { if (menuEl) { menuEl.btn.setAttribute('aria-expanded', 'false'); menuEl.remove(); menuEl = null; } }
+  function openMenu(btn, r) {
+    const again = menuEl && menuEl.btn === btn; closeMenu(); if (again) return;
+    const item = (ic, text, fn) => el('button', { role: 'menuitem', onclick: () => { closeMenu(); fn(); } }, icon(ic), document.createTextNode(text));
+    const url = safeUrl(r.url);
+    menuEl = el('div', { class: 'menu', role: 'menu' },
+      url && item('open', 'Open board', () => { const a = el('a', { href: url, target: '_blank', rel: 'noopener' }); document.body.append(a); a.click(); a.remove(); }),
+      url && item('copy', 'Copy link', () => copy(url, 'Link copied')),
+      item('pencil', 'Rename here', () => openRename(r)),
+      item(r.hidden ? 'eye' : 'eyeoff', r.hidden ? 'Show on home' : 'Hide from home', () => write(r.id, { hidden: !r.hidden }, r.hidden ? 'Back on home' : 'Hidden from home')));
+    menuEl.btn = btn; btn.setAttribute('aria-expanded', 'true');
+    document.body.append(menuEl);
+    const b = btn.getBoundingClientRect(), w = menuEl.offsetWidth, h = menuEl.offsetHeight;
+    menuEl.style.left = Math.max(8, Math.min(b.right - w, innerWidth - w - 8)) + 'px';
+    menuEl.style.top = (b.bottom + 6 + h > innerHeight - 8 ? b.top - h - 6 : b.bottom + 6) + 'px';
+  }
+  document.addEventListener('click', (e) => { if (menuEl && !menuEl.contains(e.target)) closeMenu(); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { closeMenu(); closeSheet(); } });
+  addEventListener('scroll', closeMenu, { passive: true });
+
+  async function copy(text, done) {
+    try { await navigator.clipboard.writeText(text); toast(done); }
+    catch { toast('Select the text and press ⌘C'); }
+  }
+
+  async function write(id, data, done) {
+    if (!db) { toast('Your boards list isn’t reachable right now'); return; }
+    try { await db.collection('boards').doc(id).update(data); if (done) toast(done); }
+    catch (e) { toast('That didn’t save. Try again in a moment.'); }
+  }
+
+  let sheetEl = null;
+  function closeSheet() { if (sheetEl) { sheetEl.remove(); sheetEl = null; } }
+  function sheet(...kids) {
+    closeSheet();
+    sheetEl = el('div', { class: 'scrim', onclick: (e) => { if (e.target === sheetEl) closeSheet(); } }, el('div', { class: 'sheet', role: 'dialog', 'aria-modal': 'true' }, ...kids));
+    document.body.append(sheetEl);
+    return sheetEl;
+  }
+
+  function openRename(r) {
+    const input = el('input', { type: 'text', id: 'rename-input', value: nameOf(r), maxlength: '80' });
+    const save = () => { const v = input.value.trim(); closeSheet(); write(r.id, { alias: v && v !== r.title ? v : null }, 'Renamed'); };
+    input.addEventListener('keydown', (e) => { if (e.key === 'Enter') save(); });
+    sheet(el('h2', { text: 'Rename on home' }), el('p', { text: 'This changes the name shown here. The board keeps its own name inside the editor.' }),
+      el('div', {}, el('label', { for: 'rename-input', text: 'Name' }), input),
+      el('div', { class: 'row' }, el('button', { class: 'btn quiet', text: 'Cancel', onclick: closeSheet }), el('button', { class: 'btn primary', text: 'Save', onclick: save })));
+    input.focus(); input.select();
+  }
+
+  function openNew() {
+    const link = el('input', { type: 'url', id: 'add-link', placeholder: 'https://claude.ai/artifact/…', autocomplete: 'off' });
+    const err = el('div', { class: 'err', hidden: '' });
+    const add = async () => {
+      const m = /https:\/\/claude\.ai\/(?:code\/)?artifact\/([\w-]+)/.exec(link.value.trim());
+      if (!m) { err.textContent = 'Paste a board’s link. It starts with https://claude.ai/artifact/'; err.hidden = false; return; }
+      if (!db) { err.textContent = 'Your boards list isn’t reachable right now.'; err.hidden = false; return; }
+      const id = m[1], now = new Date().toISOString();
+      try {
+        const ref = db.collection('boards').doc(id);
+        const got = await ref.get();
+        if (got.exists) await ref.update({ hidden: false }); else await ref.set({ url: 'https://claude.ai/artifact/' + id, title: 'Board', created: now, updated: now, addedHere: true });
+        closeSheet(); toast(got.exists ? 'Already here, now shown' : 'Added. Rename it from its ⋯ menu');
+      } catch { err.textContent = 'That didn’t save. Try again in a moment.'; err.hidden = false; }
+    };
+    link.addEventListener('keydown', (e) => { if (e.key === 'Enter') add(); });
+    sheet(el('h2', { text: 'New board' }),
+      el('p', { text: 'Claude makes new boards. In any Claude Code chat, type this, or say what to sketch after it. The board opens beside the chat and shows up here.' }),
+      el('div', { class: 'cmd' }, el('code', { text: NEW_CMD }), el('button', { class: 'btn', onclick: () => copy(NEW_CMD, 'Copied /draftboard') }, icon('copy'), document.createTextNode('Copy'))),
+      el('hr'),
+      el('div', {}, el('label', { for: 'add-link', text: 'Or add a board you already have' }), link, err),
+      el('div', { class: 'row' }, el('button', { class: 'btn quiet', text: 'Cancel', onclick: closeSheet }), el('button', { class: 'btn', onclick: add }, icon('link'), document.createTextNode('Add by link'))));
+  }
+
+  $('#new').addEventListener('click', openNew);
+  $('#q').addEventListener('input', (e) => { query = e.target.value; render(); });
+  $('#showHidden').addEventListener('click', () => { showHidden = !showHidden; render(); });
+
+  render();
+  const timer = setTimeout(() => { if (!loaded) { note.hidden = false; note.textContent = 'Your boards are taking a while to load. Check your connection; they’ll appear once it’s back.'; } }, 10000);
+
+  (async () => {
+    const claude = window.claude;
+    if (!claude || !claude.use) { note.hidden = false; note.textContent = 'Open this page in Claude to see your boards.'; clearTimeout(timer); return; }
+    const desktop = await claude.use('desktop').catch(() => null);
+    if (desktop && !desktop.fs && desktop.install) {
+      try { if ((await desktop.install.state()) === 'available') { const b = $('#install'); b.hidden = false; b.onclick = () => desktop.install.request().catch(() => toast('Install from the artifact’s menu in the Claude app')); } } catch {}
+    }
+    db = await claude.use('db');
+    if (!db) { clearTimeout(timer); note.hidden = false; note.textContent = 'Sign in to Claude to see your boards.'; return; }
+    db.collection('boards').onSnapshot((snap) => {
+      rows = snap.docs.filter((d) => d.exists).map((d) => ({ id: d.id, ...d.data() }));
+      if (!snap.metadata || !snap.metadata.fromCache) { loaded = true; clearTimeout(timer); note.hidden = true; }
+      else loaded = true;
+      render();
+    }, () => { clearTimeout(timer); loaded = true; note.hidden = false; note.textContent = 'Your boards can’t be reached right now. Reopen this page to try again.'; render(); });
+  })();
+})();
+</script>

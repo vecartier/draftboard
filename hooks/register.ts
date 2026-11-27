@@ -46,10 +46,48 @@ async function setUpEngine($: Engine, scratchpadDir: string): Promise<string | n
   return null
 }
 
+const HOME_CAPABILITIES = {
+  db: { rules: [{ path: 'boards', read: 'admin', write: 'admin' }] },
+  user: {},
+  assets: {},
+  desktop: {},
+}
+
+/** The person's Draftboard home artifact, or null when they have none yet. */
+async function homeUrl($: Engine): Promise<string | null> {
+  const run = await $.process.run(['bash', `${$.plugin.root}/skills/home/home.sh`, 'url'], { timeoutMs: 10_000 })
+  return /^home (https:\/\/claude\.ai\/artifact\/[\w-]+)$/.exec(run.stdout.trim())?.[1] ?? null
+}
+
+/** Puts a new board on the person's Draftboard home, when they have one. Never fails the board. */
+async function addToHome($: Engine, board: string, title: string): Promise<void> {
+  try {
+    const home = await homeUrl($)
+    const id = /artifact\/([\w-]+)$/.exec(board)?.[1]
+    if (!home || !id) return
+    const now = new Date().toISOString()
+    await $.tool.call({
+      tool: 'ArtifactData', action: 'set', url: home, collection: 'boards', doc_id: id,
+      data: { url: board, title, created: now, updated: now, hidden: false },
+    })
+  } catch {
+    // Home is a convenience: a sync from the home skill picks the board up later.
+  }
+}
+
 export const register: Register = (on) => {
+
   // `/draftboard` is the board skill's own command; this answers it first, so the skill (and a model turn)
   // only runs when the fast path can't.
   on('command.run', async ($, e, next) => {
+    // `/draftboard:home` with nothing after it opens home. Making it the first time, and a sync, take Claude.
+    if (['draftboard:home', 'home'].includes(e.command)) {
+      const existing = (e.args ?? '').trim() ? null : await homeUrl($)
+      if (!existing) return next(e)
+      const opened = await $.tool.call({ tool: 'Artifact', action: 'open', url: existing })
+      if ('deny' in (opened as object)) return next(e)
+      return { text: `Draftboard home is open: ${existing}`, isTextDisplayOnly: true }
+    }
     if (!['draftboard', 'board', 'draftboard:board'].includes(e.command)) return next(e)
     const request = (e.args ?? '').trim()
     // Only a blank board is made here. A request may be about an existing board ("add a screen to Checkout"),
@@ -96,6 +134,7 @@ export const register: Register = (on) => {
     const text = 'deny' in published && published.deny ? published.deny : published.text ?? ''
     const url = /https:\/\/claude\.ai\/artifact\/[\w-]+/.exec(text)?.[0]
     if (!url) return viaSkill(`Publishing directly didn't work: ${text.slice(0, 300)}`)
+    await addToHome($, url, name)
 
     return { text: `${name} is open beside the chat: ${url}`, isTextDisplayOnly: true }
   }).catch(($, e, next) => (next.called ? { text: 'Making your board…' } : next(e)))

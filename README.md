@@ -28,6 +28,7 @@ Other ways in:
 | `/draftboard:board` | Opens a blank board. |
 | `/draftboard:board a checkout flow with cart and payment` | Opens a board with Claude's first draft on it. |
 | `/draftboard:board open my Checkout board` | Finds an older board by name and picks up where you left off. |
+| `/draftboard:home` | Opens Draftboard home, a grid of all your boards you can install as an app. `/draftboard:home sync` adds boards it's missing. |
 | `/draftboard:build <link or name>` | Builds the board into your project, in its own stack and components. |
 
 ## Modes

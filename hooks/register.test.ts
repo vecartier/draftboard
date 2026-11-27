@@ -56,3 +56,40 @@ test('a missing engine is published by the command itself, with no model turn', 
   expect(calls[0]?.url).toBeUndefined()
   expect(prompts).toEqual([])
 })
+
+test('a new board goes on Draftboard home when the person has one', async ($, on) => {
+  const calls: Record<string, unknown>[] = []
+  on('session.info', () => ({ value: { scratchpadDir: '/tmp/scratch', transcriptPath: '' } }))
+  on('process.run', (_: unknown, e: { readonly argv: readonly string[] }) => {
+    const home = String(e.argv[1] ?? '').endsWith('home.sh')
+    const stdout = home ? 'home https://claude.ai/artifact/HOME1\n' : 'ready /tmp/scratch/draftboard-1/index.html https://claude.ai/artifact/ENGINE1\n'
+    return { value: { exitCode: 0, stdout, stderr: '', isStdoutTruncated: false, isStderrTruncated: false } }
+  })
+  on('tool.call', (_: unknown, e: Record<string, unknown>) => {
+    calls.push(e)
+    return { result: {}, text: e.tool === 'Artifact' ? 'Published at https://claude.ai/artifact/BOARD9 (Version 1)' : 'ok' }
+  })
+  on('clock.after', () => ({ value: undefined }))
+  const ran = await $.command.run({ command: 'draftboard', args: '' } as Parameters<typeof $.command.run>[0])
+  expect(ran.text).toBe('Untitled board is open beside the chat: https://claude.ai/artifact/BOARD9')
+  const row = calls.find((c) => c.tool === 'ArtifactData')
+  expect(row?.url).toBe('https://claude.ai/artifact/HOME1')
+  expect(row?.doc_id).toBe('BOARD9')
+  expect((row?.data as { title: string }).title).toBe('Untitled board')
+})
+
+test('/draftboard:home opens home when it exists, and leaves the first time to the skill', async ($, on) => {
+  let has = true
+  const calls: Record<string, unknown>[] = []
+  let skill = 0
+  on('process.run', () => ({ value: { exitCode: 0, stdout: has ? 'home https://claude.ai/artifact/HOME1\n' : 'none\n', stderr: '', isStdoutTruncated: false, isStderrTruncated: false } }))
+  on('tool.call', (_: unknown, e: Record<string, unknown>) => { calls.push(e); return { result: {}, text: 'Opened' } })
+  on('command.run', () => { skill += 1; return { text: 'skill' } })
+  const opened = await $.command.run({ command: 'draftboard:home', args: '' } as Parameters<typeof $.command.run>[0])
+  expect(opened.text).toBe('Draftboard home is open: https://claude.ai/artifact/HOME1')
+  expect(calls[0]?.action).toBe('open')
+  has = false
+  const first = await $.command.run({ command: 'draftboard:home', args: '' } as Parameters<typeof $.command.run>[0])
+  expect(first.text).toBe('skill')
+  expect(skill).toBe(1)
+})
