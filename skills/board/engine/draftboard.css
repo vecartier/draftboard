@@ -1294,13 +1294,21 @@ button:focus:not(:focus-visible) { outline: none; }
 }
 /* Progressive disclosure in the style card: a few colours, then More. */
 .quick-swatches { display: flex; align-items: flex-start; gap: 5px; flex-wrap: wrap; }
-.quick-swatches .swatches { display: flex; flex-wrap: wrap; gap: 5px; padding: 4px 0; grid-template-columns: none; }
+.quick-swatches { padding: 4px 0; }
+.quick-swatches .swatches { display: contents; }
+/* + shows a few more colours of the same kind; – folds them away. */
 .inspector .more-swatch {
-  width: 16px; height: 16px; margin-top: 4px; border-radius: 50%; padding: 0; min-height: 0;
+  width: 16px; height: 16px; border-radius: 50%; padding: 0; min-height: 0;
+  background: var(--surface-sunken); box-shadow: inset 0 0 0 1px var(--border-strong);
+}
+.inspector .more-swatch::after { content: '+'; display: block; font-size: 12px; line-height: 16px; text-align: center; color: var(--text-secondary); }
+.inspector .more-swatch.open::after { content: '–'; }
+/* The wheel opens the system colour picker for any colour. */
+.inspector .wheel-swatch {
+  position: relative; display: block; flex: none; width: 16px; height: 16px; border-radius: 50%; padding: 0; cursor: pointer;
   background: conic-gradient(#ff3b30, #ffcc00, #34c759, #00c7be, #007aff, #c8553d, #ff3b30); box-shadow: inset 0 0 0 1px rgba(20, 20, 30, 0.15);
 }
-.inspector .more-swatch.open { background: var(--surface-sunken); box-shadow: inset 0 0 0 1px var(--border-strong); }
-.inspector .more-swatch.open::after { content: '–'; display: block; font-size: 12px; line-height: 16px; text-align: center; color: var(--text-secondary); }
+.inspector .wheel-swatch input { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; border: 0; padding: 0; }
 .inspector-more {
   align-self: flex-start; margin: 2px 0 0 -4px; color: var(--text-secondary) !important; font-size: 12px !important; font-weight: 500;
   min-height: 26px !important;
