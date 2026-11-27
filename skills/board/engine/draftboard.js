@@ -50266,7 +50266,7 @@ function aN(e, t) {
 			...r,
 			kind: {
 				...r.kind,
-				name: t.trim() || "Section"
+				name: t.trim() || "Untitled"
 			}
 		}]));
 		return;
@@ -117602,12 +117602,11 @@ function YCe(e, t, n) {
 	return i;
 }
 function Q8(e, t) {
-	let n = e.state.document.elements.filter(zT).length;
 	return {
 		id: xE(),
 		kind: {
 			type: "section",
-			name: n === 0 ? "Mood board" : `Mood board ${n + 1}`,
+			name: "Untitled",
 			board: !0,
 			notes: ""
 		},
@@ -117703,18 +117702,18 @@ function twe(e, t) {
 		n && eN(e, n, "title");
 		return;
 	}
-	let s = e.state.document.elements.filter(vA).length, c = {
+	let s = {
 		id: xE(),
 		kind: {
 			type: "section",
-			name: `Section ${s + 1}`
+			name: "Untitled"
 		},
 		frame: o,
 		style: yC.section,
 		parentID: null
-	}, l = e.state.document;
-	e.commit({ elements: [c, ...l.elements] }), e.set({
-		selection: /* @__PURE__ */ new Set([c.id]),
+	}, c = e.state.document;
+	e.commit({ elements: [s, ...c.elements] }), e.set({
+		selection: /* @__PURE__ */ new Set([s.id]),
 		tool: "select"
 	});
 }
@@ -117826,7 +117825,7 @@ function o5(e) {
 	let t = e.kind;
 	switch (t.type) {
 		case "device": return t.name ?? EC(t.templateID)?.name ?? "Screen";
-		case "section": return t.name || "Section";
+		case "section": return t.name || "Untitled";
 		case "text":
 		case "note":
 		case "flow": return t.content.string.split("\n")[0]?.trim() || a5[t.type];
@@ -117849,7 +117848,7 @@ function swe(e, t) {
 		...e,
 		kind: {
 			...e.kind,
-			name: n || "Section"
+			name: n || "Untitled"
 		}
 	} : {
 		...e,
@@ -121350,7 +121349,7 @@ function tEe(e, t) {
 	};
 	return n.filter((e) => !i(e)).sort((e, t) => e.frame.y - t.frame.y || e.frame.x - t.frame.x);
 }
-var nEe = (e) => e.kind.type === "section" ? e.kind.name || "Section" : e.kind.type === "device" ? e.kind.name ?? "Screen" : "Frame";
+var nEe = (e) => e.kind.type === "section" ? e.kind.name || "Untitled" : e.kind.type === "device" ? e.kind.name ?? "Screen" : "Frame";
 /** Each section and screen on its own: one PDF with a page each, or a zip of PNGs. */
 async function rEe(e, t, n, r) {
 	if (t.length === 0) throw Error("There are no sections or screens to export.");
@@ -122003,25 +122002,31 @@ function l9({ store: e, inCard: t = !1 }) {
 		}
 		let w = p && d.every((e) => e.kind.type === "image"), T = w && d.length === 1 ? d[0] : void 0, E = Z8(e);
 		if (E.length > 0) {
-			let n = E.some(WT);
-			b.push(t("", /* @__PURE__ */ (0, $.jsx)("div", {
-				className: "inline-options",
-				children: /* @__PURE__ */ (0, $.jsxs)("button", {
-					className: `text-choice${n ? " selected" : ""}`,
-					"aria-pressed": n,
-					title: n ? "Hide the title and comment under the pictures" : "Show the title and comment under the pictures",
-					onClick: () => qCe(e, !n),
-					children: [/* @__PURE__ */ (0, $.jsx)(bxe, {}), "Notes"]
-				})
-			}, "notes")));
+			let t = E.some(WT);
+			b.push(/* @__PURE__ */ (0, $.jsxs)("button", {
+				className: "switch-row",
+				role: "switch",
+				"aria-checked": t,
+				title: t ? "Hide the title and comment under the pictures" : "Show the title and comment under the pictures",
+				onClick: () => qCe(e, !t),
+				children: [
+					/* @__PURE__ */ (0, $.jsx)(bxe, {}),
+					/* @__PURE__ */ (0, $.jsx)("span", { children: "Notes" }),
+					/* @__PURE__ */ (0, $.jsx)("span", {
+						className: `switch${t ? " on" : ""}`,
+						"aria-hidden": !0,
+						children: /* @__PURE__ */ (0, $.jsx)("span", { className: "knob" })
+					})
+				]
+			}, "notes"));
 		}
 		if (w && !T && b.push(t("", /* @__PURE__ */ (0, $.jsx)("div", {
 			className: "inline-options",
 			children: /* @__PURE__ */ (0, $.jsxs)("button", {
-				className: "text-choice",
+				className: "action-button",
 				title: "Show each picture at the size of the screen it was taken on",
 				onClick: () => J8(e, d),
-				children: [/* @__PURE__ */ (0, $.jsx)(cM, {}), "Actual size"]
+				children: [/* @__PURE__ */ (0, $.jsx)(cM, {}), "Reset to actual size"]
 			})
 		}))), T) {
 			let r = n.croppingID === T.id, i = T.kind.type === "image" && !!T.kind.crop;
@@ -122029,14 +122034,14 @@ function l9({ store: e, inCard: t = !1 }) {
 				className: "inline-options",
 				children: [
 					/* @__PURE__ */ (0, $.jsxs)("button", {
-						className: `text-choice${r ? " selected" : ""}`,
+						className: `action-button${r ? " selected" : ""}`,
 						"aria-pressed": r,
 						title: "Crop (or double-click the picture)",
 						onClick: () => e.set({ croppingID: r ? null : T.id }),
 						children: [/* @__PURE__ */ (0, $.jsx)(rxe, {}), r ? "Done" : "Crop"]
 					}),
 					i && /* @__PURE__ */ (0, $.jsxs)("button", {
-						className: "text-choice",
+						className: "action-button",
 						title: "Show the whole picture",
 						onClick: () => {
 							e.commit(_D(e.state.document, [Wve(T)])), e.set({ croppingID: null });
@@ -122044,10 +122049,10 @@ function l9({ store: e, inCard: t = !1 }) {
 						children: [/* @__PURE__ */ (0, $.jsx)(gM, {}), "Reset"]
 					}),
 					/* @__PURE__ */ (0, $.jsxs)("button", {
-						className: "text-choice",
+						className: "action-button",
 						title: "Show the picture at the size of the screen it was taken on",
 						onClick: () => J8(e, [T]),
-						children: [/* @__PURE__ */ (0, $.jsx)(cM, {}), "Actual size"]
+						children: [/* @__PURE__ */ (0, $.jsx)(cM, {}), "Reset to actual size"]
 					})
 				]
 			})));
@@ -124080,7 +124085,7 @@ function ZEe({ store: e }) {
 					/* @__PURE__ */ (0, $.jsx)("div", { className: "menu-separator" }),
 					/* @__PURE__ */ (0, $.jsxs)("div", {
 						className: "menu-version",
-						children: ["Draftboard ", "0.9.12"]
+						children: ["Draftboard ", "0.9.13"]
 					})
 				]
 			}),

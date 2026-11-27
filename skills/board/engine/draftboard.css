@@ -1426,6 +1426,30 @@ button:focus:not(:focus-visible) { outline: none; }
 
 /* Rich text: typed straight over the text box, like the plain field it replaces. */
 .rich-editor { position: absolute; outline: none; margin: 0; background: transparent; z-index: 5; box-sizing: content-box; overflow-wrap: break-word; caret-color: var(--selection, #d4622a); }
+
+/* An on/off setting in an options card: label left, switch right, the whole row is the button. */
+.switch-row {
+  display: flex; align-items: center; gap: 8px; width: 100%; padding: 6px 2px; border: none; background: none; cursor: pointer;
+  font: inherit; font-size: 13px; font-weight: 500; color: var(--text); text-align: left; border-radius: 8px;
+}
+.switch-row > svg { width: 16px; height: 16px; flex: none; color: var(--text-secondary, #6b6e73); }
+.switch-row > span:first-of-type { flex: 1; }
+.switch { position: relative; width: 34px; height: 20px; border-radius: 999px; background: rgba(44, 47, 51, 0.18); flex: none; transition: background 160ms ease; }
+.switch .knob { position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; border-radius: 50%; background: #fff; box-shadow: 0 1px 2px rgba(0,0,0,.25); transition: transform 160ms ease; }
+.switch.on { background: var(--selection, #d4622a); }
+.switch.on .knob { transform: translateX(14px); }
+.switch-row:focus-visible { outline: 2px solid var(--selection, #d4622a); outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) { .switch, .switch .knob { transition: none; } }
+
+/* Actions on a picture (Crop, Reset, Actual size): plainly buttons, with an edge and a fill. */
+.bento .inspector .inline-options .action-button, .action-button {
+  display: inline-flex; align-items: center; gap: 6px; height: 30px; padding: 0 10px; border-radius: 8px; cursor: pointer;
+  border: 1px solid rgba(44, 47, 51, 0.14); background: var(--surface, #fff); color: var(--text); font: inherit; font-size: 13px; font-weight: 500;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
+}
+.action-button svg { width: 15px; height: 15px; }
+.bento .inspector .inline-options .action-button:hover, .action-button:hover { background: rgba(44, 47, 51, 0.05); }
+.bento .inspector .inline-options .action-button.selected, .action-button.selected { background: var(--pick-bg); color: var(--pick-fg); border-color: transparent; }
 /* ---------- Responsive bento ----------
    Loaded after styles.css. Three sizes:
    - Wide (≥ 1200): Layers open on the left, cards on the right, tools centred at the bottom.

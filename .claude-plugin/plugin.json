@@ -1,6 +1,6 @@
 {
   "name": "draftboard",
-  "version": "0.9.12",
+  "version": "0.9.13",
   "description": "Wireframes, flow charts, sketches and mood boards inside Claude: each board is its own artifact beside the chat. Draw by hand or have Claude draft first, share a board from its Share menu, and build it into code with /draftboard:build.",
   "author": {
     "name": "vecartier"
