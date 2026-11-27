@@ -1409,6 +1409,20 @@ button:focus:not(:focus-visible) { outline: none; }
 .bento .canvas.erasing { cursor: none; }
 .inspector-label:empty { display: none; }
 .menu-version { font-size: 11px; color: var(--text-tertiary); padding: 4px 10px 2px; font-variant-numeric: tabular-nums; user-select: text; }
+
+/* Something slow under way (pictures being added): a small pill above the tool bar. */
+.busy-pill {
+  position: absolute; left: 50%; bottom: calc(var(--bar, 48px) + 36px); transform: translateX(-50%); z-index: 20;
+  display: flex; align-items: center; gap: 8px; padding: 7px 12px 7px 10px; border-radius: 999px;
+  background: var(--surface, #fff); color: var(--text, #2c2f33); font-size: 13px; font-weight: 500; box-shadow: var(--shadow-lg, 0 6px 24px rgba(0,0,0,.12));
+  pointer-events: none;
+}
+.busy-pill .spinner {
+  width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--pick-bg, rgba(212,98,42,.2)); border-top-color: var(--selection, #d4622a);
+  animation: busy-spin 0.8s linear infinite;
+}
+@keyframes busy-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .busy-pill .spinner { animation-duration: 2.4s; } }
 /* ---------- Responsive bento ----------
    Loaded after styles.css. Three sizes:
    - Wide (≥ 1200): Layers open on the left, cards on the right, tools centred at the bottom.
