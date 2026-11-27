@@ -1423,6 +1423,9 @@ button:focus:not(:focus-visible) { outline: none; }
 }
 @keyframes busy-spin { to { transform: rotate(360deg); } }
 @media (prefers-reduced-motion: reduce) { .busy-pill .spinner { animation-duration: 2.4s; } }
+
+/* Rich text: typed straight over the text box, like the plain field it replaces. */
+.rich-editor { position: absolute; outline: none; margin: 0; background: transparent; z-index: 5; box-sizing: content-box; overflow-wrap: break-word; caret-color: var(--selection, #d4622a); }
 /* ---------- Responsive bento ----------
    Loaded after styles.css. Three sizes:
    - Wide (≥ 1200): Layers open on the left, cards on the right, tools centred at the bottom.
