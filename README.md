@@ -4,16 +4,20 @@ A canvas for wireframes, flow charts, sketches and mood boards, inside Claude. E
 
 ## Install
 
-Inside Claude Code:
+In a terminal:
 
 ```
-/plugin marketplace add vecartier/draftboard
-/plugin install draftboard@draftboard
+npx github:vecartier/draftboard
 ```
 
-Start a new session afterwards. You need Claude Code with a claude.ai account (for artifacts), and nothing else: no server, nothing running on your computer.
+It finds Claude Code (including the copy inside the Claude desktop app), adds the plugin and installs it. Run it again any time to update, or to repair an install that says a file is missing. Then start a new Claude Code chat and type `/draftboard:board`.
 
-Prefer the open [skills](https://github.com/vercel-labs/skills) installer? `npx skills add vecartier/draftboard -g -a claude-code` installs the same skills as `/board` and `/build`, without the plugin's instant blank board. Use one route, not both.
+You need Node.js for `npx`, and Claude Code with a claude.ai account (for artifacts). Nothing else: no server, nothing running on your computer.
+
+Other ways in:
+- **Inside Claude Code:** `/plugin marketplace add vecartier/draftboard`, then `/plugin install draftboard@draftboard`.
+- **Ask Claude:** paste *Install the Draftboard plugin: marketplace vecartier/draftboard, plugin draftboard@draftboard.* into a Claude Code chat.
+- **The open [skills](https://github.com/vercel-labs/skills) installer:** `npx skills add vecartier/draftboard -g -a claude-code` installs the same skills as `/board` and `/build`, without the plugin's instant blank board. Use one route, not both.
 
 **Your first board can take a few minutes**, while Claude publishes the editor as a private artifact of your own. Every board after that opens in seconds.
 
@@ -52,6 +56,7 @@ Each board is a small page plus the Draftboard editor, copied on the server from
 | `skills/board/` | The board skill, page template (`board.html`), draft format (`draft-reference.md`, `flowchart-reference.md`) and helper scripts |
 | `skills/board/engine/` | The built editor and its `VERSION` |
 | `skills/build/` | The build skill |
+| `installer/` | The `npx` installer |
 | `hooks/` | Opens a blank board instantly for `/draftboard:board` with no request |
 
 MIT licensed.
