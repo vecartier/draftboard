@@ -1,15 +1,6 @@
 # Draftboard for Claude
 
-Wireframe in Draftboard without leaving Claude. Every board is its own Claude artifact, like a Design: it opens beside the chat, you draw on it by hand or ask Claude for drafts, you share it from its own Share menu, and Claude builds it into code later.
-
-- **`/draftboard:board`** opens a fresh blank board in a couple of seconds.
-- **Flow charts** on any board: process, decision, start/end, input/output, document and database shapes (switch to Flowchart at the top of the board), joined by connectors that stick to shapes and screens, re-route when they move and carry labels like Yes and No. Ask for one ("/draftboard how a refund gets approved") and Claude drafts it, laid out automatically. Drag from a shape's side dot to add the next step, press Tab to add one below, double-click a connector to label it.
-- **`/draftboard:board a checkout flow with cart and payment`** makes a new board with Claude's first draft on it.
-- **Tools** sit along the bottom; the picked tool's options and the selection's style appear on the right. The Flowchart / Wireframe switch at the top changes which tools show.
-- **Iterate** by asking in the chat ("make Pay sticky", "add an error state"), or leave comments on the board with the artifact's own comments and send them to Claude: Claude makes the change, replies on the thread and resolves it. Every Claude change is one ⌘Z.
-- **Come back later**: "open my Checkout board" finds the board by name, opens it beside the chat and picks up where you left off.
-- **Build it**: paste the board's link into Claude Code in your project ("build this"), or run `/draftboard:build <link or name>`. Claude reads the screens, copy, flows, notes and comments, and builds them in your project's own stack and components.
-- **Sharing**: from the board's Share menu. People you share it with can view it; only you (and anyone you give edit access) change it.
+A canvas for wireframes, flow charts, sketches and mood boards, inside Claude. Every board is its own Claude artifact: it opens beside the chat, you work on it by hand or ask Claude for a first draft, you share it from its Share menu, and Claude can build it into code later.
 
 ## Install
 
@@ -20,16 +11,47 @@ Inside Claude Code:
 /plugin install draftboard@draftboard
 ```
 
-Or from a terminal: `claude plugin marketplace add vecartier/draftboard && claude plugin install draftboard@draftboard`. Start a new session afterwards.
+Start a new session afterwards. You need Claude Code with a claude.ai account (for artifacts), and nothing else: no server, nothing running on your computer.
 
-Prefer the open [skills](https://github.com/vercel-labs/skills) installer? `npx skills add vecartier/draftboard -g -a claude-code` installs the same skills (as `/board` and `/build`), without the plugin's quick blank board (a blank board then takes Claude a few more seconds). Use one route or the other, not both.
+Prefer the open [skills](https://github.com/vercel-labs/skills) installer? `npx skills add vecartier/draftboard -g -a claude-code` installs the same skills as `/board` and `/build`, without the plugin's instant blank board. Use one route, not both.
 
-It needs Claude Code with Claude artifacts (a claude.ai account), and nothing else: no server, nothing running on your computer.
+**Your first board can take a few minutes**, while Claude publishes the editor as a private artifact of your own. Every board after that opens in seconds.
 
-**Your first board can take a few minutes.** Claude publishes the Draftboard editor (in `skills/board/engine/`) as a private artifact of your own, which your boards then copy on the server, so every board after that opens at once. When the plugin updates its editor, Claude refreshes that copy on your next `/draftboard`.
+## Use it
+
+| Command | What it does |
+| --- | --- |
+| `/draftboard:board` | Opens a blank board. |
+| `/draftboard:board a checkout flow with cart and payment` | Opens a board with Claude's first draft on it. |
+| `/draftboard:board open my Checkout board` | Finds an older board by name and picks up where you left off. |
+| `/draftboard:build <link or name>` | Builds the board into your project, in its own stack and components. |
+
+## Modes
+
+Switch with the icons at the top of the board (hover for the name).
+
+- **Wireframe**: phone, tablet and desktop frames, UI components, icons, shapes, images and text.
+- **Flowchart**: process, decision, start/end, input/output, document and database shapes, joined by connectors that stick to shapes, re-route as you move things and carry labels like Yes and No. Tab adds the next step.
+- **Draw**: pen, pencil, marker and highlighter with an eraser, one drawing layer per board, and freeform canvases. Works with Apple Pencil on iPad.
+- **Mood board**: boards with a title and notes, picture cards with a title and caption in a grid you reorder by dragging, bulk add, paste or drop images, and circle or box highlights.
+
+Notes, connectors and sections (to group things) sit alongside the mode's own tools. Images can be cropped and resized.
+
+## Working with Claude
+
+- **Iterate** by asking in the chat ("make Pay sticky", "add an error state"), or leave comments on the board and send them to Claude. Claude makes the change and replies on the thread. Every Claude change is one ⌘Z.
+- **Share** from the board's Share menu. People you share with can view it; only you change it.
+- **Build** by pasting the board's link into Claude Code in your project ("build this"). Claude reads the screens, copy, flows, notes and comments.
 
 ## How it works
 
-Each board artifact is a small page plus the Draftboard editor, copied on the server from your own private engine artifact (recorded in `~/.claude/draftboard/engine.json`). The board lives in the artifact's own database, with a readable copy (outline, hand-off JSON and a picture) that Claude reads through the artifact tools. Claude drafts by dropping a draft in the board's inbox, and the open board applies it.
+Each board is a small page plus the Draftboard editor, copied on the server from your private engine artifact (its link is kept in `~/.claude/draftboard/engine.json`). The board is saved in the artifact's own database, with a readable copy (an outline, hand-off JSON and a picture) that Claude reads. Claude drafts by dropping a draft in the board's inbox, and the open board applies it. When the plugin ships a new editor, Claude refreshes your engine on your next `/draftboard`.
 
-`skills/board/engine/` is the built editor (from the Draftboard app, `npm run build:engine`); `skills/board/board.html` is the page template; `skills/board/draft-reference.md` is the draft format and component catalog; `skills/board/flowchart-reference.md` is the flowchart draft format.
+| Path | Contents |
+| --- | --- |
+| `skills/board/` | The board skill, page template (`board.html`), draft format (`draft-reference.md`, `flowchart-reference.md`) and helper scripts |
+| `skills/board/engine/` | The built editor and its `VERSION` |
+| `skills/build/` | The build skill |
+| `hooks/` | Opens a blank board instantly for `/draftboard:board` with no request |
+
+MIT licensed.

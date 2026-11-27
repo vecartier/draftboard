@@ -4,13 +4,13 @@
     "name": "vecartier"
   },
   "metadata": {
-    "description": "Draftboard: wireframe boards as Claude artifacts."
+    "description": "Draftboard: boards for wireframes, flow charts, sketches and mood boards, as Claude artifacts."
   },
   "plugins": [
     {
       "name": "draftboard",
       "source": "./",
-      "description": "Wireframe in Draftboard inside Claude: each board is its own artifact beside the chat, drafted by you or Claude, shared from its Share menu, built into code with /draftboard:build."
+      "description": "Wireframes, flow charts, sketches and mood boards inside Claude: each board is its own artifact beside the chat. Draw by hand or have Claude draft first, share a board from its Share menu, and build it into code with /draftboard:build."
     }
   ]
 }
