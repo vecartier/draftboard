@@ -1560,4 +1560,12 @@ button:focus:not(:focus-visible) { outline: none; }
 
 /* The mode toggle: text the size of the title row's other labels, with just enough room around it. */
 .bento .mode-option { font-size: 15px; padding: 0 12px; }
+/* Icons only now (the name shows on hover): square buttons. */
+.bento .mode-option { width: 40px; padding: 0; position: relative; }
+.bento .mode-option svg { width: 19px; height: 19px; }
+@media (hover: hover) { .bento .mode-option[data-tip]:hover::after {
+  content: attr(data-tip); position: absolute; top: calc(100% + 10px); left: 50%; transform: translateX(-50%);
+  white-space: pre; padding: 5px 8px; border-radius: 7px; background: rgba(28, 28, 30, 0.92); color: #fff;
+  font-size: 12px; font-weight: 500; pointer-events: none; z-index: 30; animation: tip-in 0.12s ease 0.35s both;
+} }
 /*$vite$:1*/
