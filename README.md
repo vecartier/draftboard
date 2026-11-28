@@ -2,7 +2,7 @@
 
 A canvas for wireframes, flow charts, sketches and mood boards, inside Claude. Every board is its own Claude artifact: it opens beside the chat, you work on it by hand or ask Claude for a first draft, you share it from its Share menu, and Claude can build it into code later.
 
-![Draftboard demo: Claude drafts a checkout flow, then a flowchart, a sketch and a mood board on the same board, and builds it into code](https://raw.githubusercontent.com/vecartier/draftboard/media/demo.gif)
+![Draftboard demo: Claude drafts a checkout flowchart, a benchmark mood board sits beside it, Claude wireframes the screens, hand-drawn notes go on top, and Claude builds it into code](https://raw.githubusercontent.com/vecartier/draftboard/media/demo.gif)
 
 ## Install
 
