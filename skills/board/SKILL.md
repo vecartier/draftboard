@@ -31,6 +31,15 @@ Boards copy the Draftboard editor from the person's own private **engine artifac
 
 Only when `new-board.sh` says `engine-needed`:
 
+**First look for an engine the person already has.** `engine.json` is missing in a fresh session (a cloud session, a new computer) even when their engine exists, and publishing a new one is slow. So:
+
+1. Run `bash "<this skill's folder>/engine-files.sh" hash`. It prints `hash <version> <hash>`.
+2. List their artifacts (Artifact `action: "list"`) and take those titled "Draftboard engine", in listed order (page through with `page_token` until you have them or run out). For each, up to 6, list its files (`action: "list"`, `scope: "files"`, its `url`) and compare the sha256 shown for `draftboard.js` with `<hash>`.
+3. On the first match, run `bash "<this skill's folder>/engine-files.sh" record <its url> <version>`, then run `new-board.sh` again. Don't publish anything.
+4. With no match, set a new engine up (below).
+
+**Set a new engine up:**
+
 1. Tell the user in one line: "Setting up your private copy of the Draftboard editor. This happens once and takes a few minutes."
 2. Copy the four engine files into a new folder in your scratchpad (artifacts publish from there).
 3. Read `draftboard.js` and `draftboard.css` in full (the Artifact tool publishes only what you have read). They are the minified Draftboard editor from this plugin; read them in parts if needed.

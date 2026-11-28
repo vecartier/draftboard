@@ -20,7 +20,7 @@ HAVE="$(sed -n 's/.*"version"[^"]*"\([^"]*\)".*/\1/p' "$RECORD")"
 NEWEST="$(printf '%s\n%s\n' "$WANT" "$HAVE" | sort -V | tail -1)"
 [ "$NEWEST" = "$HAVE" ] || { echo "engine-needed engine $HAVE is older than $WANT"; exit 0; }
 
-ID="$(uuidgen | tr '[:upper:]' '[:lower:]')"
+ID="$( (uuidgen 2>/dev/null || cat /proc/sys/kernel/random/uuid) | tr '[:upper:]' '[:lower:]')"
 DIR="$OUT/draftboard-$ID"
 mkdir -p "$DIR"
 # The name goes into HTML (escaped) and into a JSON string (escaped).
