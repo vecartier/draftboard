@@ -3,7 +3,7 @@
   "version": "0.9.18",
   "description": "Installs the Draftboard plugin into Claude Code: wireframes, flow charts, sketches and mood boards, each board its own Claude artifact.",
   "bin": { "draftboard": "installer/install.js" },
-  "files": ["installer/"],
+  "files": ["installer/", "skills/", "hooks/", ".claude-plugin/"],
   "repository": { "type": "git", "url": "git+https://github.com/vecartier/draftboard.git" },
   "keywords": ["claude-code", "claude-plugin", "wireframe", "flowchart", "moodboard"],
   "license": "MIT"

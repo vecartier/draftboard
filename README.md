@@ -10,9 +10,15 @@ In a terminal:
 npx github:vecartier/draftboard
 ```
 
-It finds Claude Code (including the copy inside the Claude desktop app), adds the plugin and installs it. Run it again any time to update, or to repair an install that says a file is missing. Then start a new Claude Code chat and type `/draftboard:board`.
+It finds Claude Code (including the copy inside the Claude desktop app), adds the plugin and installs it. Run it again any time to update, or to repair a broken install. Then fully quit the Claude app (⌘Q on a Mac) or Claude Code, open it again, and type `/draftboard:board` in a new chat.
 
 You need Node.js for `npx`, and Claude Code with a claude.ai account (for artifacts). Nothing else: no server, nothing running on your computer.
+
+No git on your computer (`npx` says *An unknown git error occurred*, or a Mac asks to install developer tools)? Use this instead, which downloads the same thing without git:
+
+```
+npx https://github.com/vecartier/draftboard/archive/refs/heads/main.tar.gz
+```
 
 Other ways in:
 - **Inside Claude Code:** `/plugin marketplace add vecartier/draftboard`, then `/plugin install draftboard@draftboard`.
