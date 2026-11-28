@@ -12,11 +12,18 @@ The board is in `$ARGUMENTS`: a link, or a board's name ("build my Checkout boar
 
 A board artifact keeps a readable copy of itself for Claude. Read it with the ArtifactData tool on the board's URL:
 
-1. `action: "list"`, `collection: "board"`. Find the document whose id starts with `handoff.` and has no `~` (for example `handoff.<board id>`). If there is none, the board has never been opened and edited: ask the user to open it once, and stop.
-2. That document has `name`, `updated`, `outline` (a readable summary: each frame with its device, size and system bar, then its contents in reading order), `parts`, `json` and `png`. The full hand-off JSON (format `draftboard.handoff/1`) is its `json` followed by the `json` of the documents `handoff.<board id>~1` … `~<parts-1>`, joined in order. It has frames with their children (positions in points, relative to each frame), text, components, Lucide icon names, colours, `flows` between frames, loose `notes`, and open `comments`.
-3. See the board: Artifact tool, `action: "read"`, the board's `url`, `path`: `png.assetId`. Look at it before you write code.
+1. `action: "list"`, `collection: "board"`, with `out_dir` set to a folder in your scratchpad (the copy is too big to read inline). Find the file for the document whose id is `handoff.<board id>` (no `~`). If there is none, the board has never been opened and edited: ask the user to open it once, and stop.
+2. That document has `name`, `updated`, `outline`, `parts`, `t`, `json` and `png`. Read `outline` first: it lists every frame, the flows between frames, the flow chart (steps, connections and Mermaid), each section and mood board with its pictures, and open comments, then each frame's contents in reading order. On a big board some frames' details are left out, and the outline names them at the end.
+3. For the full detail, join the hand-off JSON (format `draftboard.handoff/1`): the head's `json`, then the `v` of the documents `handoff.<board id>~1` … `~<parts-1>`, in that order. Each part's `t` equals the head's `t`; if one doesn't, the board was saving: list again. It has frames with their children (positions in points, relative to each frame), text, components, Lucide icon names, colours, `flows` between frames, the `flowchart`, loose `canvas` items (sections, mood board cards, notes), and open `comments`. Every item names the section it sits in (`section`).
+4. Look at it before you write code. `png` is a small picture of the whole board (Artifact tool, `action: "read"`, the board's `url`, `path`: `png.assetId`), good for the overall layout only. For a sharp picture of the frames you're building, ask the open board for them: ArtifactData `action: "set"`, `collection: "inbox"`, a new `doc_id` (`picture-<short timestamp>`), `data: {"picture": ["<frame name or id>", "<section name>", "flowchart"]}` (up to 20). Then `action: "get"` the same document: `status: "applied"` comes with `pictures: [{name, id, assetId}]` (and `missing` for names it didn't find); read each `assetId` with the Artifact tool. With no `status` after a few seconds the board isn't open: open it (Artifact `action: "open"`) and check again. If the board is too old to answer (no `status` once open), update it to the latest editor (board skill) or go by the outline and `png`.
 
-The copy updates a few seconds after each edit, and the picture every couple of minutes. Notes and open comments are requirements from the user, so treat them as part of the spec. Rough ink is intent, not pixels.
+The copy updates a few seconds after each edit. Notes and open comments are requirements from the user, so treat them as part of the spec. Rough ink is intent, not pixels.
+
+### What each part of a board is for
+
+- **Wireframes** (frames with a device): screens to build. Frames named alike ("iPhone 18 Pro" twice) are told apart by id; ask which to build when it matters.
+- **Flow chart** (`flowchart`): the logic of a journey. Use it for navigation, states and branching (decisions are `if`s or routes, each labelled connection a case). It is not a screen to draw, unless the user asks for a diagram.
+- **Mood boards** (sections with `board: true`): visual references. Each card's `heading` names it and `text` says why it matters. Read the pictures you need (`asset`, with the Artifact tool and `path` = that id) and take the look from them (type, spacing, colour, density, motion hints), not their content or brands.
 
 ## 2. Fit it to the project
 
