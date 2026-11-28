@@ -9,6 +9,8 @@ OUT="${1:-}"
 NAME="${2:-Untitled board}"
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 RECORD="$HOME/.claude/draftboard/engine.json"
+# uuidgen isn't in Git Bash on Windows.
+new_id() { if command -v uuidgen >/dev/null 2>&1; then uuidgen | tr '[:upper:]' '[:lower:]'; else od -An -N16 -tx1 /dev/urandom | tr -d ' \n' | sed 's/^\(.\{8\}\)\(.\{4\}\)\(.\{4\}\)\(.\{4\}\)/\1-\2-\3-\4-/'; fi; }
 [ -n "$OUT" ] || { echo "error Give a folder to write into."; exit 1; }
 
 WANT="$(tr -d '[:space:]' < "$HERE/engine/VERSION")"
@@ -20,7 +22,7 @@ HAVE="$(sed -n 's/.*"version"[^"]*"\([^"]*\)".*/\1/p' "$RECORD")"
 NEWEST="$(printf '%s\n%s\n' "$WANT" "$HAVE" | sort -V | tail -1)"
 [ "$NEWEST" = "$HAVE" ] || { echo "engine-needed engine $HAVE is older than $WANT"; exit 0; }
 
-ID="$(uuidgen | tr '[:upper:]' '[:lower:]')"
+ID="$(new_id)"
 DIR="$OUT/draftboard-$ID"
 mkdir -p "$DIR"
 # The name goes into HTML (escaped) and into a JSON string (escaped).

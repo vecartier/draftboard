@@ -56,3 +56,17 @@ test('a missing engine is published by the command itself, with no model turn', 
   expect(calls[0]?.url).toBeUndefined()
   expect(prompts).toEqual([])
 })
+
+test('a scratchpad path with spaces still takes the fast path', async ($, on) => {
+  const prompts: string[] = []
+  on('session.info', () => ({ value: { scratchpadDir: 'C:\\Users\\Ana Lima\\Temp', transcriptPath: '' } }))
+  on('process.run', () => ({
+    value: { exitCode: 0, stdout: 'ready C:\\Users\\Ana Lima\\Temp/draftboard-1/index.html https://claude.ai/artifact/ENGINE1\n', stderr: '', isStdoutTruncated: false, isStderrTruncated: false },
+  }))
+  on('tool.call', () => ({ result: {}, text: 'Published at https://claude.ai/artifact/BOARD1 (Version 1)' }))
+  on('clock.after', () => ({ value: undefined }))
+  on('prompt.submit', (_: unknown, e: { text: string }) => { prompts.push(e.text); return { text: e.text } })
+  const ran = await $.command.run({ command: 'draftboard', args: '' } as Parameters<typeof $.command.run>[0])
+  expect(ran.text).toBe('Untitled board is open beside the chat: https://claude.ai/artifact/BOARD1')
+  expect(prompts).toEqual([])
+})

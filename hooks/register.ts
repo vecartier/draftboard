@@ -28,7 +28,7 @@ function resultText(result: unknown): string {
 /** Publishes (or refreshes) the person's private engine artifact and records it. Returns why it couldn't, or null. */
 async function setUpEngine($: Engine, scratchpadDir: string): Promise<string | null> {
   const copied = await $.process.run(['bash', `${$.plugin.root}/skills/board/engine-files.sh`, 'copy', scratchpadDir], { timeoutMs: 30_000 })
-  const line = /^files (\S+) (\S+) (\S+)$/.exec(copied.stdout.trim().split('\n').pop() ?? '')
+  const line = /^files (.+) (\S+) (\S+)$/.exec(copied.stdout.trim().split('\n').pop() ?? '')
   if (!line) return `Copying the editor failed: ${copied.stdout.trim() || copied.stderr.trim()}`
   const [, dir, version] = line
   // Always a new engine artifact: replacing an existing one needs it read in this conversation first, which a
@@ -76,7 +76,7 @@ export const register: Register = (on) => {
       prepared = await prepare()
     }
     const line = prepared.line
-    const ready = /^ready (\S+) (https:\/\/claude\.ai\/artifact\/[\w-]+)$/.exec(line)
+    const ready = /^ready (.+) (https:\/\/claude\.ai\/artifact\/[\w-]+)$/.exec(line)
     if (!ready) return viaSkill(line.startsWith('engine-needed') ? 'The engine needs setting up first.' : `Preparing it failed: ${line || prepared.stderr}`)
     const [, page, engine] = ready
 
