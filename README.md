@@ -59,4 +59,13 @@ Each board is a small page plus the Draftboard editor, copied on the server from
 | `installer/` | The `npx` installer |
 | `hooks/` | Opens a blank board instantly for `/draftboard:board` with no request |
 
+## What it runs and what it sends
+
+- **On your computer**, the plugin runs two small bash scripts from `skills/board/`: `new-board.sh` writes a board page into Claude's scratchpad folder, and `engine-files.sh` copies the editor files there and keeps your engine link in `~/.claude/draftboard/engine.json`. The hook module `hooks/register.ts` runs them when you type `/draftboard:board` with nothing after it, then publishes the board with Claude's own Artifact tool. Nothing is downloaded or installed, and no permission settings are changed.
+- **On claude.ai**, boards and your engine are private artifacts in your account; each board saves to its own artifact storage. Claude reads and changes a board only through the Artifact tools, when you ask.
+- **In your browser**, an open board loads the Caveat font from Google Fonts. The editor (`skills/board/engine/draftboard.js`, a built bundle) also holds code for Draftboard's standalone web version, which calls a relative `/api` path; inside an artifact that code is not used.
+- **The `npx` installer** (`installer/install.js`) is not part of the plugin at run time. It finds Claude Code and runs its own `plugin marketplace add vecartier/draftboard` and `plugin install draftboard@draftboard`.
+
+See [PRIVACY.md](PRIVACY.md).
+
 MIT licensed.

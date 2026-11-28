@@ -5,5 +5,17 @@
   "author": {
     "name": "vecartier"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "homepage": "https://github.com/vecartier/draftboard",
+  "repository": "https://github.com/vecartier/draftboard",
+  "icon": "./.claude-plugin/icon.png",
+  "documentationUrl": "https://github.com/vecartier/draftboard#readme",
+  "supportUrl": "https://github.com/vecartier/draftboard/issues",
+  "privacyPolicyUrl": "https://github.com/vecartier/draftboard/blob/main/PRIVACY.md",
+  "network": {
+    "hosts": [
+      "fonts.googleapis.com",
+      "fonts.gstatic.com"
+    ]
+  }
 }
